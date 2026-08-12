@@ -1,0 +1,36 @@
+name: Fetch Weekly NFL Matchups
+
+on:
+  schedule:
+    # Runs at 10:00 AM UTC every Tuesday
+    - cron: '0 10 * * 2'
+  workflow_dispatch: # Allows you to trigger it manually from the Actions tab
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to push commits
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: pip install requests
+
+      - name: Run Fetcher Script
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: python update_picks.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add matchups.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update weekly NFL matchups and spreads" && git push)
