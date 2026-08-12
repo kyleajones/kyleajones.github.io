@@ -1,1 +1,121 @@
-[]
+[
+    {
+        "id": "8c94552d022acec4a0458d70c19d3da9",
+        "away": "New England Patriots",
+        "home": "Seattle Seahawks",
+        "spread": "+3.5",
+        "commence_time": "2026-09-10T00:15:00Z"
+    },
+    {
+        "id": "acc580d74344ea3b31bbcdd057fe6a9c",
+        "away": "San Francisco 49ers",
+        "home": "Los Angeles Rams",
+        "spread": "+3.5",
+        "commence_time": "2026-09-11T00:35:00Z"
+    },
+    {
+        "id": "95c01d1bb797d6df14824b106c5a9130",
+        "away": "Atlanta Falcons",
+        "home": "Pittsburgh Steelers",
+        "spread": "+3.0",
+        "commence_time": "2026-09-13T17:00:00Z"
+    },
+    {
+        "id": "b6cfdcbafa61ce220ba87dc2d9b80c77",
+        "away": "Baltimore Ravens",
+        "home": "Indianapolis Colts",
+        "spread": "-3.5",
+        "commence_time": "2026-09-13T17:00:00Z"
+    },
+    {
+        "id": "7e09efed7e12c659b82740b67ce2f9a1",
+        "away": "Buffalo Bills",
+        "home": "Houston Texans",
+        "spread": "-1.5",
+        "commence_time": "2026-09-13T17:00:00Z"
+    },
+    {
+        "id": "fc362aff0d889ec52d358307a70c32ed",
+        "away": "Chicago Bears",
+        "home": "Carolina Panthers",
+        "spread": "-2.5",
+        "commence_time": "2026-09-13T17:00:00Z"
+    },
+    {
+        "id": "ed6d24ff979f9c71979fead577b0b3f7",
+        "away": "Tampa Bay Buccaneers",
+        "home": "Cincinnati Bengals",
+        "spread": "+3.5",
+        "commence_time": "2026-09-13T17:00:00Z"
+    },
+    {
+        "id": "e55c6fe19fce094ce214c8b0e5b504e9",
+        "away": "Cleveland Browns",
+        "home": "Jacksonville Jaguars",
+        "spread": "+7.5",
+        "commence_time": "2026-09-13T17:00:00Z"
+    },
+    {
+        "id": "c1d3fcec25aaeb06ebd2244d33d338e0",
+        "away": "New Orleans Saints",
+        "home": "Detroit Lions",
+        "spread": "+7.0",
+        "commence_time": "2026-09-13T17:00:00Z"
+    },
+    {
+        "id": "7dddb296a42e7a41a774b24bd1709ce1",
+        "away": "New York Jets",
+        "home": "Tennessee Titans",
+        "spread": "+3.0",
+        "commence_time": "2026-09-13T17:00:00Z"
+    },
+    {
+        "id": "1edfa5ceaa1ad2cb57df1c1b908731f6",
+        "away": "Arizona Cardinals",
+        "home": "Los Angeles Chargers",
+        "spread": "+10.5",
+        "commence_time": "2026-09-13T20:25:00Z"
+    },
+    {
+        "id": "cb77efed7e711d25a72c1a2a0a1af119",
+        "away": "Green Bay Packers",
+        "home": "Minnesota Vikings",
+        "spread": "-1.5",
+        "commence_time": "2026-09-13T20:25:00Z"
+    },
+    {
+        "id": "c5d95f48a16849ab6bebc68fbbfcb74a",
+        "away": "Miami Dolphins",
+        "home": "Las Vegas Raiders",
+        "spread": "+3.5",
+        "commence_time": "2026-09-13T20:25:00Z"
+    },
+    {
+        "id": "17885cb8dcade8f6c3bce14b2de805e8",
+        "away": "Washington Commanders",
+        "home": "Philadelphia Eagles",
+        "spread": "+4.5",
+        "commence_time": "2026-09-13T20:25:00Z"
+    },
+    {
+        "id": "3e646c7479c57f5d9752d8c7dfe7059b",
+        "away": "Dallas Cowboys",
+        "home": "New York Giants",
+        "spread": "-2.5",
+        "commence_time": "2026-09-14T00:20:00Z"
+    },
+    {
+        "id": "5ad8135dc2b5f27de0b777acd317855a",
+        "away": "Denver Broncos",
+        "home": "Kansas City Chiefs",
+        "spread": "+3.0",
+        "commence_time": "2026-09-15T00:15:00Z"
+    },
+    {
+        "id": "56e8897681915f7ec92baeee952bb1ae",
+        "away": "Detroit Lions",
+        "home": "Buffalo Bills",
+        "spread": "+3.0",
+        "commence_time": "2026-09-18T00:15:00Z"
+    }
+]
