@@ -1,33 +1,79 @@
 document.addEventListener('DOMContentLoaded', () => {
     fetch('matchups.json')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`File not found or server error (Status: ${response.status})`);
+            }
+            return response.json();
+        })
         .then(matchups => {
             const container = document.getElementById('matchups-container');
             
+            // Tracker variable to watch for day changes
+            let currentDayString = '';
+            
             matchups.forEach(game => {
-                const gameDiv = document.createElement('div');
-                gameDiv.className = 'matchup';
+                const gameDate = new Date(game.commence_time);
                 
-                gameDiv.innerHTML = `
+                // Extract just the date for the header (e.g., "Sunday, Sep 8")
+                const dayString = gameDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+
+                // Extract just the time for the individual game (e.g., "1:00 PM")
+                const timeString = gameDate.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit'
+                });
+
+                // If the day changes, inject a new header into the container
+                if (dayString !== currentDayString) {
+                    const dayHeader = document.createElement('h2');
+                    dayHeader.textContent = dayString;
                     
-                        
-                        
-                            ${game.away} (Away) 
-                            Spread: ${game.spread}
-                        
+                    // Simple styling to make the header pop
+                    dayHeader.style.marginTop = '40px';
+                    dayHeader.style.borderBottom = '2px solid #ddd';
+                    dayHeader.style.paddingBottom = '10px';
+                    dayHeader.style.color = '#333';
                     
-                    VS
+                    container.appendChild(dayHeader);
                     
-                        
-                        ${game.home} (Home)
-                    
+                    // Update the tracker
+                    currentDayString = dayString;
+                }
+
+                // Create the matchup block
+                const wrapperDiv = document.createElement('div');
+                wrapperDiv.style.marginBottom = '20px';
+                
+                wrapperDiv.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 8px; font-weight: bold; color: #555; font-size: 0.95em;">
+                        ${timeString}
+                    </div>
+                    <div class="matchup" style="margin-bottom: 0;">
+                        <label>
+                            <input type="radio" name="${game.id}" value="${game.away}" required>
+                            <span class="team-label">
+                                ${game.away} (Away) <br>
+                                <small>Spread: ${game.spread}</small>
+                            </span>
+                        </label>
+                        <span>VS</span>
+                        <label>
+                            <input type="radio" name="${game.id}" value="${game.home}">
+                            <span class="team-label">${game.home} (Home)</span>
+                        </label>
+                    </div>
                 `;
-                container.appendChild(gameDiv);
+                container.appendChild(wrapperDiv);
             });
         })
         .catch(error => {
             console.error('Error fetching matchups:', error);
-            document.getElementById('matchups-container').innerHTML = 'Matchups will be available soon.';
+            document.getElementById('matchups-container').innerHTML = '<p>Matchups will be available soon.</p>';
         });
 
     document.getElementById('picks-form').addEventListener('submit', function(e) {
