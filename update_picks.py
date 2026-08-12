@@ -2,7 +2,7 @@ import os
 import json
 import requests
 
-API_KEY = os.environ.get("df6bf03e43557e446c74a04dc5ec6aa6")
+API_KEY = os.environ.get("ODDS_API_KEY")
 URL = f"https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey={API_KEY}®ions=us&markets=spreads"
 
 def fetch_matchups():
