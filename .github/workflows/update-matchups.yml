@@ -13,10 +13,10 @@ jobs:
       contents: write # Needed to push commits
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5 # Bumped from v4 to v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6 # Bumped from v5 to v6
         with:
           python-version: '3.11'
 
