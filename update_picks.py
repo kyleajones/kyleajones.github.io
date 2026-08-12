@@ -3,10 +3,18 @@ import json
 import requests
 
 API_KEY = os.environ.get("ODDS_API_KEY")
-URL = f"https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey={API_KEY}®ions=us&markets=spreads"
+# Keep the base URL clean
+URL = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/"
 
 def fetch_matchups():
-    response = requests.get(URL)
+    # Pass parameters safely as a dictionary
+    params = {
+        "apiKey": API_KEY,
+        "regions": "us",
+        "markets": "spreads"
+    }
+    
+    response = requests.get(URL, params=params)
     response.raise_for_status()
     games = response.json()
     
@@ -40,4 +48,3 @@ def fetch_matchups():
         
 if __name__ == "__main__":
     fetch_matchups()
-  
