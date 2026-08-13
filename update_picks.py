@@ -31,8 +31,8 @@ def fetch_matchups():
     # 2. Find the date of the very first game the API returned
     first_game_time = datetime.fromisoformat(games[0]['commence_time'].replace('Z', '+00:00'))
     
-    # 3. Create an 8-day window starting from that first game
-    end_of_window = first_game_time + timedelta(days=8)
+    # 3. Create an 7-day window starting from that first game
+    end_of_window = first_game_time + timedelta(days=7)
     
     for game in games:
         game_time = datetime.fromisoformat(game['commence_time'].replace('Z', '+00:00'))
