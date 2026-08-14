@@ -12,6 +12,45 @@ function getTeamLogoUrl(teamName) {
     return logoMap[teamName] || '';
 }
 
+// Pick tracking
+const PICKS_REQUIRED = 7;
+let currentPicks = new Set();
+let matchupsData = [];
+
+function updatePickCount() {
+    const count = currentPicks.size;
+    const counter = document.getElementById('pick-counter');
+    if (counter) {
+        counter.textContent = `${count}/${PICKS_REQUIRED}`;
+        if (count === PICKS_REQUIRED) {
+            counter.style.color = '#28a745';
+        } else {
+            counter.style.color = '#666';
+        }
+    }
+}
+
+function validateAndSubmitPicks() {
+    if (currentPicks.size !== PICKS_REQUIRED) {
+        alert(`You must make exactly ${PICKS_REQUIRED} picks. Currently: ${currentPicks.size}/${PICKS_REQUIRED}`);
+        return false;
+    }
+    return true;
+}
+
+function trackPick(event) {
+    const input = event.target;
+    const gameId = input.name.split('_')[1];
+    
+    if (input.checked) {
+        currentPicks.add(gameId);
+    } else {
+        currentPicks.delete(gameId);
+    }
+    
+    updatePickCount();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     fetch('matchups.json')
         .then(response => {
@@ -21,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         })
         .then(matchups => {
+            matchupsData = matchups;
             const container = document.getElementById('matchups-container');
             
             // Tracker variable to watch for day changes
@@ -117,6 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 container.appendChild(wrapperDiv);
             });
+            
+            // Add event listeners to all radio buttons
+            document.querySelectorAll('input[type="radio"]').forEach(input => {
+                input.addEventListener('change', trackPick);
+            });
         })
         .catch(error => {
             console.error('Error fetching matchups:', error);
@@ -125,9 +170,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('picks-form').addEventListener('submit', function(e) {
         e.preventDefault();
+        
+        if (!validateAndSubmitPicks()) {
+            return;
+        }
+        
         const formData = new FormData(e.target);
         const userPicks = Object.fromEntries(formData.entries());
+        
+        // Save picks to localStorage with timestamp
+        const week = getWeekNumber(new Date());
+        const year = new Date().getFullYear();
+        const storageKey = `picks_${year}_week_${week}`;
+        
+        const pickRecord = {
+            week: week,
+            year: year,
+            date: new Date().toISOString(),
+            picks: userPicks,
+            pickCount: Object.keys(userPicks).length
+        };
+        
+        localStorage.setItem(storageKey, JSON.stringify(pickRecord));
+        
         console.log('Saved Picks:', userPicks);
-        alert('Picks saved! Open developer console to view.');
+        alert('Picks saved! You can now view your running record.');
+        
+        // Clear picks for next week
+        currentPicks.clear();
+        updatePickCount();
+        document.getElementById('picks-form').reset();
     });
 });
+
+// Get ISO week number
+function getWeekNumber(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
