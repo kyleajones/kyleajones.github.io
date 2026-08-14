@@ -1,41 +1,15 @@
-// Function to get team logo URL from a public API
+// Load logo mapping and get logo URL
+let logoMap = {};
+
+fetch('logos.json')
+    .then(response => response.json())
+    .then(data => {
+        logoMap = data;
+    })
+    .catch(error => console.warn('Could not load logo mapping:', error));
+
 function getTeamLogoUrl(teamName) {
-    // Using NFL team IDs and a reliable logo service
-    const teamLogos = {
-        'New England Patriots': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_ne_logo.png',
-        'Seattle Seahawks': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_sea_logo.png',
-        'San Francisco 49ers': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_sf_logo.png',
-        'Los Angeles Rams': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_la_logo.png',
-        'Atlanta Falcons': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_atl_logo.png',
-        'Pittsburgh Steelers': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_pit_logo.png',
-        'Baltimore Ravens': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_bal_logo.png',
-        'Indianapolis Colts': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_ind_logo.png',
-        'Buffalo Bills': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_buf_logo.png',
-        'Houston Texans': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_hou_logo.png',
-        'Chicago Bears': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_chi_logo.png',
-        'Carolina Panthers': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_car_logo.png',
-        'Tampa Bay Buccaneers': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_tb_logo.png',
-        'Cincinnati Bengals': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_cin_logo.png',
-        'Cleveland Browns': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_cle_logo.png',
-        'Jacksonville Jaguars': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_jax_logo.png',
-        'New Orleans Saints': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_no_logo.png',
-        'Detroit Lions': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_det_logo.png',
-        'New York Jets': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_nyj_logo.png',
-        'Tennessee Titans': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_ten_logo.png',
-        'Arizona Cardinals': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_ari_logo.png',
-        'Los Angeles Chargers': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_lac_logo.png',
-        'Green Bay Packers': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_gb_logo.png',
-        'Minnesota Vikings': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_min_logo.png',
-        'Miami Dolphins': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_mia_logo.png',
-        'Las Vegas Raiders': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_lv_logo.png',
-        'Washington Commanders': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_was_logo.png',
-        'Philadelphia Eagles': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_phi_logo.png',
-        'Dallas Cowboys': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_dal_logo.png',
-        'New York Giants': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_nyg_logo.png',
-        'Denver Broncos': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_den_logo.png',
-        'Kansas City Chiefs': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_kc_logo.png'
-    };
-    return teamLogos[teamName] || '';
+    return logoMap[teamName] || '';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -110,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <label class="team-option">
                                     <input type="radio" name="spread_${game.id}" value="${game.away}" required>
                                     <div class="team-with-logo">
-                                        <img src="${awayLogo}" alt="${game.away}" class="team-logo" onerror="this.style.display='none'">
+                                        ${awayLogo ? `<img src="${awayLogo}" alt="${game.away}" class="team-logo" onerror="this.style.display='none'">` : ''}
                                         <span class="team-label">${game.away}</span>
                                     </div>
                                 </label>
@@ -118,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <label class="team-option">
                                     <input type="radio" name="spread_${game.id}" value="${game.home}">
                                     <div class="team-with-logo">
-                                        <img src="${homeLogo}" alt="${game.home}" class="team-logo" onerror="this.style.display='none'">
+                                        ${homeLogo ? `<img src="${homeLogo}" alt="${game.home}" class="team-logo" onerror="this.style.display='none'">` : ''}
                                         <span class="team-label">${game.home}</span>
                                     </div>
                                 </label>
