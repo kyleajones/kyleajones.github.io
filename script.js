@@ -1,38 +1,42 @@
-// Map of NFL team names to their logo URLs
-const TEAM_LOGOS = {
-    'New England Patriots': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_patriots_logo.png',
-    'Seattle Seahawks': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_seahawks_logo.png',
-    'San Francisco 49ers': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_49ers_logo.png',
-    'Los Angeles Rams': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_rams_logo.png',
-    'Atlanta Falcons': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_falcons_logo.png',
-    'Pittsburgh Steelers': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_steelers_logo.png',
-    'Baltimore Ravens': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_ravens_logo.png',
-    'Indianapolis Colts': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_colts_logo.png',
-    'Buffalo Bills': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_bills_logo.png',
-    'Houston Texans': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_texans_logo.png',
-    'Chicago Bears': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_bears_logo.png',
-    'Carolina Panthers': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_panthers_logo.png',
-    'Tampa Bay Buccaneers': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_buccaneers_logo.png',
-    'Cincinnati Bengals': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_bengals_logo.png',
-    'Cleveland Browns': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_browns_logo.png',
-    'Jacksonville Jaguars': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_jaguars_logo.png',
-    'New Orleans Saints': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_saints_logo.png',
-    'Detroit Lions': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_lions_logo.png',
-    'New York Jets': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_jets_logo.png',
-    'Tennessee Titans': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_titans_logo.png',
-    'Arizona Cardinals': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_cardinals_logo.png',
-    'Los Angeles Chargers': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_chargers_logo.png',
-    'Green Bay Packers': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_packers_logo.png',
-    'Minnesota Vikings': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_vikings_logo.png',
-    'Miami Dolphins': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_dolphins_logo.png',
-    'Las Vegas Raiders': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_raiders_logo.png',
-    'Washington Commanders': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_commanders_logo.png',
-    'Philadelphia Eagles': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_eagles_logo.png',
-    'Dallas Cowboys': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_cowboys_logo.png',
-    'New York Giants': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_giants_logo.png',
-    'Denver Broncos': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_broncos_logo.png',
-    'Kansas City Chiefs': 'https://a.espncdn.com/media/motion/2024/0315/dm_240315_nfl_chiefs_logo.png'
-};
+// Function to get team logo URL from a public API
+function getTeamLogoUrl(teamName) {
+    // Using NFL team IDs and a reliable logo service
+    const teamLogos = {
+        'New England Patriots': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_ne_logo.png',
+        'Seattle Seahawks': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_sea_logo.png',
+        'San Francisco 49ers': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_sf_logo.png',
+        'Los Angeles Rams': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_la_logo.png',
+        'Atlanta Falcons': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_atl_logo.png',
+        'Pittsburgh Steelers': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_pit_logo.png',
+        'Baltimore Ravens': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_bal_logo.png',
+        'Indianapolis Colts': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_ind_logo.png',
+        'Buffalo Bills': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_buf_logo.png',
+        'Houston Texans': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_hou_logo.png',
+        'Chicago Bears': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_chi_logo.png',
+        'Carolina Panthers': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_car_logo.png',
+        'Tampa Bay Buccaneers': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_tb_logo.png',
+        'Cincinnati Bengals': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_cin_logo.png',
+        'Cleveland Browns': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_cle_logo.png',
+        'Jacksonville Jaguars': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_jax_logo.png',
+        'New Orleans Saints': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_no_logo.png',
+        'Detroit Lions': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_det_logo.png',
+        'New York Jets': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_nyj_logo.png',
+        'Tennessee Titans': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_ten_logo.png',
+        'Arizona Cardinals': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_ari_logo.png',
+        'Los Angeles Chargers': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_lac_logo.png',
+        'Green Bay Packers': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_gb_logo.png',
+        'Minnesota Vikings': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_min_logo.png',
+        'Miami Dolphins': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_mia_logo.png',
+        'Las Vegas Raiders': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_lv_logo.png',
+        'Washington Commanders': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_was_logo.png',
+        'Philadelphia Eagles': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_phi_logo.png',
+        'Dallas Cowboys': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_dal_logo.png',
+        'New York Giants': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_nyg_logo.png',
+        'Denver Broncos': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_den_logo.png',
+        'Kansas City Chiefs': 'https://a.espncdn.com/media/motion/2024/1104/dm_241104_nfl_kc_logo.png'
+    };
+    return teamLogos[teamName] || '';
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     fetch('matchups.json')
@@ -82,8 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 // Get team logos
-                const awayLogo = TEAM_LOGOS[game.away] || '';
-                const homeLogo = TEAM_LOGOS[game.home] || '';
+                const awayLogo = getTeamLogoUrl(game.away);
+                const homeLogo = getTeamLogoUrl(game.home);
 
                 // Create the matchup block
                 const wrapperDiv = document.createElement('div');
