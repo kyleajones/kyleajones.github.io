@@ -10,7 +10,7 @@ def fetch_matchups():
     params = {
         "apiKey": API_KEY,
         "regions": "us",
-        "markets": "spreads"
+        "markets": "spreads,totals"
     }
     
     response = requests.get(URL, params=params)
@@ -42,22 +42,36 @@ def fetch_matchups():
             home_team = game['home_team']
             away_team = game['away_team']
             spread_text = "N/A"
+            over_under = "N/A"
             
             if game.get('bookmakers'):
                 markets = game['bookmakers'][0].get('markets', [])
-                if markets and markets[0]['key'] == 'spreads':
-                    for outcome in markets[0]['outcomes']:
-                        if outcome['name'] == away_team:
-                            point = outcome.get('point')
-                            if point is not None:
-                                spread_text = f"{point:+}" 
-                            break
+                
+                # Extract spread
+                for market in markets:
+                    if market['key'] == 'spreads':
+                        for outcome in market['outcomes']:
+                            if outcome['name'] == away_team:
+                                point = outcome.get('point')
+                                if point is not None:
+                                    spread_text = f"{point:+}" 
+                                break
+                    
+                    # Extract over/under (totals)
+                    elif market['key'] == 'totals':
+                        for outcome in market['outcomes']:
+                            if outcome['name'] == 'Over':
+                                point = outcome.get('point')
+                                if point is not None:
+                                    over_under = f"{point}" 
+                                break
                             
             matchups.append({
                 "id": game['id'],
                 "away": away_team,
                 "home": home_team,
                 "spread": spread_text,
+                "over_under": over_under,
                 "commence_time": game['commence_time'] 
             })
             
@@ -66,4 +80,3 @@ def fetch_matchups():
         
 if __name__ == "__main__":
     fetch_matchups()
-    
