@@ -53,12 +53,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div style="text-align: center; margin-bottom: 8px; font-weight: bold; color: #555; font-size: 0.95em;">
                         ${timeString}
                     </div>
+                    <div class="odds-summary">
+                        <span class="odds-item">Spread: ${game.spread}</span>
+                        <span class="odds-item">O/U: ${game.over_under}</span>
+                    </div>
                     <div class="matchup" style="margin-bottom: 0;">
                         <label>
                             <input type="radio" name="${game.id}" value="${game.away}" required>
                             <span class="team-label">
-                                ${game.away} (Away) <br>
-                                <small>Spread: ${game.spread}</small>
+                                ${game.away} (Away)
                             </span>
                         </label>
                         <span>VS</span>
