@@ -12,6 +12,22 @@ header {
     margin-bottom: 30px;
 }
 
+.odds-summary {
+    background: #f0f0f0;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.odds-item {
+    font-weight: 600;
+}
+
 .matchup {
     background: #fff;
     padding: 15px;
