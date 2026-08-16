@@ -40,8 +40,9 @@ function validateAndSubmitPicks() {
 
 function trackPick(event) {
     const input = event.target;
-    const gameId = input.name.split('_')[1];
-    
+    // Track the specific market (spread or ou) + the game ID
+    const pickId = input.name;
+
     if (input.checked) {
         currentPicks.add(gameId);
     } else {
@@ -122,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="section-label">Spread</div>
                             <div class="matchup">
                                 <label class="team-option">
-                                    <input type="radio" name="spread_${game.id}" value="${game.away}" required>
+                                    <input type="radio" name="spread_${game.id}" value="${game.away}">
                                     <div class="team-with-logo">
                                         ${awayLogo ? `<img src="${awayLogo}" alt="${game.away}" class="team-logo" onerror="this.style.display='none'">` : ''}
                                         <span class="team-label">${game.away}</span>
