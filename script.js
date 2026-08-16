@@ -66,17 +66,38 @@ document.addEventListener('DOMContentLoaded', () => {
             matchupsData = matchups;
             const container = document.getElementById('matchups-container');
             
-        matchups.forEach(game => {
+            let currentDateTimeString = '';
+
+            matchups.forEach(game => {
                 const gameDate = new Date(game.commence_time);
                 
-                // 1. Format the date and time compactly (e.g., "Sun, Sep 13 @ 1:00 PM")
-                const dateTimeString = gameDate.toLocaleDateString('en-US', { 
-                    weekday: 'short', month: 'short', day: 'numeric' 
-                }) + ' @ ' + gameDate.toLocaleTimeString('en-US', {
+                // Format the date and time for the group header
+                const dateString = gameDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', month: 'short', day: 'numeric' 
+                });
+                const timeString = gameDate.toLocaleTimeString('en-US', {
                     hour: 'numeric', minute: '2-digit'
                 });
+                const dateTimeString = `${dateString} @ ${timeString}`;
 
-                // 2. Automatically assign and flip the spread for Away vs Home
+                // Inject a header if it's a new date/time block
+                if (dateTimeString !== currentDateTimeString) {
+                    const blockHeader = document.createElement('h2');
+                    blockHeader.textContent = dateTimeString;
+                    blockHeader.style.marginTop = '35px';
+                    blockHeader.style.marginBottom = '15px';
+                    blockHeader.style.borderBottom = '2px solid #ddd';
+                    blockHeader.style.paddingBottom = '8px';
+                    blockHeader.style.color = '#333';
+                    blockHeader.style.fontSize = '1.2em';
+                    
+                    container.appendChild(blockHeader);
+                    
+                    // Update the tracker
+                    currentDateTimeString = dateTimeString;
+                }
+
+                // Automatically assign and flip the spread for Away vs Home
                 let awaySpread = game.spread;
                 let homeSpread = "N/A";
                 
@@ -86,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         awaySpread = "PK";
                         homeSpread = "PK";
                     } else {
-                        // Flip the sign for the home team
                         const inverted = spreadVal * -1;
                         homeSpread = inverted > 0 ? `+${inverted}` : `${inverted}`;
                     }
@@ -99,10 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 wrapperDiv.className = 'game-card';
                 
                 wrapperDiv.innerHTML = `
-                    <div class="game-header">
-                        ${dateTimeString}
-                    </div>
-                    
                     <div class="game-container" style="margin-bottom: 0;">
                         <!-- Spread Picks -->
                         <div class="picks-section">
@@ -118,7 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 
                                 <div class="home-marker">
                                     <span>@</span>
-                                    <span class="home-text">Home</span>
                                 </div>
                                 
                                 <label class="team-option">
