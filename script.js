@@ -66,8 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
             matchupsData = matchups;
             const container = document.getElementById('matchups-container');
             
-            let currentDayString = '';
-            
         matchups.forEach(game => {
                 const gameDate = new Date(game.commence_time);
                 
