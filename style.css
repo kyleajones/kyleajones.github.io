@@ -251,16 +251,9 @@ input[type="radio"]:checked + .team-with-logo .spread-badge {
 
 .home-marker {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    color: #d9534f;
+    color: #666;
     font-weight: bold;
+    font-size: 1.2em;
     margin: 0 10px;
-}
-
-.home-text {
-    font-size: 0.55em;
-    text-transform: uppercase;
-    color: #999;
-    margin-top: 2px;
 }
