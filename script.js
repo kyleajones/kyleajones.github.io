@@ -40,19 +40,21 @@ function validateAndSubmitPicks() {
 
 function trackPick(event) {
     const input = event.target;
-    // Track the specific market (spread or ou) + the game ID
-    const pickId = input.name;
-
+    const pickId = input.name; 
+    
     if (input.checked) {
-        currentPicks.add(gameId);
+        currentPicks.add(pickId);
     } else {
-        currentPicks.delete(gameId);
+        currentPicks.delete(pickId);
     }
     
     updatePickCount();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize counter display immediately
+    updatePickCount();
+
     fetch('matchups.json')
         .then(response => {
             if (!response.ok) {
@@ -64,47 +66,37 @@ document.addEventListener('DOMContentLoaded', () => {
             matchupsData = matchups;
             const container = document.getElementById('matchups-container');
             
-            // Tracker variable to watch for day changes
             let currentDayString = '';
             
             matchups.forEach(game => {
                 const gameDate = new Date(game.commence_time);
                 
-                // Extract just the date for the header (e.g., "Sunday, Sep 8")
                 const dayString = gameDate.toLocaleDateString('en-US', { 
                     weekday: 'long', 
                     month: 'short', 
                     day: 'numeric' 
                 });
 
-                // Extract just the time for the individual game (e.g., "1:00 PM")
                 const timeString = gameDate.toLocaleTimeString('en-US', {
                     hour: 'numeric',
                     minute: '2-digit'
                 });
 
-                // If the day changes, inject a new header into the container
                 if (dayString !== currentDayString) {
                     const dayHeader = document.createElement('h2');
                     dayHeader.textContent = dayString;
-                    
-                    // Simple styling to make the header pop
                     dayHeader.style.marginTop = '40px';
                     dayHeader.style.borderBottom = '2px solid #ddd';
                     dayHeader.style.paddingBottom = '10px';
                     dayHeader.style.color = '#333';
                     
                     container.appendChild(dayHeader);
-                    
-                    // Update the tracker
                     currentDayString = dayString;
                 }
 
-                // Get team logos
                 const awayLogo = getTeamLogoUrl(game.away);
                 const homeLogo = getTeamLogoUrl(game.home);
 
-                // Create the matchup block
                 const wrapperDiv = document.createElement('div');
                 wrapperDiv.style.marginBottom = '20px';
                 
@@ -159,8 +151,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 container.appendChild(wrapperDiv);
             });
             
-            // Add event listeners to all radio buttons
+            // Add custom click logic to allow deselecting radio buttons
             document.querySelectorAll('input[type="radio"]').forEach(input => {
+                // Keep track of whether this radio was already checked when clicked
+                input.dataset.wasChecked = "false";
+
+                input.addEventListener('mousedown', function() {
+                    this.dataset.wasChecked = this.checked ? "true" : "false";
+                });
+
+                input.addEventListener('click', function() {
+                    if (this.dataset.wasChecked === "true") {
+                        this.checked = false;
+                        this.dataset.wasChecked = "false";
+                        // Manually trigger change event so the pick counter updates
+                        this.dispatchEvent(new Event('change'));
+                    } else {
+                        this.dataset.wasChecked = "true";
+                        // Uncheck other radios in the same group so their states update cleanly
+                        document.querySelectorAll(`input[name="${this.name}"]`).forEach(other => {
+                            if (other !== this) other.dataset.wasChecked = "false";
+                        });
+                    }
+                });
+
                 input.addEventListener('change', trackPick);
             });
         })
@@ -179,7 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(e.target);
         const userPicks = Object.fromEntries(formData.entries());
         
-        // Save picks to localStorage with timestamp
         const week = getWeekNumber(new Date());
         const year = new Date().getFullYear();
         const storageKey = `picks_${year}_week_${week}`;
@@ -194,17 +207,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         localStorage.setItem(storageKey, JSON.stringify(pickRecord));
         
-        console.log('Saved Picks:', userPicks);
         alert('Picks saved! You can now view your running record.');
         
-        // Clear picks for next week
         currentPicks.clear();
         updatePickCount();
         document.getElementById('picks-form').reset();
     });
 });
 
-// Get ISO week number
 function getWeekNumber(date) {
     const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
     const dayNum = d.getUTCDay() || 7;
