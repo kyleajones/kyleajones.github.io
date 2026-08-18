@@ -1,3 +1,6 @@
+import { db } from './firebase-config.js';
+import { collection, addDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
 // Load logo mapping and get logo URL
 let logoMap = {};
 
@@ -183,19 +186,24 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('matchups-container').innerHTML = '<p>Matchups will be available soon.</p>';
         });
 
-    document.getElementById('picks-form').addEventListener('submit', function(e) {
+    document.getElementById('picks-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         
         if (!validateAndSubmitPicks()) {
             return;
         }
         
+        // Change button text so the user knows it's saving
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Saving...';
+        submitBtn.disabled = true;
+
         const formData = new FormData(e.target);
         const userPicks = Object.fromEntries(formData.entries());
         
         const week = getWeekNumber(new Date());
         const year = new Date().getFullYear();
-        const storageKey = `picks_${year}_week_${week}`;
         
         const pickRecord = {
             week: week,
@@ -205,13 +213,28 @@ document.addEventListener('DOMContentLoaded', () => {
             pickCount: Object.keys(userPicks).length
         };
         
-        localStorage.setItem(storageKey, JSON.stringify(pickRecord));
-        
-        alert('Picks saved! You can now view your running record.');
-        
-        currentPicks.clear();
-        updatePickCount();
-        document.getElementById('picks-form').reset();
+        try {
+            // Push the data to a Firestore collection named "picks"
+            await addDoc(collection(db, "picks"), pickRecord);
+            
+            alert('Picks saved! You can now view your running record.');
+            
+            currentPicks.clear();
+            updatePickCount();
+            e.target.reset();
+            
+            // Uncheck all custom radio buttons visually
+            document.querySelectorAll('input[type="radio"]').forEach(input => {
+                input.dataset.wasChecked = "false";
+            });
+            
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            alert("There was an error saving your picks. Please try again.");
+        } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
     });
 });
 
