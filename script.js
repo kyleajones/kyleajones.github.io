@@ -69,67 +69,82 @@ document.addEventListener('DOMContentLoaded', () => {
             matchupsData = matchups;
             const container = document.getElementById('matchups-container');
             
-            let currentDayString = '';
-            
+            let currentDateTimeString = '';
+
             matchups.forEach(game => {
                 const gameDate = new Date(game.commence_time);
                 
-                const dayString = gameDate.toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    month: 'short', 
-                    day: 'numeric' 
+                // Format the date and time for the group header
+                const dateString = gameDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', month: 'short', day: 'numeric' 
                 });
-
                 const timeString = gameDate.toLocaleTimeString('en-US', {
-                    hour: 'numeric',
-                    minute: '2-digit'
+                    hour: 'numeric', minute: '2-digit'
                 });
+                const dateTimeString = `${dateString} @ ${timeString}`;
 
-                if (dayString !== currentDayString) {
-                    const dayHeader = document.createElement('h2');
-                    dayHeader.textContent = dayString;
-                    dayHeader.style.marginTop = '40px';
-                    dayHeader.style.borderBottom = '2px solid #ddd';
-                    dayHeader.style.paddingBottom = '10px';
-                    dayHeader.style.color = '#333';
+                // Inject a header if it's a new date/time block
+                if (dateTimeString !== currentDateTimeString) {
+                    const blockHeader = document.createElement('h2');
+                    blockHeader.textContent = dateTimeString;
+                    blockHeader.style.marginTop = '35px';
+                    blockHeader.style.marginBottom = '15px';
+                    blockHeader.style.borderBottom = '2px solid #ddd';
+                    blockHeader.style.paddingBottom = '8px';
+                    blockHeader.style.color = '#333';
+                    blockHeader.style.fontSize = '1.2em';
                     
-                    container.appendChild(dayHeader);
-                    currentDayString = dayString;
+                    container.appendChild(blockHeader);
+                    
+                    // Update the tracker
+                    currentDateTimeString = dateTimeString;
+                }
+
+                // Automatically assign and flip the spread for Away vs Home
+                let awaySpread = game.spread;
+                let homeSpread = "N/A";
+                
+                if (awaySpread !== "N/A") {
+                    const spreadVal = parseFloat(awaySpread);
+                    if (spreadVal === 0) {
+                        awaySpread = "PK";
+                        homeSpread = "PK";
+                    } else {
+                        const inverted = spreadVal * -1;
+                        homeSpread = inverted > 0 ? `+${inverted}` : `${inverted}`;
+                    }
                 }
 
                 const awayLogo = getTeamLogoUrl(game.away);
                 const homeLogo = getTeamLogoUrl(game.home);
 
                 const wrapperDiv = document.createElement('div');
-                wrapperDiv.style.marginBottom = '20px';
+                wrapperDiv.className = 'game-card';
                 
                 wrapperDiv.innerHTML = `
-                    <div style="text-align: center; margin-bottom: 8px; font-weight: bold; color: #555; font-size: 0.95em;">
-                        ${timeString}
-                    </div>
-                    <div class="odds-summary">
-                        <span class="odds-item">Spread: ${game.spread}</span>
-                        <span class="odds-item">O/U: ${game.over_under}</span>
-                    </div>
-                    
-                    <div class="game-container">
+                    <div class="game-container" style="margin-bottom: 0;">
                         <!-- Spread Picks -->
                         <div class="picks-section">
-                            <div class="section-label">Spread</div>
-                            <div class="matchup">
+                            <div class="matchup" style="box-shadow: none; padding: 0; background: transparent;">
                                 <label class="team-option">
                                     <input type="radio" name="spread_${game.id}" value="${game.away}">
                                     <div class="team-with-logo">
                                         ${awayLogo ? `<img src="${awayLogo}" alt="${game.away}" class="team-logo" onerror="this.style.display='none'">` : ''}
                                         <span class="team-label">${game.away}</span>
+                                        <span class="spread-badge">${awaySpread}</span>
                                     </div>
                                 </label>
-                                <span class="vs-text">VS</span>
+                                
+                                <div class="home-marker">
+                                    <span>@</span>
+                                </div>
+                                
                                 <label class="team-option">
                                     <input type="radio" name="spread_${game.id}" value="${game.home}">
                                     <div class="team-with-logo">
                                         ${homeLogo ? `<img src="${homeLogo}" alt="${game.home}" class="team-logo" onerror="this.style.display='none'">` : ''}
                                         <span class="team-label">${game.home}</span>
+                                        <span class="spread-badge">${homeSpread}</span>
                                     </div>
                                 </label>
                             </div>
@@ -137,15 +152,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         <!-- Over/Under Picks -->
                         <div class="picks-section">
-                            <div class="section-label">Over/Under</div>
-                            <div class="ou-picks">
+                            <div class="ou-picks" style="box-shadow: none; padding: 0; background: transparent; height: 100%; align-items: center;">
                                 <label class="ou-option">
                                     <input type="radio" name="ou_${game.id}" value="Over">
-                                    <span class="ou-label">Over ${game.over_under}</span>
+                                    <span class="ou-label">Over <br><span style="font-weight: normal; font-size: 0.9em;">${game.over_under}</span></span>
                                 </label>
                                 <label class="ou-option">
                                     <input type="radio" name="ou_${game.id}" value="Under">
-                                    <span class="ou-label">Under ${game.over_under}</span>
+                                    <span class="ou-label">Under <br><span style="font-weight: normal; font-size: 0.9em;">${game.over_under}</span></span>
                                 </label>
                             </div>
                         </div>
@@ -153,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 container.appendChild(wrapperDiv);
             });
-            
+
             // Add custom click logic to allow deselecting radio buttons
             document.querySelectorAll('input[type="radio"]').forEach(input => {
                 // Keep track of whether this radio was already checked when clicked
