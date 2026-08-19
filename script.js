@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="picks-section">
                             <div class="matchup" style="box-shadow: none; padding: 0; background: transparent;">
                                 <label class="team-option">
-                                    <input type="radio" name="spread_${game.id}" value="${game.away}">
+                                    <input type="radio" name="spread_${game.id}" value="${game.away}|${awaySpread}">
                                     <div class="team-with-logo">
                                         ${awayLogo ? `<img src="${awayLogo}" alt="${game.away}" class="team-logo" onerror="this.style.display='none'">` : ''}
                                         <span class="team-label">${game.away}</span>
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                                 
                                 <label class="team-option">
-                                    <input type="radio" name="spread_${game.id}" value="${game.home}">
+                                    <input type="radio" name="spread_${game.id}" value="${game.home}|${homeSpread}">
                                     <div class="team-with-logo">
                                         ${homeLogo ? `<img src="${homeLogo}" alt="${game.home}" class="team-logo" onerror="this.style.display='none'">` : ''}
                                         <span class="team-label">${game.home}</span>
@@ -154,11 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="picks-section">
                             <div class="ou-picks" style="box-shadow: none; padding: 0; background: transparent; height: 100%; align-items: center;">
                                 <label class="ou-option">
-                                    <input type="radio" name="ou_${game.id}" value="Over">
+                                    <input type="radio" name="ou_${game.id}" value="Over|${game.over_under}">
                                     <span class="ou-label">Over <br><span style="font-weight: normal; font-size: 0.9em;">${game.over_under}</span></span>
                                 </label>
                                 <label class="ou-option">
-                                    <input type="radio" name="ou_${game.id}" value="Under">
+                                    <input type="radio" name="ou_${game.id}" value="Under|${game.over_under}">
                                     <span class="ou-label">Under <br><span style="font-weight: normal; font-size: 0.9em;">${game.over_under}</span></span>
                                 </label>
                             </div>
@@ -220,6 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const year = new Date().getFullYear();
         
         const pickRecord = {
+        	username: username,
             week: week,
             year: year,
             date: new Date().toISOString(),
