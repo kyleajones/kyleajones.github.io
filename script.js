@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			userPicks[key] = value;
 		}
 		
-		const week = getWeekNumber(new Date());
+		const week = getNFLWeek(new Date());
 		const year = new Date().getFullYear();
 		
 		const pickRecord = {
@@ -320,10 +320,54 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 });
 
-function getWeekNumber(date) {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    const dayNum = d.getUTCDay() || 7;
-    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+function getNFLWeek(date = new Date()) {
+    const currentYear = date.getFullYear();
+    
+    // Helper to find Labor Day (first Monday of September)
+    function getLaborDay(yr) {
+        const sept1 = new Date(yr, 8, 1);
+        const dayOfWeek = sept1.getDay();
+        const daysToFirstMonday = (1 - dayOfWeek + 7) % 7;
+        return new Date(yr, 8, 1 + daysToFirstMonday);
+    }
+    
+    let seasonYear = currentYear;
+    let laborDay = getLaborDay(currentYear);
+    
+    // Account for Wednesday vs Thursday openers dynamically
+    const wednesdayOpenerYears = [2012, 2026];
+    const offsetDays = wednesdayOpenerYears.includes(seasonYear) ? 2 : 3;
+    let seasonStart = new Date(seasonYear, 8, laborDay.getDate() + offsetDays);
+    
+    if (date < seasonStart) {
+        if (date.getMonth() < 8) {
+            seasonYear = currentYear - 1;
+            laborDay = getLaborDay(seasonYear);
+            const prevOffset = wednesdayOpenerYears.includes(seasonYear) ? 2 : 3;
+            seasonStart = new Date(seasonYear, 8, laborDay.getDate() + prevOffset);
+        } else {
+            return 1;
+        }
+    }
+    
+    // Find the Tuesday immediately following the season kickoff (end of Week 1 / start of Week 2 transition)
+    let transitionTuesday = new Date(seasonStart);
+    let dayOfWeek = transitionTuesday.getDay(); // Wed = 3, Thu = 4
+    let daysToTue = (2 - dayOfWeek + 7) % 7;
+    if (daysToTue === 0) daysToTue = 7;
+    transitionTuesday.setDate(transitionTuesday.getDate() + daysToTue);
+    transitionTuesday.setHours(0, 0, 0, 0); // Midnight on Tuesday
+    
+    // If before the first transition Tuesday, it is Week 1
+    if (date < transitionTuesday) {
+        return 1;
+    }
+    
+    // After the transition Tuesday, every subsequent 7-day block increments the week on Tuesdays
+    const diffTime = date.getTime() - transitionTuesday.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const weeksSinceTransition = Math.floor(diffDays / 7);
+    
+    const weekNum = 2 + weeksSinceTransition;
+    return weekNum > 18 ? 18 : weekNum;
 }

@@ -136,9 +136,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const pickType = pickKey.startsWith('spread') ? 'Spread' : 'Over/Under';
                 const status = gradePick(pickValue, pickType, resultsData[gameId]);
                 
-                // Format the displayed text nicely: "Chiefs (-3.5)"
+                // Format the displayed text nicely and clean up plus/minus signs
                 const [selection, lineStr] = pickValue.split('|');
-                const lineDisplay = (lineStr > 0 && pickType === 'Spread') ? `+${lineStr}` : lineStr;
+                let lineDisplay = lineStr;
+                
+                if (pickType === 'Spread') {
+                    if (lineStr === "PK" || lineStr === "0" || lineStr === "0.0") {
+                        lineDisplay = "PK";
+                    } else {
+                        const numLine = parseFloat(lineStr);
+                        if (!isNaN(numLine)) {
+                            lineDisplay = numLine > 0 ? `+${numLine}` : `${numLine}`;
+                        }
+                    }
+                }
+                
                 const displayText = `${selection} (${lineDisplay})`;
                 
                 // Color code the result badge
