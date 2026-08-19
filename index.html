@@ -24,14 +24,27 @@
 
     <main>
         <form id="picks-form">
-        	<div style="text-align: center; margin-bottom: 25px;">
-		    	<label for="username" style="font-weight: bold; font-size: 1.1em;">Your Name:</label>
-		    	<input type="text" id="username" name="username" required placeholder="Enter your name" style="padding: 10px; font-size: 1em; margin-left: 10px; border-radius: 5px; border: 1px solid #ccc;">
-			</div>
+        	<div id="auth-container" style="text-align: center; margin-bottom: 25px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    			<div id="logged-out-view">
+        			<h3 style="margin-top: 0;">Log In to Save Picks</h3>
+       				<input type="email" id="email-input" placeholder="Email" style="padding: 10px; margin: 5px; border: 1px solid #ccc; border-radius: 4px;">
+			        <input type="password" id="password-input" placeholder="Password" style="padding: 10px; margin: 5px; border: 1px solid #ccc; border-radius: 4px;"><br>
+			        <input type="text" id="display-name-input" placeholder="Your Name (For New Signups Only)" style="padding: 10px; margin: 5px; border: 1px solid #ccc; border-radius: 4px;"><br>
+
+			        <button id="login-btn" type="button" style="padding: 10px 20px; margin: 10px 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Log In</button>
+			        <button id="signup-btn" type="button" style="padding: 10px 20px; margin: 10px 5px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Sign Up</button>
+			        <div id="auth-error" style="color: #d9534f; margin-top: 10px; font-weight: bold;"></div>
+    			</div>
+
+    			<div id="logged-in-view" style="display: none;">
+        			<h3 style="margin: 0; color: #28a745;">Logged in as: <span id="user-display-name"></span></h3>
+			        <button id="logout-btn" type="button" style="padding: 8px 15px; margin-top: 15px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Log Out</button>
+			    </div>
+			</div>	
             <div id="matchups-container">
                 <!-- Matchups will be populated here by JavaScript -->
             </div>
-            <button type="submit" id="submit-btn">Save My Picks</button>
+            <button type="submit" id="submit-picks-btn" disabled>Save Picks</button>
         </form>
     </main>
 

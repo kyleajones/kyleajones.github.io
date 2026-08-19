@@ -57,35 +57,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         const userStats = {};
         const allPickHistory = [];
 
-        querySnapshot.forEach((doc) => {
+		querySnapshot.forEach((doc) => {
             const record = doc.data();
             allPickHistory.push(record);
             
-            const user = record.username || "Anonymous";
-            if (!userStats[user]) {
-                userStats[user] = { name: user, w: 0, l: 0, p: 0, points: 0 };
+            // Extract the unique ID (falling back to username for older anonymous picks)
+            const uid = record.userId || record.username || "Unknown";
+            const userName = record.username || "Anonymous";
+            
+            // Create the stats tracker using the 'uid'
+            if (!userStats[uid]) {
+                userStats[uid] = { name: userName, w: 0, l: 0, p: 0, points: 0 };
             }
 
-            // Grade each pick in the ticket
+            // Grade each pick
             for (const [pickKey, pickValue] of Object.entries(record.picks)) {
-                const gameId = pickKey.split('_')[1]; // extract game ID from "spread_123"
+                const gameId = pickKey.split('_')[1]; 
                 const pickType = pickKey.startsWith('spread') ? 'Spread' : 'Over/Under';
                 
                 const status = gradePick(pickValue, pickType, resultsData[gameId]);
                 
+                // Add points/records to the specific 'uid'
                 if (status === 'WIN') {
-                    userStats[user].w += 1;
-                    userStats[user].points += 3;
+                    userStats[uid].w += 1;
+                    userStats[uid].points += 3;
                 } else if (status === 'PUSH') {
-                    userStats[user].p += 1;
-                    userStats[user].points += 1;
+                    userStats[uid].p += 1;
+                    userStats[uid].points += 1;
                 } else if (status === 'LOSS') {
-                    userStats[user].l += 1;
+                    userStats[uid].l += 1;
                 }
-                // PENDING picks do not affect stats
             }
         });
-
         // Generate Leaderboard HTML
         const sortedUsers = Object.values(userStats).sort((a, b) => b.points - a.points);
         

@@ -1,5 +1,67 @@
-import { db } from './firebase-config.js';
+import { db, auth } from './firebase-config.js';
 import { collection, addDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+
+const loggedOutView = document.getElementById('logged-out-view');
+const loggedInView = document.getElementById('logged-in-view');
+const userDisplayNameSpan = document.getElementById('user-display-name');
+const authError = document.getElementById('auth-error');
+const submitPicksBtn = document.getElementById('submit-picks-btn');
+
+let currentUser = null;
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUser = user;
+        loggedOutView.style.display = 'none';
+        loggedInView.style.display = 'block';
+        userDisplayNameSpan.textContent = user.displayName || user.email;
+        submitPicksBtn.disabled = false; 
+    } else {
+        currentUser = null;
+        loggedOutView.style.display = 'block';
+        loggedInView.style.display = 'none';
+        submitPicksBtn.disabled = true; 
+    }
+});
+
+document.getElementById('signup-btn').addEventListener('click', async () => {
+    const email = document.getElementById('email-input').value.trim();
+    const password = document.getElementById('password-input').value.trim();
+    const displayName = document.getElementById('display-name-input').value.trim();
+    
+    if (!email || !password || !displayName) {
+        authError.textContent = "Please fill out Email, Password, and Your Name to sign up.";
+        return;
+    }
+    
+    try {
+        authError.textContent = "Creating account...";
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(userCredential.user, { displayName: displayName });
+        userDisplayNameSpan.textContent = displayName;
+        authError.textContent = "";
+    } catch (error) {
+        authError.textContent = error.message;
+    }
+});
+
+document.getElementById('login-btn').addEventListener('click', async () => {
+    const email = document.getElementById('email-input').value.trim();
+    const password = document.getElementById('password-input').value.trim();
+    
+    try {
+        authError.textContent = "Logging in...";
+        await signInWithEmailAndPassword(auth, email, password);
+        authError.textContent = "";
+    } catch (error) {
+        authError.textContent = "Login failed. Check your email and password.";
+    }
+});
+
+document.getElementById('logout-btn').addEventListener('click', async () => {
+    await signOut(auth);
+});
 
 // Load logo mapping and get logo URL
 let logoMap = {};
@@ -201,56 +263,61 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     document.getElementById('picks-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        if (!validateAndSubmitPicks()) {
-            return;
-        }
-        
-        // Change button text so the user knows it's saving
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Saving...';
-        submitBtn.disabled = true;
-
-        const formData = new FormData(e.target);
-        const userPicks = Object.fromEntries(formData.entries());
-        
-        const week = getWeekNumber(new Date());
-        const year = new Date().getFullYear();
-        
-        const pickRecord = {
-        	username: username,
-            week: week,
-            year: year,
-            date: new Date().toISOString(),
-            picks: userPicks,
-            pickCount: Object.keys(userPicks).length
-        };
-        
-        try {
-            // Push the data to a Firestore collection named "picks"
-            await addDoc(collection(db, "picks"), pickRecord);
-            
-            alert('Picks saved! You can now view your running record.');
-            
-            currentPicks.clear();
-            updatePickCount();
-            e.target.reset();
-            
-            // Uncheck all custom radio buttons visually
-            document.querySelectorAll('input[type="radio"]').forEach(input => {
-                input.dataset.wasChecked = "false";
-            });
-            
-        } catch (error) {
-            console.error("Error adding document: ", error);
-            alert("There was an error saving your picks. Please try again.");
-        } finally {
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        }
-    });
+		e.preventDefault();
+		
+		// Block submission if not logged in
+		if (!currentUser) {
+			alert("You must be logged in to save picks.");
+			return;
+		}
+		
+		if (!validateAndSubmitPicks()) {
+			return;
+		}
+		
+		const submitBtn = e.target.querySelector('button[type="submit"]');
+		const originalText = submitBtn.textContent;
+		submitBtn.textContent = 'Saving...';
+		submitBtn.disabled = true;
+	
+		// Build userPicks by looping over formData 
+		const formData = new FormData(e.target);
+		const userPicks = {};
+		for (let [key, value] of formData.entries()) {
+			userPicks[key] = value;
+		}
+		
+		const week = getWeekNumber(new Date());
+		const year = new Date().getFullYear();
+		
+		const pickRecord = {
+			userId: currentUser.uid,                  // Stores the secure Firebase ID
+			username: currentUser.displayName,        // Stores their profile name
+			week: week,
+			year: year,
+			date: new Date().toISOString(),
+			picks: userPicks,
+			pickCount: Object.keys(userPicks).length
+		};
+		
+		try {
+			await addDoc(collection(db, "picks"), pickRecord);
+			alert('Picks saved! You can now view your running record.');
+			
+			currentPicks.clear();
+			updatePickCount();
+			e.target.reset();
+			document.querySelectorAll('input[type="radio"]').forEach(input => {
+				input.dataset.wasChecked = "false";
+			});
+		} catch (error) {
+			console.error("Error adding document: ", error);
+			alert("There was an error saving your picks. Please try again.");
+		} finally {
+			submitBtn.textContent = originalText;
+			submitBtn.disabled = false;
+		}
+	});
 });
 
 function getWeekNumber(date) {
