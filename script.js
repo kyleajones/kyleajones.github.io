@@ -1,5 +1,5 @@
 import { db, auth } from './firebase-config.js';
-import { collection, addDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 const loggedOutView = document.getElementById('logged-out-view');
@@ -77,8 +77,7 @@ function getTeamLogoUrl(teamName) {
     return logoMap[teamName] || '';
 }
 
-// Pick tracking
-const PICKS_REQUIRED = 7;
+// Pick tracking (Dynamic)
 let currentPicks = new Set();
 let matchupsData = [];
 
@@ -86,18 +85,15 @@ function updatePickCount() {
     const count = currentPicks.size;
     const counter = document.getElementById('pick-counter');
     if (counter) {
-        counter.textContent = `${count}/${PICKS_REQUIRED}`;
-        if (count === PICKS_REQUIRED) {
-            counter.style.color = '#28a745';
-        } else {
-            counter.style.color = '#666';
-        }
+        // Changed to just show total picks made, no strict limit
+        counter.textContent = `${count}`;
+        counter.style.color = count > 0 ? '#28a745' : '#666';
     }
 }
 
 function validateAndSubmitPicks() {
-    if (currentPicks.size !== PICKS_REQUIRED) {
-        alert(`You must make exactly ${PICKS_REQUIRED} picks. Currently: ${currentPicks.size}/${PICKS_REQUIRED}`);
+    if (currentPicks.size === 0) {
+        alert("You must make at least one pick before saving.");
         return false;
     }
     return true;
@@ -180,16 +176,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 const awayLogo = getTeamLogoUrl(game.away);
                 const homeLogo = getTeamLogoUrl(game.home);
 
+                // Calculate if the game has already started
+                const isLocked = gameDate <= new Date();
+                const lockAttr = isLocked ? 'disabled' : '';
+                const lockOverlay = isLocked ? `<div style="text-align: center; color: #dc3545; font-weight: bold; font-size: 0.8em; margin-bottom: 5px;">🔒 GAME LOCKED</div>` : '';
+
                 const wrapperDiv = document.createElement('div');
                 wrapperDiv.className = 'game-card';
+                // Add a slight opacity fade if the game is locked
+                if (isLocked) wrapperDiv.style.opacity = '0.7';
                 
                 wrapperDiv.innerHTML = `
+                    ${lockOverlay}
                     <div class="game-container" style="margin-bottom: 0;">
                         <!-- Spread Picks -->
                         <div class="picks-section">
                             <div class="matchup" style="box-shadow: none; padding: 0; background: transparent;">
                                 <label class="team-option">
-                                    <input type="radio" name="spread_${game.id}" value="${game.away}|${awaySpread}">
+                                    <input type="radio" name="spread_${game.id}" value="${game.away}|${awaySpread}" ${lockAttr}>
                                     <div class="team-with-logo">
                                         ${awayLogo ? `<img src="${awayLogo}" alt="${game.away}" class="team-logo" onerror="this.style.display='none'">` : ''}
                                         <span class="team-label">${game.away}</span>
@@ -202,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                                 
                                 <label class="team-option">
-                                    <input type="radio" name="spread_${game.id}" value="${game.home}|${homeSpread}">
+                                    <input type="radio" name="spread_${game.id}" value="${game.home}|${homeSpread}" ${lockAttr}>
                                     <div class="team-with-logo">
                                         ${homeLogo ? `<img src="${homeLogo}" alt="${game.home}" class="team-logo" onerror="this.style.display='none'">` : ''}
                                         <span class="team-label">${game.home}</span>
@@ -216,11 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="picks-section">
                             <div class="ou-picks" style="box-shadow: none; padding: 0; background: transparent; height: 100%; align-items: center;">
                                 <label class="ou-option">
-                                    <input type="radio" name="ou_${game.id}" value="Over|${game.over_under}">
+                                    <input type="radio" name="ou_${game.id}" value="Over|${game.over_under}" ${lockAttr}>
                                     <span class="ou-label">Over <br><span style="font-weight: normal; font-size: 0.9em;">${game.over_under}</span></span>
                                 </label>
                                 <label class="ou-option">
-                                    <input type="radio" name="ou_${game.id}" value="Under|${game.over_under}">
+                                    <input type="radio" name="ou_${game.id}" value="Under|${game.over_under}" ${lockAttr}>
                                     <span class="ou-label">Under <br><span style="font-weight: normal; font-size: 0.9em;">${game.over_under}</span></span>
                                 </label>
                             </div>
@@ -301,9 +305,14 @@ document.addEventListener('DOMContentLoaded', () => {
 		};
 		
 		try {
-			await addDoc(collection(db, "picks"), pickRecord);
-			alert('Picks saved! You can now view your running record.');
-			
+			// Create a unique but predictable document ID for this user's weekly ticket
+            const customDocId = `${currentUser.uid}_week${week}_${year}`;
+            
+            // setDoc will create the document if it doesn't exist, or overwrite it if it does
+            await setDoc(doc(db, "picks", customDocId), pickRecord);
+            
+            alert('Picks saved! You can now view your running record.');
+		
 			currentPicks.clear();
 			updatePickCount();
 			e.target.reset();
