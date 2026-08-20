@@ -2,9 +2,9 @@ name: Fetch Weekly NFL Matchups and Scores
 
 on:
   schedule:
-    # Runs at 10:00 AM UTC every Tuesday
-    - cron: '0 10 * * 2'
-  workflow_dispatch: # Allows you to trigger it manually from the Actions tab
+    # Runs daily at 10:00 AM UTC (6:00 AM EDT) to catch line moves and game results
+    - cron: '0 10 * * *'
+  workflow_dispatch: # Allows manual trigger from the Actions tab
 
 jobs:
   update-json:
@@ -13,12 +13,13 @@ jobs:
       contents: write # Needed to push commits
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip' # Caches dependencies for faster build times
 
       - name: Install Dependencies
         run: pip install requests

@@ -341,42 +341,30 @@ function getNFLWeek(date = new Date()) {
     }
     
     let seasonYear = currentYear;
-    let laborDay = getLaborDay(currentYear);
     
-    // Account for Wednesday vs Thursday openers dynamically
-    const wednesdayOpenerYears = [2012, 2026];
-    const offsetDays = wednesdayOpenerYears.includes(seasonYear) ? 2 : 3;
-    let seasonStart = new Date(seasonYear, 8, laborDay.getDate() + offsetDays);
-    
-    if (date < seasonStart) {
-        if (date.getMonth() < 8) {
-            seasonYear = currentYear - 1;
-            laborDay = getLaborDay(seasonYear);
-            const prevOffset = wednesdayOpenerYears.includes(seasonYear) ? 2 : 3;
-            seasonStart = new Date(seasonYear, 8, laborDay.getDate() + prevOffset);
-        } else {
-            return 1;
-        }
+    // If we are in January through July, we are in the previous NFL season's calendar year
+    if (date.getMonth() < 7) {
+        seasonYear = currentYear - 1;
     }
     
-    // Find the Tuesday immediately following the season kickoff (end of Week 1 / start of Week 2 transition)
-    let transitionTuesday = new Date(seasonStart);
-    let dayOfWeek = transitionTuesday.getDay(); // Wed = 3, Thu = 4
-    let daysToTue = (2 - dayOfWeek + 7) % 7;
-    if (daysToTue === 0) daysToTue = 7;
-    transitionTuesday.setDate(transitionTuesday.getDate() + daysToTue);
-    transitionTuesday.setHours(0, 0, 0, 0); // Midnight on Tuesday
+    const laborDay = getLaborDay(seasonYear);
     
-    // If before the first transition Tuesday, it is Week 1
-    if (date < transitionTuesday) {
+    // Week 2 ALWAYS starts on the Tuesday that is exactly 8 days after Labor Day.
+    // This ignores the Wed/Thu kickoff variation and anchors to the post-Sunday reset.
+    const week2Start = new Date(seasonYear, 8, laborDay.getDate() + 8);
+    week2Start.setHours(0, 0, 0, 0); // Midnight on Tuesday
+    
+    // If the current date is before the Week 2 transition Tuesday, it is Week 1
+    if (date < week2Start) {
         return 1;
     }
     
-    // After the transition Tuesday, every subsequent 7-day block increments the week on Tuesdays
-    const diffTime = date.getTime() - transitionTuesday.getTime();
+    // After the transition Tuesday, calculate how many 7-day blocks have passed
+    const diffTime = date.getTime() - week2Start.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const weeksSinceTransition = Math.floor(diffDays / 7);
+    const weeksSinceWeek2 = Math.floor(diffDays / 7);
     
-    const weekNum = 2 + weeksSinceTransition;
+    const weekNum = 2 + weeksSinceWeek2;
     return weekNum > 18 ? 18 : weekNum;
 }
+
