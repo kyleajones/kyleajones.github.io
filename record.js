@@ -140,19 +140,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
                 });
 
+                // Added a colored header background and negative margins to stretch it to the edges
                 tHtml += `
-                    <div class="game-card" style="margin-bottom: 20px;">
-                        <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-                            <h3 style="margin: 0;">Week ${record.week}</h3>
-                            <span style="font-size: 0.85em; color: #888;">${dateSaved}</span>
+                    <div class="game-card" style="margin-bottom: 15px; overflow: hidden; padding: 0;">
+                        <div style="background: #e3f2fd; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #bbdefb;">
+                            <h3 style="margin: 0; color: #0d47a1; font-size: 1.1em;">Week ${record.week}</h3>
+                            <span style="font-size: 0.8em; color: #1565c0;">${dateSaved}</span>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 10px;">
                 `;
 
                 for (const [pickKey, pickValue] of Object.entries(record.picks)) {
                     const gameId = pickKey.split('_')[1];
-                    const pickType = pickKey.startsWith('spread') ? 'Spread' : 'Over/Under';
-                    const status = gradePick(pickValue, pickType, resultsData[gameId]);
+                    const pickType = pickKey.startsWith('spread') ? 'Spread' : 'O/U'; // Shortened label
+                    const status = gradePick(pickValue, pickType === 'Spread' ? 'Spread' : 'Over/Under', resultsData[gameId]);
                     
                     const [selection, lineStr] = pickValue.split('|');
                     let lineDisplay = lineStr;
@@ -170,11 +171,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (status === 'LOSS') badgeColor = '#dc3545'; 
                     if (status === 'PUSH') badgeColor = '#ffc107'; 
 
+                    // Tightened padding and font sizes for individual picks
                     tHtml += `
-                        <div style="background: #f9f9f9; padding: 10px; border-radius: 6px; border: 1px solid #eaeaea;">
-                            <div style="font-size: 0.7em; color: #666; text-transform: uppercase; font-weight: bold; margin-bottom: 4px;">${pickType}</div>
-                            <div style="font-weight: bold; font-size: 1em; margin-bottom: 6px;">${selection} (${lineDisplay})</div>
-                            <span style="background: ${badgeColor}; color: ${status === 'PUSH' ? '#333' : '#fff'}; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; font-weight: bold;">${status}</span>
+                        <div style="background: #f8f9fa; padding: 6px 8px; border-radius: 4px; border: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 0.65em; color: #6c757d; font-weight: bold; margin-bottom: 2px;">${pickType}</div>
+                                <div style="font-weight: bold; font-size: 0.85em; color: #343a40;">${selection} (${lineDisplay})</div>
+                            </div>
+                            <span style="background: ${badgeColor}; color: ${status === 'PUSH' ? '#212529' : '#fff'}; padding: 2px 5px; border-radius: 3px; font-size: 0.7em; font-weight: bold;">${status}</span>
                         </div>
                     `;
                 }
