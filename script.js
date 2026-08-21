@@ -143,16 +143,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Inject a header if it's a new date/time block
                 if (dateTimeString !== currentDateTimeString) {
+                    // 1. Create the colored wrapper box
+                    const headerWrapper = document.createElement('div');
+                    headerWrapper.style.background = '#e3f2fd';
+                    headerWrapper.style.padding = '10px 15px';
+                    headerWrapper.style.margin = '25px 0 15px 0';
+                    headerWrapper.style.borderRadius = '6px';
+                    headerWrapper.style.borderLeft = '6px solid #0d47a1';
+                    headerWrapper.style.display = 'flex';
+                    headerWrapper.style.alignItems = 'center';
+
+                    // 2. Create the text element
                     const blockHeader = document.createElement('h2');
                     blockHeader.textContent = dateTimeString;
-                    blockHeader.style.marginTop = '35px';
-                    blockHeader.style.marginBottom = '15px';
-                    blockHeader.style.borderBottom = '2px solid #ddd';
-                    blockHeader.style.paddingBottom = '8px';
-                    blockHeader.style.color = '#333';
-                    blockHeader.style.fontSize = '1.2em';
+                    blockHeader.style.margin = '0';
+                    blockHeader.style.color = '#0d47a1';
+                    blockHeader.style.fontSize = '1.25em';
                     
-                    container.appendChild(blockHeader);
+                    // 3. Assemble and attach to the main container
+                    headerWrapper.appendChild(blockHeader);
+                    container.appendChild(headerWrapper);
                     
                     // Update the tracker
                     currentDateTimeString = dateTimeString;

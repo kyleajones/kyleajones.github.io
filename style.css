@@ -1,10 +1,24 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    /* Alternating turf grass stripes */
+    background: repeating-linear-gradient(
+        0deg,
+        #1f592d,
+        #1f592d 60px,
+        #246433 60px,
+        #246433 120px
+    );
+    background-attachment: fixed;
     color: #333;
     max-width: 900px;
     margin: 0 auto;
     padding: 20px;
+}
+
+/* Ensure header text and labels remain easy to read on turf green */
+header h1, header p, header div {
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 header {
@@ -256,4 +270,29 @@ input[type="radio"]:checked + .team-with-logo .spread-badge {
     font-weight: bold;
     font-size: 1.2em;
     margin: 0 10px;
+}
+
+/* Desktop Auth Container (Floating Top Right) */
+#auth-container {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    width: 220px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+/* Mobile Auth Container (Centered & Stacked) */
+@media (max-width: 768px) {
+    #auth-container {
+        position: static; /* Removes the absolute positioning */
+        width: 100%; /* Takes up full screen width */
+        margin: 0 0 20px 0; /* Adds breathing room below it */
+        box-sizing: border-box;
+        box-shadow: none; /* Flattens it out for mobile */
+        border: 1px solid #ddd;
+    }
 }
