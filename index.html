@@ -24,27 +24,33 @@
 
     <main>
         <form id="picks-form">
-        	<div id="auth-container" style="text-align: center; margin-bottom: 25px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-    			<div id="logged-out-view">
-        			<h3 style="margin-top: 0;">Log In to Save Picks</h3>
-       				<input type="email" id="email-input" placeholder="Email" style="padding: 10px; margin: 5px; border: 1px solid #ccc; border-radius: 4px;">
-			        <input type="password" id="password-input" placeholder="Password" style="padding: 10px; margin: 5px; border: 1px solid #ccc; border-radius: 4px;"><br>
-			        <input type="text" id="display-name-input" placeholder="Your Name (For New Signups Only)" style="padding: 10px; margin: 5px; border: 1px solid #ccc; border-radius: 4px;"><br>
-
-			        <button id="login-btn" type="button" style="padding: 10px 20px; margin: 10px 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Log In</button>
-			        <button id="signup-btn" type="button" style="padding: 10px 20px; margin: 10px 5px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Sign Up</button>
-			        <div id="auth-error" style="color: #d9534f; margin-top: 10px; font-weight: bold;"></div>
-    			</div>
-
-    			<div id="logged-in-view" style="display: none;">
-        			<h3 style="margin: 0; color: #28a745;">Logged in as: <span id="user-display-name"></span></h3>
-			        <button id="logout-btn" type="button" style="padding: 8px 15px; margin-top: 15px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Log Out</button>
-			    </div>
-			</div>	
+        	<div id="auth-container" style="position: absolute; top: 15px; right: 20px; width: 220px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1000;">
+				<div id="logged-out-view">
+					<h3 style="margin: 0 0 10px 0; font-size: 1.1em; text-align: center;">Account</h3>
+					
+					<!-- Inputs with 100% width and box-sizing to prevent overflow -->
+					<input type="email" id="email-input" placeholder="Email" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+					<input type="password" id="password-input" placeholder="Password" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+					<input type="text" id="display-name-input" placeholder="Name (New Signups)" style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+			
+					<!-- Flexbox to arrange login and signup buttons side-by-side -->
+					<div style="display: flex; gap: 8px;">
+						<button id="login-btn" type="button" style="flex: 1; padding: 8px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em;">Log In</button>
+						<button id="signup-btn" type="button" style="flex: 1; padding: 8px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em;">Sign Up</button>
+					</div>
+					
+					<div id="auth-error" style="color: #d9534f; margin-top: 10px; font-weight: bold; font-size: 0.85em; text-align: center;"></div>
+				</div>
+			
+				<div id="logged-in-view" style="display: none; text-align: center;">
+					<h3 style="margin: 0 0 10px 0; font-size: 1em; color: #28a745;">Hello, <span id="user-display-name"></span></h3>
+					<button id="logout-btn" type="button" style="width: 100%; padding: 8px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Log Out</button>
+				</div>
+			</div>
+			<button type="submit" id="submit-picks-btn" disabled>Save Picks</button>	
             <div id="matchups-container">
                 <!-- Matchups will be populated here by JavaScript -->
             </div>
-            <button type="submit" id="submit-picks-btn" disabled>Save Picks</button>
         </form>
     </main>
 
