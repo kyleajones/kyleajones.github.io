@@ -26,11 +26,13 @@ jobs:
       - name: Run Fetcher Script
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        working-directory: ./pick-em
         run: python update_picks.py
 
       - name: Run Scores Fetcher Script
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        working-directory: ./pick-em
         run: python fetch_scores.py
 
       - name: Commit and Push Changes
