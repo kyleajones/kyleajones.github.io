@@ -157,14 +157,15 @@ input[type="radio"]:checked + .team-with-logo .team-label {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Golden yellow highlight specifically for Over/Under picks */
-.ou-option input[type="radio"]:checked + .ou-label {
-    background-color: var(--color-ou-gold);
-    border-color: var(--color-ou-gold-dark);
-    /* Assuming you have a dark text variable like --color-text-main, otherwise use #333333 */
-    color: var(--color-text-main, #333333); 
+/* Ensure the outer label container distributes evenly */
+.ou-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    flex: 1;
 }
 
+/* Base styling for the unclicked O/U button */
 .ou-label {
     display: flex;
     flex-direction: column;
@@ -172,16 +173,18 @@ input[type="radio"]:checked + .team-with-logo .team-label {
     justify-content: center;
     text-align: center;
     width: 100%;
+    padding: 6px 10px; 
+    border: 2px solid var(--color-border);
+    border-radius: 5px;
+    transition: background-color 0.2s, border-color 0.2s;
     box-sizing: border-box;
-    /* Add any of your existing padding or border radius here */
-    padding: 10px; 
 }
 
-/* Updated to match the Spread Picks instead of standard green */
-input[type="radio"]:checked + .ou-label {
-    background-color: var(--color-football-brown);
-    color: var(--color-white);
-    border-color: var(--color-football-brown);
+/* Golden yellow highlight specifically for Over/Under picks */
+.ou-option input[type="radio"]:checked + .ou-label {
+    background-color: var(--color-ou-gold);
+    border-color: var(--color-ou-gold-dark);
+    color: var(--color-text-main); 
 }
 
 /* Pylon Orange Buttons */
