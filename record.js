@@ -130,10 +130,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const myPicks = allPickHistory.filter(record => record.userId === user.uid);
         
-        let tHtml = `<h2 style="margin-bottom: 20px; color: #5d4037;">My Picks</h2>`;
+        let tHtml = `<h2 style="margin-bottom: 20px; color: #ffffff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);">My Picks</h2>`;
         
         if (myPicks.length === 0) {
-            tHtml += `<p>You haven't submitted any picks yet.</p>`;
+            tHtml += `<p style="color: #ffffff;">You haven't submitted any picks yet.</p>`;
         } else {
             myPicks.forEach(record => {
                 const dateSaved = new Date(record.date).toLocaleDateString('en-US', {
