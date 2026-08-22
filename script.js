@@ -63,7 +63,7 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
     await signOut(auth);
 });
 
-// Load logo mapping and get logo URL
+// Load logo mapping
 let logoMap = {};
 
 fetch('logos.json')
@@ -77,7 +77,7 @@ function getTeamLogoUrl(teamName) {
     return logoMap[teamName] || '';
 }
 
-// Pick tracking (Dynamic)
+// Pick tracking
 let currentPicks = new Set();
 let matchupsData = [];
 
@@ -86,8 +86,7 @@ function updatePickCount() {
     const counter = document.getElementById('pick-counter');
     if (counter) {
         counter.textContent = `${count}`;
-        // Set to bright yellow if picks are made, otherwise default to white
-        counter.style.color = count > 0 ? '#ffd700' : '#ffffff'; 
+        counter.style.color = count > 0 ? '#ffd700' : 'var(--color-white)'; 
     }
 }
 
@@ -113,7 +112,6 @@ function trackPick(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize counter display immediately
     updatePickCount();
 
     fetch('matchups.json')
@@ -132,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
             matchups.forEach(game => {
                 const gameDate = new Date(game.commence_time);
                 
-                // Format the date and time for the group header
                 const dateString = gameDate.toLocaleDateString('en-US', { 
                     weekday: 'long', month: 'short', day: 'numeric' 
                 });
@@ -141,21 +138,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const dateTimeString = `${dateString} @ ${timeString}`;
 
-                // Inject a header if it's a new date/time block
+                // Inject header using themed styling
                 if (dateTimeString !== currentDateTimeString) {
                     const headerWrapper = document.createElement('div');
-                    headerWrapper.style.background = '#fff9c4'; // Light yellow shading
+                    headerWrapper.style.background = '#fff9c4'; 
                     headerWrapper.style.padding = '10px 15px';
                     headerWrapper.style.margin = '25px 0 15px 0';
                     headerWrapper.style.borderRadius = '6px';
-                    headerWrapper.style.borderLeft = '6px solid #5d4037'; // Brown accent
+                    headerWrapper.style.borderLeft = '6px solid var(--color-football-brown)'; 
                     headerWrapper.style.display = 'flex';
                     headerWrapper.style.alignItems = 'center';
 
                     const blockHeader = document.createElement('h2');
                     blockHeader.textContent = dateTimeString;
                     blockHeader.style.margin = '0';
-                    blockHeader.style.color = '#5d4037'; // Brown font
+                    blockHeader.style.color = 'var(--color-football-brown)'; 
                     blockHeader.style.fontSize = '1.25em';
                     
                     headerWrapper.appendChild(blockHeader);
@@ -164,7 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentDateTimeString = dateTimeString;
                 }
 
-                // Automatically assign and flip the spread for Away vs Home
                 let awaySpread = game.spread;
                 let homeSpread = "N/A";
                 
@@ -182,14 +178,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const awayLogo = getTeamLogoUrl(game.away);
                 const homeLogo = getTeamLogoUrl(game.home);
 
-                // Calculate if the game has already started
                 const isLocked = gameDate <= new Date();
                 const lockAttr = isLocked ? 'disabled' : '';
                 const lockOverlay = isLocked ? `<div style="text-align: center; color: #dc3545; font-weight: bold; font-size: 0.8em; margin-bottom: 5px;">🔒 GAME LOCKED</div>` : '';
 
                 const wrapperDiv = document.createElement('div');
                 wrapperDiv.className = 'game-card';
-                // Add a slight opacity fade if the game is locked
                 if (isLocked) wrapperDiv.style.opacity = '0.7';
                 
                 wrapperDiv.innerHTML = `
@@ -240,9 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 container.appendChild(wrapperDiv);
             });
 
-            // Add custom click logic to allow deselecting radio buttons
             document.querySelectorAll('input[type="radio"]').forEach(input => {
-                // Keep track of whether this radio was already checked when clicked
                 input.dataset.wasChecked = "false";
 
                 input.addEventListener('mousedown', function() {
@@ -253,11 +245,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (this.dataset.wasChecked === "true") {
                         this.checked = false;
                         this.dataset.wasChecked = "false";
-                        // Manually trigger change event so the pick counter updates
                         this.dispatchEvent(new Event('change'));
                     } else {
                         this.dataset.wasChecked = "true";
-                        // Uncheck other radios in the same group so their states update cleanly
                         document.querySelectorAll(`input[name="${this.name}"]`).forEach(other => {
                             if (other !== this) other.dataset.wasChecked = "false";
                         });
@@ -269,13 +259,12 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => {
             console.error('Error fetching matchups:', error);
-            document.getElementById('matchups-container').innerHTML = '<p>Matchups will be available soon.</p>';
+            document.getElementById('matchups-container').innerHTML = '<p style="color: var(--color-white);">Matchups will be available soon.</p>';
         });
 
     document.getElementById('picks-form').addEventListener('submit', async function(e) {
 		e.preventDefault();
 		
-		// Block submission if not logged in
 		if (!currentUser) {
 			alert("You must be logged in to save picks.");
 			return;
@@ -290,7 +279,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		submitBtn.textContent = 'Saving...';
 		submitBtn.disabled = true;
 	
-		// Build userPicks by looping over formData 
 		const formData = new FormData(e.target);
 		const userPicks = {};
 		for (let [key, value] of formData.entries()) {
@@ -301,8 +289,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		const year = new Date().getFullYear();
 		
 		const pickRecord = {
-			userId: currentUser.uid,                  // Stores the secure Firebase ID
-			username: currentUser.displayName,        // Stores their profile name
+			userId: currentUser.uid,                  
+			username: currentUser.displayName,        
 			week: week,
 			year: year,
 			date: new Date().toISOString(),
@@ -311,10 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		};
 		
 		try {
-			// Create a unique but predictable document ID for this user's weekly ticket
             const customDocId = `${currentUser.uid}_week${week}_${year}`;
-            
-            // setDoc will create the document if it doesn't exist, or overwrite it if it does
             await setDoc(doc(db, "picks", customDocId), pickRecord);
             
             alert('Picks saved! You can now view your running record.');
@@ -338,7 +323,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function getNFLWeek(date = new Date()) {
     const currentYear = date.getFullYear();
     
-    // Helper to find Labor Day (first Monday of September)
     function getLaborDay(yr) {
         const sept1 = new Date(yr, 8, 1);
         const dayOfWeek = sept1.getDay();
@@ -347,25 +331,18 @@ function getNFLWeek(date = new Date()) {
     }
     
     let seasonYear = currentYear;
-    
-    // If we are in January through July, we are in the previous NFL season's calendar year
     if (date.getMonth() < 7) {
         seasonYear = currentYear - 1;
     }
     
     const laborDay = getLaborDay(seasonYear);
-    
-    // Week 2 ALWAYS starts on the Tuesday that is exactly 8 days after Labor Day.
-    // This ignores the Wed/Thu kickoff variation and anchors to the post-Sunday reset.
     const week2Start = new Date(seasonYear, 8, laborDay.getDate() + 8);
-    week2Start.setHours(0, 0, 0, 0); // Midnight on Tuesday
+    week2Start.setHours(0, 0, 0, 0); 
     
-    // If the current date is before the Week 2 transition Tuesday, it is Week 1
     if (date < week2Start) {
         return 1;
     }
     
-    // After the transition Tuesday, calculate how many 7-day blocks have passed
     const diffTime = date.getTime() - week2Start.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     const weeksSinceWeek2 = Math.floor(diffDays / 7);
@@ -373,4 +350,3 @@ function getNFLWeek(date = new Date()) {
     const weekNum = 2 + weeksSinceWeek2;
     return weekNum > 18 ? 18 : weekNum;
 }
-
