@@ -87,8 +87,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 1. Render Global Leaderboard
         const sortedUsers = Object.values(userStats).sort((a, b) => b.points - a.points);
         let lbHtml = `
-            <div class="game-card" style="margin-bottom: 30px; border-top: 4px solid #007bff;">
-                <h2 style="margin-top: 0; text-align: center;">Season Leaderboard</h2>
+            <div class="game-card" style="margin-bottom: 30px; border-top: 4px solid #5d4037;">
+                <h2 style="margin-top: 0; text-align: center; color: #5d4037;">Season Leaderboard</h2>
                 <table style="width: 100%; text-align: left; border-collapse: collapse; margin-top: 15px;">
                     <tr style="border-bottom: 2px solid #ddd;">
                         <th style="padding: 10px 5px;">Rank</th>
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!user) {
             ticketsContainer.innerHTML = `
                 <div style="background: #fff; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    <h3>My Pick Tickets</h3>
+                    <h3 style="color: #5d4037;">My Picks</h3>
                     <p style="color: #666;">Please log in on the 'Make Picks' page to view your history.</p>
                 </div>
             `;
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const myPicks = allPickHistory.filter(record => record.userId === user.uid);
         
-        let tHtml = `<h2 style="margin-bottom: 20px;">My Pick Tickets</h2>`;
+        let tHtml = `<h2 style="margin-bottom: 20px; color: #5d4037;">My Picks</h2>`;
         
         if (myPicks.length === 0) {
             tHtml += `<p>You haven't submitted any picks yet.</p>`;
@@ -140,12 +140,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
                 });
 
-                // Added a colored header background and negative margins to stretch it to the edges
+                // Apply light yellow background, yellow bottom border, and brown fonts
                 tHtml += `
                     <div class="game-card" style="margin-bottom: 15px; overflow: hidden; padding: 0;">
-                        <div style="background: #e3f2fd; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #bbdefb;">
-                            <h3 style="margin: 0; color: #0d47a1; font-size: 1.1em;">Week ${record.week}</h3>
-                            <span style="font-size: 0.8em; color: #1565c0;">${dateSaved}</span>
+                        <div style="background: #fff9c4; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #fff59d;">
+                            <h3 style="margin: 0; color: #5d4037; font-size: 1.1em;">Week ${record.week}</h3>
+                            <span style="font-size: 0.8em; color: #6d4c41;">${dateSaved}</span>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 10px;">
                 `;

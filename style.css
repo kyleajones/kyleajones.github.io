@@ -117,11 +117,11 @@ input[type="radio"] {
     display: none;
 }
 
-/* Style the label when the hidden radio button is checked */
+/* Checked Spread Pick (Brown background instead of blue) */
 input[type="radio"]:checked + .team-with-logo {
-    background-color: #007bff;
+    background-color: #5d4037; /* Football Brown */
     color: white;
-    border-color: #007bff;
+    border-color: #5d4037;
 }
 
 input[type="radio"]:checked + .team-with-logo .team-label {
@@ -161,12 +161,13 @@ input[type="radio"]:checked + .ou-label {
     border-color: #28a745;
 }
 
+/* Pylon Orange Buttons */
 button {
     display: block;
     width: 100%;
     padding: 15px;
     margin-top: 20px;
-    background-color: #007bff;
+    background-color: #ff4500; /* Pylon Orange */
     color: white;
     border: none;
     border-radius: 5px;
@@ -176,7 +177,7 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #cc3700; /* Darker orange on hover */
 }
 
 @media (max-width: 768px) {
@@ -221,12 +222,13 @@ button:hover {
     color: #333;
 }
 
+/* Active Tab (Brown text instead of blue) */
 .tab.active {
     background-color: #fff;
-    color: #007bff;
+    color: #5d4037; /* Football Brown */
     border-color: #ddd;
     border-bottom: 2px solid #fff;
-    margin-bottom: -2px; /* Covers the bottom border to make it look connected */
+    margin-bottom: -2px; 
 }
 
 /* Compact Layout & Spread Badges */

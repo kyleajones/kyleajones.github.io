@@ -85,9 +85,9 @@ function updatePickCount() {
     const count = currentPicks.size;
     const counter = document.getElementById('pick-counter');
     if (counter) {
-        // Changed to just show total picks made, no strict limit
         counter.textContent = `${count}`;
-        counter.style.color = count > 0 ? '#28a745' : '#666';
+        // Set to bright yellow if picks are made, otherwise default to white
+        counter.style.color = count > 0 ? '#ffd700' : '#ffffff'; 
     }
 }
 
@@ -143,28 +143,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Inject a header if it's a new date/time block
                 if (dateTimeString !== currentDateTimeString) {
-                    // 1. Create the colored wrapper box
                     const headerWrapper = document.createElement('div');
-                    headerWrapper.style.background = '#e3f2fd';
+                    headerWrapper.style.background = '#fff9c4'; // Light yellow shading
                     headerWrapper.style.padding = '10px 15px';
                     headerWrapper.style.margin = '25px 0 15px 0';
                     headerWrapper.style.borderRadius = '6px';
-                    headerWrapper.style.borderLeft = '6px solid #0d47a1';
+                    headerWrapper.style.borderLeft = '6px solid #5d4037'; // Brown accent
                     headerWrapper.style.display = 'flex';
                     headerWrapper.style.alignItems = 'center';
 
-                    // 2. Create the text element
                     const blockHeader = document.createElement('h2');
                     blockHeader.textContent = dateTimeString;
                     blockHeader.style.margin = '0';
-                    blockHeader.style.color = '#0d47a1';
+                    blockHeader.style.color = '#5d4037'; // Brown font
                     blockHeader.style.fontSize = '1.25em';
                     
-                    // 3. Assemble and attach to the main container
                     headerWrapper.appendChild(blockHeader);
                     container.appendChild(headerWrapper);
                     
-                    // Update the tracker
                     currentDateTimeString = dateTimeString;
                 }
 
