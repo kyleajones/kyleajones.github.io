@@ -5,6 +5,8 @@
     --color-football-brown: #5d4037;
     --color-pylon-orange: #ff4500;
     --color-pylon-orange-hover: #cc3700;
+    --color-ou-gold: #ffd700;
+    --color-ou-gold-dark: #d4af37;
     
     /* Consolidated Neutrals */
     --color-text-main: #212529;   /* Replaces #333, #555 */
@@ -155,11 +157,12 @@ input[type="radio"]:checked + .team-with-logo .team-label {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.ou-option {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
+/* Golden yellow highlight specifically for Over/Under picks */
+.ou-option input[type="radio"]:checked + .ou-label {
+    background-color: var(--color-ou-gold);
+    border-color: var(--color-ou-gold-dark);
+    /* Assuming you have a dark text variable like --color-text-main, otherwise use #333333 */
+    color: var(--color-text-main, #333333); 
 }
 
 .ou-label {
