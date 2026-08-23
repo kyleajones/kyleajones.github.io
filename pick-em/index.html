@@ -18,41 +18,68 @@
         <nav class="site-tabs">
             <a href="index.html" class="tab active">Make Picks</a>
             <a href="record.html" class="tab">Results</a>
-            <!-- You can easily add more tabs here later -->
+            <!-- Added class="tab" so it renders cleanly alongside other tabs -->
+            <a href="#" id="how-to-play-link" class="tab">How to Play</a>
         </nav>
     </header>
 
     <main>
         <form id="picks-form">
-        	<div id="auth-container">
-				<div id="logged-out-view">
-					<h3 style="margin: 0 0 10px 0; font-size: 1.1em; text-align: center;">Account</h3>
-					
-					<!-- Inputs with 100% width and box-sizing to prevent overflow -->
-					<input type="email" id="email-input" placeholder="Email" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-					<input type="password" id="password-input" placeholder="Password" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-					<input type="text" id="display-name-input" placeholder="Name (New Signups)" style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-			
-					<!-- Flexbox to arrange login and signup buttons side-by-side -->
-					<div style="display: flex; gap: 8px;">
-						<button id="login-btn" type="button" style="flex: 1; padding: 8px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em;">Log In</button>
-						<button id="signup-btn" type="button" style="flex: 1; padding: 8px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em;">Sign Up</button>
-					</div>
-					
-					<div id="auth-error" style="color: #d9534f; margin-top: 10px; font-weight: bold; font-size: 0.85em; text-align: center;"></div>
-				</div>
-			
-				<div id="logged-in-view" style="display: none; text-align: center;">
-					<h3 style="margin: 0 0 10px 0; font-size: 1em; color: #28a745;">Hello, <span id="user-display-name"></span></h3>
-					<button id="logout-btn" type="button" style="width: 100%; padding: 8px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Log Out</button>
-				</div>
-			</div>
-			<button type="submit" id="submit-picks-btn" disabled>Save Picks</button>	
+            <div id="auth-container">
+                <div id="logged-out-view">
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.1em; text-align: center;">Account</h3>
+                    
+                    <input type="email" id="email-input" placeholder="Email" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    <input type="password" id="password-input" placeholder="Password" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    <input type="text" id="display-name-input" placeholder="Name (New Signups)" style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+            
+                    <div style="display: flex; gap: 8px;">
+                        <button id="login-btn" type="button" style="flex: 1; padding: 8px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em;">Log In</button>
+                        <button id="signup-btn" type="button" style="flex: 1; padding: 8px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em;">Sign Up</button>
+                    </div>
+                    
+                    <div id="auth-error" style="color: #d9534f; margin-top: 10px; font-weight: bold; font-size: 0.85em; text-align: center;"></div>
+                </div>
+            
+                <div id="logged-in-view" style="display: none; text-align: center;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 1em; color: #28a745;">Hello, <span id="user-display-name"></span></h3>
+                    <button id="logout-btn" type="button" style="width: 100%; padding: 8px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Log Out</button>
+                </div>
+            </div>
+            <button type="submit" id="submit-picks-btn" disabled>Save Picks</button>  
             <div id="matchups-container">
                 <!-- Matchups will be populated here by JavaScript -->
             </div>
         </form>
     </main>
+
+    <!-- Modal Overlay moved right before closing </body> -->
+    <div id="how-to-play-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button type="button" class="modal-close" id="modal-close-btn">&times;</button>
+            <h2>How to Play</h2>
+            
+            <p>Welcome to 3woks NFL Pick'em! Make your picks each week to win it all.</p>
+
+            <div class="rules-section">
+                <h3>Scoring Rules</h3>
+                <ul>
+                    <li><strong>Correct Pick:</strong> 3 Points</li>
+                    <li><strong>Push / Tie:</strong> 1 Point</li>
+                    <li><strong>Incorrect Pick:</strong> 0 Points</li>
+                </ul>
+            </div>
+
+            <div class="rules-section">
+                <h3>Making Picks</h3>
+                <ul>
+                    <li>Pick up to 7 games (either against the spread and/or over/unders).</li>
+                    <li>Picks must be submitted before each game's scheduled kickoff time.</li>
+                    <li>Highest score at the end of each week wins a prize, and highest score at the end of the season wins the championship!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <script type="module" src="script.js"></script>
 </body>

@@ -318,6 +318,27 @@ document.addEventListener('DOMContentLoaded', () => {
 			submitBtn.disabled = false;
 		}
 	});
+	// How to Play Modal Logic (Inside DOMContentLoaded)
+    const modal = document.getElementById('how-to-play-modal');
+    const openBtn = document.getElementById('how-to-play-link');
+    const closeBtn = document.getElementById('modal-close-btn');
+
+    if (openBtn && modal && closeBtn) {
+        openBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.style.display = 'flex';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
 });
 
 function getNFLWeek(date = new Date()) {
@@ -350,3 +371,4 @@ function getNFLWeek(date = new Date()) {
     const weekNum = 2 + weeksSinceWeek2;
     return weekNum > 18 ? 18 : weekNum;
 }
+
