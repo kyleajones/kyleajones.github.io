@@ -14,7 +14,7 @@
         <nav class="site-tabs">
             <a href="index.html" class="tab">Make Picks</a>
             <a href="record.html" class="tab active">Results</a>
-            <!-- You can easily add more tabs here later -->
+            <a href="#" id="how-to-play-link" class="tab">How to Play</a>
         </nav>
     </header>
 
@@ -24,6 +24,33 @@
         </div>
     </main>
 
+    <!-- How to Play Modal Overlay -->
+    <div id="how-to-play-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button type="button" class="modal-close" id="modal-close-btn">&times;</button>
+            <h2>How to Play</h2>
+            
+            <p>Welcome to 3woks NFL Pick'em! Make your picks each week to win it all.</p>
+
+            <div class="rules-section">
+                <h3>Scoring Rules</h3>
+                <ul>
+                    <li><strong>Correct Pick:</strong> 3 Points</li>
+                    <li><strong>Push / Tie:</strong> 1 Point[cite: 3]</li>
+                    <li><strong>Incorrect Pick:</strong> 0 Points[cite: 3]</li>
+                </ul>
+            </div>
+
+            <div class="rules-section">
+                <h3>Making Picks</h3>
+                <ul>
+                    <li>Pick up to 7 games (either against the spread and/or over/unders)[cite: 3].</li>
+                    <li>Picks must be submitted before each game's scheduled kickoff time[cite: 3].</li>
+                    <li>Highest score at the end of each week wins a prize, and highest score at the end of the season wins the championship[cite: 3]!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
     <script type="module" src="record.js"></script>
 </body>
 </html>

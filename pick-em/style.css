@@ -325,15 +325,6 @@ input[type="radio"]:checked + .team-with-logo .spread-badge {
     }
 }
 
-/* How to Play Link */
-#how-to-play-link {
-    color: var(--color-white);
-    font-weight: bold;
-    text-decoration: underline;
-    cursor: pointer;
-    font-size: 0.9em;
-}
-
 /* Modal Overlay */
 .modal-overlay {
     display: none; 
