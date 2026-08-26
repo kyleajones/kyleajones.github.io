@@ -258,7 +258,7 @@ button {
 .lock-select-wrap label {
     display: block;
     margin-bottom: 8px;
-    color: var(--color-text-muted);
+    color: var(--color-ou-gold);
     font-size: 0.9em;
     font-weight: 600;
 }
