@@ -83,6 +83,10 @@
         </div>
     </div>
 
-    <script type="module" src="script.js"></script>
+    <!-- Loaded as an independent module with no external imports, so matchups
+         still render even if a content blocker prevents auth.js's Firebase
+         imports from loading. -->
+    <script type="module" src="matchups.js"></script>
+    <script type="module" src="auth.js"></script>
 </body>
 </html>
