@@ -1,5 +1,5 @@
 import { db, auth } from './firebase-config.js';
-import { collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { collection, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 const loggedOutView = document.getElementById('logged-out-view');
@@ -283,20 +283,41 @@ document.addEventListener('DOMContentLoaded', () => {
 		
 		const week = getNFLWeek(new Date());
 		const year = new Date().getFullYear();
-		
-		const pickRecord = {
-			userId: currentUser.uid,                  
-			username: currentUser.displayName,        
-			week: week,
-			year: year,
-			date: new Date().toISOString(),
-			picks: userPicks,
-			pickCount: Object.keys(userPicks).length
-		};
-		
+
 		try {
             const customDocId = `${currentUser.uid}_week${week}_${year}`;
-            await setDoc(doc(db, "picks", customDocId), pickRecord);
+            const docRef = doc(db, "picks", customDocId);
+
+            // Merge with any previously saved picks so that resubmitting
+            // doesn't erase picks for games that have already locked.
+            const existingSnap = await getDoc(docRef);
+            const existingPicks = existingSnap.exists() ? (existingSnap.data().picks || {}) : {};
+
+            const mergedPicks = { ...userPicks };
+            const now = new Date();
+            for (const [key, value] of Object.entries(existingPicks)) {
+                if (key in userPicks) continue;
+
+                const gameId = key.split('_')[1];
+                const game = matchupsData.find(g => g.id === gameId);
+                const isLocked = !game || new Date(game.commence_time) <= now;
+
+                if (isLocked) {
+                    mergedPicks[key] = value;
+                }
+            }
+
+            const pickRecord = {
+                userId: currentUser.uid,
+                username: currentUser.displayName,
+                week: week,
+                year: year,
+                date: new Date().toISOString(),
+                picks: mergedPicks,
+                pickCount: Object.keys(mergedPicks).length
+            };
+
+            await setDoc(docRef, pickRecord);
             
             alert('Picks saved! You can now view your running record.');
 		

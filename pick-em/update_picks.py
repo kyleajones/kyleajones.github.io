@@ -16,9 +16,20 @@ def fetch_matchups():
     response = requests.get(URL, params=params)
     response.raise_for_status()
     games = response.json()
-    
+
     matchups = []
-    
+
+    # Load any existing matchups so already-published lines can be locked in
+    # for the rest of the week, regardless of how the market line moves.
+    existing_by_id = {}
+    if os.path.exists("matchups.json"):
+        try:
+            with open("matchups.json", "r") as f:
+                for existing_game in json.load(f):
+                    existing_by_id[existing_game["id"]] = existing_game
+        except (json.JSONDecodeError, KeyError):
+            existing_by_id = {}
+
     if not games:
         # If the API returns absolutely nothing, save an empty list
         with open("matchups.json", "w") as f:
@@ -66,13 +77,22 @@ def fetch_matchups():
                                     over_under = f"{point}" 
                                 break
                             
+            # Lock the spread/total once first published: reuse the existing
+            # value for this game if one was already saved, so the line
+            # can't shift out from under users who already picked it.
+            existing_game = existing_by_id.get(game['id'])
+            if existing_game and existing_game.get('spread', 'N/A') != 'N/A':
+                spread_text = existing_game['spread']
+            if existing_game and existing_game.get('over_under', 'N/A') != 'N/A':
+                over_under = existing_game['over_under']
+
             matchups.append({
                 "id": game['id'],
                 "away": away_team,
                 "home": home_team,
                 "spread": spread_text,
                 "over_under": over_under,
-                "commence_time": game['commence_time'] 
+                "commence_time": game['commence_time']
             })
             
     with open("matchups.json", "w") as f:
