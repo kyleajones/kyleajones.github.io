@@ -82,6 +82,11 @@ document.getElementById('picks-form').addEventListener('submit', async function(
         return;
     }
 
+    if (Object.keys(userPicks).length > 7) {
+        alert("You can only make up to 7 picks per week.");
+        return;
+    }
+
     const submitBtn = e.target.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Saving...';
@@ -103,6 +108,7 @@ document.getElementById('picks-form').addEventListener('submit', async function(
         const existingPicks = existingSnap.exists() ? (existingSnap.data().picks || {}) : {};
 
         const mergedPicks = { ...userPicks };
+        let carriedOverCount = 0;
         const now = new Date();
         for (const [key, value] of Object.entries(existingPicks)) {
             if (key in userPicks) continue;
@@ -113,7 +119,17 @@ document.getElementById('picks-form').addEventListener('submit', async function(
 
             if (isLocked) {
                 mergedPicks[key] = value;
+                carriedOverCount++;
             }
+        }
+
+        // The 7-pick cap has to be checked post-merge, not just against this
+        // submission's new picks, since carried-over locked picks from an
+        // earlier submission also count toward the total that gets scored.
+        if (Object.keys(mergedPicks).length > 7) {
+            const remainingSlots = Math.max(0, 7 - carriedOverCount);
+            alert(`You already have ${carriedOverCount} locked-in pick${carriedOverCount === 1 ? '' : 's'} from this week. You can add up to ${remainingSlots} more new pick${remainingSlots === 1 ? '' : 's'} (max 7 total).`);
+            return;
         }
 
         const pickRecord = {

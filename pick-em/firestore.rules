@@ -11,15 +11,19 @@ service cloud.firestore {
       // player's future week ID (their uid is visible via the public
       // leaderboard query) and permanently block that player's real
       // submission, since `update` would then see a mismatched owner.
+      // Also cap total picks at 7 — the only tamper-proof enforcement of
+      // the "Pick 7" rule, since client-side checks can be bypassed.
       allow create: if request.auth != null
                     && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.picks.size() <= 7
                     && pickId.matches(request.auth.uid + '_week[0-9]+_[0-9]+');
 
       // Require the existing document, the incoming data, AND the document
-      // ID to all match the authenticated user.
+      // ID to all match the authenticated user. Also cap total picks at 7.
       allow update: if request.auth != null
                     && resource.data.userId == request.auth.uid
                     && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.picks.size() <= 7
                     && pickId.matches(request.auth.uid + '_week[0-9]+_[0-9]+');
 
       allow delete: if false;

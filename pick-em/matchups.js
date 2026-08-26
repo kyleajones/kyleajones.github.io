@@ -19,6 +19,7 @@ function getTeamLogoUrl(teamName) {
 }
 
 // Pick tracking
+const MAX_PICKS = 7;
 let currentPicks = new Set();
 
 function updatePickCount() {
@@ -26,13 +27,25 @@ function updatePickCount() {
     const counter = document.getElementById('pick-counter');
     const progressBar = document.getElementById('pick-progress-bar');
     if (counter) {
-        counter.textContent = `${count}/7`;
+        counter.textContent = `${count}/${MAX_PICKS}`;
         counter.style.color = count > 0 ? 'var(--color-accent)' : 'var(--color-text-muted)';
     }
     if (progressBar) {
-        const pct = Math.min((count / 7) * 100, 100);
+        const pct = Math.min((count / MAX_PICKS) * 100, 100);
         progressBar.style.width = `${pct}%`;
     }
+}
+
+// Once the cap is reached, disable any not-yet-selected, not-already-locked
+// radio inputs so a player can't rack up more than MAX_PICKS scored picks.
+// This is a UX nicety only — the real enforcement is in firestore.rules,
+// since a player could bypass anything client-side via dev tools.
+function enforcePickLimit() {
+    const atLimit = currentPicks.size >= MAX_PICKS;
+    document.querySelectorAll('input[type="radio"]').forEach(input => {
+        if (input.checked || input.closest('.game-card.locked')) return;
+        input.disabled = atLimit;
+    });
 }
 
 function trackPick(event) {
@@ -46,12 +59,14 @@ function trackPick(event) {
     }
 
     updatePickCount();
+    enforcePickLimit();
 }
 
 // Reset local pick-tracking state once auth.js confirms a save succeeded.
 document.addEventListener('picks:saved', () => {
     currentPicks.clear();
     updatePickCount();
+    enforcePickLimit();
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -189,6 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 input.addEventListener('change', trackPick);
             });
+
+            enforcePickLimit();
         })
         .catch(error => {
             console.error('Error fetching matchups:', error);
