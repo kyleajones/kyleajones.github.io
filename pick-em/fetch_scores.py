@@ -1,3 +1,12 @@
+import os
+import json
+import requests
+
+# Use the exact same environment variable name as your update_picks script
+API_KEY = os.environ.get('ODDS_API_KEY')
+SPORT = 'americanfootball_nfl'
+DAYS_FROM = 3  # The Odds API allows looking back 1 to 3 days for recent scores
+
 def fetch_scores():
     print("Fetching recent NFL scores...")
     url = f"https://api.the-odds-api.com/v4/sports/{SPORT}/scores/?apiKey={API_KEY}&daysFrom={DAYS_FROM}"
@@ -38,3 +47,6 @@ def fetch_scores():
         json.dump(completed_games, f, indent=4)
         
     print(f"Successfully updated results.json. Total stored games: {len(completed_games)}")
+
+if __name__ == "__main__":
+    fetch_scores()

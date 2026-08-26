@@ -2,6 +2,18 @@ import { db, auth } from './firebase-config.js';
 import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
+// Escape user-controlled strings (display names, pick values) before they're
+// interpolated into innerHTML, so a crafted display name can't inject markup
+// that executes in every visitor's browser.
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // Grading Logic
 function gradePick(pickValue, pickType, gameResult) {
     if (!gameResult) return 'PENDING';
@@ -102,7 +114,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             lbHtml += `
                 <div class="leaderboard-row">
                     <span class="rank-badge${rankClass}">#${rank}</span>
-                    <span class="leaderboard-name">${u.name}</span>
+                    <span class="leaderboard-name">${escapeHtml(u.name)}</span>
                     <span class="leaderboard-points">${u.points}</span>
                     <span class="leaderboard-record">${u.w} - ${u.l} - ${u.p}</span>
                 </div>
@@ -172,7 +184,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <div class="pick-chip">
                             <div>
                                 <div class="pick-chip-type">${pickType}</div>
-                                <div class="pick-chip-selection">${selection} (${lineDisplay})</div>
+                                <div class="pick-chip-selection">${escapeHtml(selection)} (${escapeHtml(lineDisplay)})</div>
                             </div>
                             <span class="status-pill ${statusClass}">${status}</span>
                         </div>
