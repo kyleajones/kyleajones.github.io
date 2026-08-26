@@ -84,9 +84,14 @@ let matchupsData = [];
 function updatePickCount() {
     const count = currentPicks.size;
     const counter = document.getElementById('pick-counter');
+    const progressBar = document.getElementById('pick-progress-bar');
     if (counter) {
-        counter.textContent = `${count}`;
-        counter.style.color = count > 0 ? '#ffd700' : 'var(--color-white)'; 
+        counter.textContent = `${count}/7`;
+        counter.style.color = count > 0 ? 'var(--color-accent)' : 'var(--color-text-muted)';
+    }
+    if (progressBar) {
+        const pct = Math.min((count / 7) * 100, 100);
+        progressBar.style.width = `${pct}%`;
     }
 }
 
@@ -141,23 +146,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Inject header using themed styling
                 if (dateTimeString !== currentDateTimeString) {
                     const headerWrapper = document.createElement('div');
-                    headerWrapper.style.background = '#fff9c4'; 
-                    headerWrapper.style.padding = '10px 15px';
-                    headerWrapper.style.margin = '25px 0 15px 0';
-                    headerWrapper.style.borderRadius = '6px';
-                    headerWrapper.style.borderLeft = '6px solid var(--color-football-brown)'; 
-                    headerWrapper.style.display = 'flex';
-                    headerWrapper.style.alignItems = 'center';
+                    headerWrapper.classList.add('date-header');
 
                     const blockHeader = document.createElement('h2');
                     blockHeader.textContent = dateTimeString;
-                    blockHeader.style.margin = '0';
-                    blockHeader.style.color = 'var(--color-football-brown)'; 
-                    blockHeader.style.fontSize = '1.25em';
-                    
+
                     headerWrapper.appendChild(blockHeader);
                     container.appendChild(headerWrapper);
-                    
+
                     currentDateTimeString = dateTimeString;
                 }
 
@@ -180,52 +176,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const isLocked = gameDate <= new Date();
                 const lockAttr = isLocked ? 'disabled' : '';
-                const lockOverlay = isLocked ? `<div style="text-align: center; color: #dc3545; font-weight: bold; font-size: 0.8em; margin-bottom: 5px;">🔒 GAME LOCKED</div>` : '';
+                const lockOverlay = isLocked ? `<div class="locked-banner">🔒 GAME LOCKED</div>` : '';
 
                 const wrapperDiv = document.createElement('div');
                 wrapperDiv.className = 'game-card';
-                if (isLocked) wrapperDiv.style.opacity = '0.7';
-                
+                if (isLocked) wrapperDiv.classList.add('locked');
+
                 wrapperDiv.innerHTML = `
                     ${lockOverlay}
-                    <div class="game-container" style="margin-bottom: 0;">
+                    <div class="game-container">
                         <!-- Spread Picks -->
                         <div class="picks-section">
-                            <div class="matchup" style="box-shadow: none; padding: 0; background: transparent;">
+                            <div class="matchup">
                                 <label class="team-option">
                                     <input type="radio" name="spread_${game.id}" value="${game.away}|${awaySpread}" ${lockAttr}>
                                     <div class="team-with-logo">
-                                        ${awayLogo ? `<img src="${awayLogo}" alt="${game.away}" class="team-logo" onerror="this.style.display='none'">` : ''}
+                                        ${awayLogo ? `<div class="team-logo-badge"><img src="${awayLogo}" alt="${game.away}" class="team-logo" onerror="this.parentElement.style.display='none'"></div>` : ''}
                                         <span class="team-label">${game.away}</span>
                                         <span class="spread-badge">${awaySpread}</span>
                                     </div>
                                 </label>
-                                
+
                                 <div class="home-marker">
                                     <span>@</span>
                                 </div>
-                                
+
                                 <label class="team-option">
                                     <input type="radio" name="spread_${game.id}" value="${game.home}|${homeSpread}" ${lockAttr}>
                                     <div class="team-with-logo">
-                                        ${homeLogo ? `<img src="${homeLogo}" alt="${game.home}" class="team-logo" onerror="this.style.display='none'">` : ''}
+                                        ${homeLogo ? `<div class="team-logo-badge"><img src="${homeLogo}" alt="${game.home}" class="team-logo" onerror="this.parentElement.style.display='none'"></div>` : ''}
                                         <span class="team-label">${game.home}</span>
                                         <span class="spread-badge">${homeSpread}</span>
                                     </div>
                                 </label>
                             </div>
                         </div>
-                        
+
                         <!-- Over/Under Picks -->
                         <div class="picks-section">
-                            <div class="ou-picks" style="box-shadow: none; padding: 0; background: transparent; height: 100%; align-items: center;">
+                            <div class="ou-picks">
                                 <label class="ou-option">
                                     <input type="radio" name="ou_${game.id}" value="Over|${game.over_under}" ${lockAttr}>
-                                    <span class="ou-label">Over <br><span style="font-weight: normal; font-size: 0.9em;">${game.over_under}</span></span>
+                                    <span class="ou-label">Over <br><span class="ou-total">${game.over_under}</span></span>
                                 </label>
                                 <label class="ou-option">
                                     <input type="radio" name="ou_${game.id}" value="Under|${game.over_under}" ${lockAttr}>
-                                    <span class="ou-label">Under <br><span style="font-weight: normal; font-size: 0.9em;">${game.over_under}</span></span>
+                                    <span class="ou-label">Under <br><span class="ou-total">${game.over_under}</span></span>
                                 </label>
                             </div>
                         </div>
@@ -259,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => {
             console.error('Error fetching matchups:', error);
-            document.getElementById('matchups-container').innerHTML = '<p style="color: var(--color-white);">Matchups will be available soon.</p>';
+            document.getElementById('matchups-container').innerHTML = '<p style="color: var(--color-text-muted);">Matchups will be available soon.</p>';
         });
 
     document.getElementById('picks-form').addEventListener('submit', async function(e) {

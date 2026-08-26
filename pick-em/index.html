@@ -11,8 +11,11 @@
         <h1>NFL Weekly Pick 7</h1>
         <p>Pick 7 spreads/totals each week to win it all!</p>
         
-        <div style="font-size: 1.2em; font-weight: bold; margin-top: 15px; margin-bottom: 20px;">
-            Picks Made: <span id="pick-counter">0</span>
+        <div class="pick-counter-wrap">
+            <span class="pick-counter-label">Picks Made: <span id="pick-counter">0/7</span></span>
+            <div class="pick-progress-track">
+                <div class="pick-progress-bar" id="pick-progress-bar"></div>
+            </div>
         </div>
 
         <nav class="site-tabs">
@@ -27,22 +30,22 @@
             <div id="auth-container">
                 <div id="logged-out-view">
                     <h3 style="margin: 0 0 10px 0; font-size: 1.1em; text-align: center;">Account</h3>
-                    
-                    <input type="email" id="email-input" placeholder="Email" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                    <input type="password" id="password-input" placeholder="Password" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                    <input type="text" id="display-name-input" placeholder="Name (New Signups)" style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-                    <div style="display: flex; gap: 8px;">
-                        <button id="login-btn" type="button" style="flex: 1; padding: 8px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em;">Log In</button>
-                        <button id="signup-btn" type="button" style="flex: 1; padding: 8px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em;">Sign Up</button>
+
+                    <input type="email" id="email-input" class="auth-input" placeholder="Email">
+                    <input type="password" id="password-input" class="auth-input" placeholder="Password">
+                    <input type="text" id="display-name-input" class="auth-input" placeholder="Name (New Signups)">
+
+                    <div class="auth-actions">
+                        <button id="login-btn" type="button" class="btn-primary">Log In</button>
+                        <button id="signup-btn" type="button" class="btn-primary">Sign Up</button>
                     </div>
-                    
-                    <div id="auth-error" style="color: #d9534f; margin-top: 10px; font-weight: bold; font-size: 0.85em; text-align: center;"></div>
+
+                    <div id="auth-error" style="color: var(--color-loss); margin-top: 10px; font-weight: bold; font-size: 0.85em; text-align: center;"></div>
                 </div>
-            
+
                 <div id="logged-in-view" style="display: none; text-align: center;">
-                    <h3 style="margin: 0 0 10px 0; font-size: 1em; color: #28a745;">Hello, <span id="user-display-name"></span></h3>
-                    <button id="logout-btn" type="button" style="width: 100%; padding: 8px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Log Out</button>
+                    <h3 style="margin: 0 0 10px 0; font-size: 1em; color: var(--color-win);">Hello, <span id="user-display-name"></span></h3>
+                    <button id="logout-btn" type="button" class="btn-secondary" style="width: 100%;">Log Out</button>
                 </div>
             </div>
             <button type="submit" id="submit-picks-btn" disabled>Save Picks</button>  
