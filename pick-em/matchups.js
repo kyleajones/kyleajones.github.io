@@ -60,6 +60,36 @@ function trackPick(event) {
 
     updatePickCount();
     enforcePickLimit();
+    rebuildLockOptions();
+}
+
+// Rebuilds the Lock-of-the-Week <select> from whatever picks are currently
+// checked. Games that have already started are excluded — a player
+// shouldn't be able to newly designate an already-started game as their
+// lock (though an existing lock on a started game is handled separately,
+// via the frozen-lock branch in the picks:prefill listener).
+function rebuildLockOptions() {
+    const lockSelect = document.getElementById('lock-select');
+    if (!lockSelect) return;
+
+    const previousValue = lockSelect.value;
+
+    lockSelect.innerHTML = '<option value="">No Lock</option>';
+
+    currentPicks.forEach(pickId => {
+        const input = document.querySelector(`input[name="${pickId}"]:checked`);
+        if (!input) return;
+        if (input.closest('.game-card.locked')) return;
+
+        const [selection, line] = input.value.split('|');
+        const option = document.createElement('option');
+        option.value = pickId;
+        option.textContent = `${selection} (${line})`;
+        lockSelect.appendChild(option);
+    });
+
+    const stillValid = Array.from(lockSelect.options).some(opt => opt.value === previousValue);
+    lockSelect.value = stillValid ? previousValue : '';
 }
 
 // Reset local pick-tracking state once auth.js confirms a save succeeded.
@@ -67,6 +97,74 @@ document.addEventListener('picks:saved', () => {
     currentPicks.clear();
     updatePickCount();
     enforcePickLimit();
+    rebuildLockOptions();
+});
+
+// auth.js dispatches this on every auth state change, before prefilling, so
+// that switching users (or logging out) doesn't leave a stale prior user's
+// picks/lock checked in the DOM.
+document.addEventListener('picks:reset', () => {
+    document.querySelectorAll('input[type="radio"]').forEach(input => {
+        input.checked = false;
+        input.dataset.wasChecked = "false";
+    });
+    currentPicks.clear();
+    updatePickCount();
+    enforcePickLimit();
+
+    const lockSelect = document.getElementById('lock-select');
+    if (lockSelect) {
+        lockSelect.innerHTML = '<option value="">No Lock</option>';
+        lockSelect.value = '';
+        lockSelect.disabled = false;
+    }
+});
+
+// auth.js dispatches this once it has both a logged-in user and confirmation
+// that matchups have rendered, carrying that user's previously saved picks
+// (if any) so revisiting the page pre-checks them.
+document.addEventListener('picks:prefill', (event) => {
+    const { picks = {}, lockedPick = null } = event.detail || {};
+
+    for (const [key, value] of Object.entries(picks)) {
+        const candidates = document.querySelectorAll(`input[name="${key}"]`);
+        for (const input of candidates) {
+            if (input.value === value) {
+                input.checked = true;
+                input.dataset.wasChecked = "true";
+                input.dispatchEvent(new Event('change'));
+                break;
+            }
+        }
+    }
+
+    const lockSelect = document.getElementById('lock-select');
+    if (!lockSelect) return;
+
+    if (lockedPick) {
+        const checkedInput = document.querySelector(`input[name="${lockedPick}"]:checked`);
+        const gameCard = checkedInput ? checkedInput.closest('.game-card') : null;
+        const isFrozen = gameCard ? gameCard.classList.contains('locked') : false;
+
+        if (isFrozen) {
+            const alreadyOption = Array.from(lockSelect.options).some(opt => opt.value === lockedPick);
+            if (!alreadyOption && checkedInput) {
+                const [selection, line] = checkedInput.value.split('|');
+                const option = document.createElement('option');
+                option.value = lockedPick;
+                option.textContent = `${selection} (${line})`;
+                lockSelect.appendChild(option);
+            }
+            lockSelect.value = lockedPick;
+            lockSelect.disabled = true;
+        } else {
+            lockSelect.value = lockedPick;
+            lockSelect.disabled = false;
+        }
+    } else {
+        lockSelect.value = '';
+        lockSelect.disabled = false;
+    }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -206,6 +304,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             enforcePickLimit();
+            rebuildLockOptions();
+            document.dispatchEvent(new CustomEvent('matchups:rendered'));
         })
         .catch(error => {
             console.error('Error fetching matchups:', error);

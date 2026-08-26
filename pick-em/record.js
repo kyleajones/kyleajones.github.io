@@ -80,13 +80,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             for (const [pickKey, pickValue] of Object.entries(record.picks)) {
-                const gameId = pickKey.split('_')[1]; 
+                const gameId = pickKey.split('_')[1];
                 const pickType = pickKey.startsWith('spread') ? 'Spread' : 'Over/Under';
                 const status = gradePick(pickValue, pickType, resultsData[gameId]);
-                
+                const isLocked = pickKey === record.lockedPick;
+
                 if (status === 'WIN') {
                     userStats[uid].w += 1;
-                    userStats[uid].points += 3;
+                    userStats[uid].points += isLocked ? 5 : 3;
                 } else if (status === 'PUSH') {
                     userStats[uid].p += 1;
                     userStats[uid].points += 1;
@@ -166,6 +167,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const gameId = pickKey.split('_')[1];
                     const pickType = pickKey.startsWith('spread') ? 'Spread' : 'O/U';
                     const status = gradePick(pickValue, pickType === 'Spread' ? 'Spread' : 'Over/Under', resultsData[gameId]);
+                    const isLocked = pickKey === record.lockedPick;
 
                     const [selection, lineStr] = pickValue.split('|');
                     let lineDisplay = lineStr;
@@ -179,11 +181,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
 
                     const statusClass = `status-${status.toLowerCase()}`;
+                    const typeLabel = isLocked ? `${pickType} 🔒` : pickType;
 
                     tHtml += `
                         <div class="pick-chip">
                             <div>
-                                <div class="pick-chip-type">${pickType}</div>
+                                <div class="pick-chip-type">${typeLabel}</div>
                                 <div class="pick-chip-selection">${escapeHtml(selection)} (${escapeHtml(lineDisplay)})</div>
                             </div>
                             <span class="status-pill ${statusClass}">${status}</span>

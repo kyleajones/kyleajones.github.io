@@ -10,6 +10,47 @@ const submitPicksBtn = document.getElementById('submit-picks-btn');
 
 let currentUser = null;
 
+// Tracks whether matchups.js has finished rendering the DOM (safe to
+// inspect/manipulate) and which uid we last prefilled for, so that
+// maybeInitializePicks() only resets/reprefills when the effective user
+// actually changes rather than on every incidental onAuthStateChanged fire.
+let matchupsRendered = false;
+let lastPrefilledUid;
+
+document.addEventListener('matchups:rendered', () => {
+    matchupsRendered = true;
+    maybeInitializePicks();
+});
+
+async function maybeInitializePicks() {
+    if (!matchupsRendered) return;
+
+    const effectiveUid = currentUser?.uid ?? null;
+    if (effectiveUid === lastPrefilledUid) return;
+    lastPrefilledUid = effectiveUid;
+
+    document.dispatchEvent(new CustomEvent('picks:reset'));
+
+    if (!currentUser) return;
+
+    try {
+        const week = getNFLWeek(new Date());
+        const year = new Date().getFullYear();
+        const customDocId = `${currentUser.uid}_week${week}_${year}`;
+        const docRef = doc(db, "picks", customDocId);
+        const snap = await getDoc(docRef);
+
+        if (snap.exists()) {
+            const data = snap.data();
+            document.dispatchEvent(new CustomEvent('picks:prefill', {
+                detail: { picks: data.picks || {}, lockedPick: data.lockedPick || null }
+            }));
+        }
+    } catch (error) {
+        console.error("Error prefilling picks: ", error);
+    }
+}
+
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
@@ -23,6 +64,8 @@ onAuthStateChanged(auth, (user) => {
         loggedInView.style.display = 'none';
         submitPicksBtn.disabled = true;
     }
+
+    maybeInitializePicks();
 });
 
 document.getElementById('signup-btn').addEventListener('click', async () => {
@@ -74,8 +117,10 @@ document.getElementById('picks-form').addEventListener('submit', async function(
     const formData = new FormData(e.target);
     const userPicks = {};
     for (let [key, value] of formData.entries()) {
+        if (key === 'lock') continue;
         userPicks[key] = value;
     }
+    const submittedLock = formData.get('lock') || null;
 
     if (Object.keys(userPicks).length === 0) {
         alert("You must make at least one pick before saving.");
@@ -106,6 +151,7 @@ document.getElementById('picks-form').addEventListener('submit', async function(
             fetch('matchups.json').then(r => r.json()).catch(() => [])
         ]);
         const existingPicks = existingSnap.exists() ? (existingSnap.data().picks || {}) : {};
+        const existingLockedPick = existingSnap.exists() ? (existingSnap.data().lockedPick || null) : null;
 
         const mergedPicks = { ...userPicks };
         let carriedOverCount = 0;
@@ -121,6 +167,21 @@ document.getElementById('picks-form').addEventListener('submit', async function(
                 mergedPicks[key] = value;
                 carriedOverCount++;
             }
+        }
+
+        // Once a locked pick's game has started, the Lock designation itself
+        // freezes — independent of whether the underlying pick is being
+        // changed — so a player can't wait to see which pick won and then
+        // resubmit to retroactively mark that winner as their Lock.
+        let finalLockedPick = null;
+        if (existingLockedPick) {
+            const gameId = existingLockedPick.split('_')[1];
+            const game = matchupsData.find(g => g.id === gameId);
+            const lockIsFrozen = !game || new Date(game.commence_time) <= now;
+            if (lockIsFrozen) finalLockedPick = existingLockedPick;
+        }
+        if (finalLockedPick === null && submittedLock && submittedLock in mergedPicks) {
+            finalLockedPick = submittedLock;
         }
 
         // The 7-pick cap has to be checked post-merge, not just against this
@@ -139,7 +200,8 @@ document.getElementById('picks-form').addEventListener('submit', async function(
             year: year,
             date: new Date().toISOString(),
             picks: mergedPicks,
-            pickCount: Object.keys(mergedPicks).length
+            pickCount: Object.keys(mergedPicks).length,
+            lockedPick: finalLockedPick
         };
 
         await setDoc(docRef, pickRecord);

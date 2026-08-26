@@ -48,7 +48,13 @@
                     <button id="logout-btn" type="button" class="btn-secondary" style="width: 100%;">Log Out</button>
                 </div>
             </div>
-            <button type="submit" id="submit-picks-btn" disabled>Save Picks</button>  
+            <div class="lock-select-wrap">
+                <label for="lock-select">Lock of the Week (+2 bonus if it wins):</label>
+                <select id="lock-select" name="lock">
+                    <option value="">No Lock</option>
+                </select>
+            </div>
+            <button type="submit" id="submit-picks-btn" disabled>Save Picks</button>
             <div id="matchups-container">
                 <!-- Matchups will be populated here by JavaScript -->
             </div>
@@ -69,6 +75,7 @@
                     <li><strong>Correct Pick:</strong> 3 Points</li>
                     <li><strong>Push / Tie:</strong> 1 Point</li>
                     <li><strong>Incorrect Pick:</strong> 0 Points</li>
+                    <li><strong>Lock of the Week (correct):</strong> 5 Points</li>
                 </ul>
             </div>
 
@@ -76,6 +83,7 @@
                 <h3>Making Picks</h3>
                 <ul>
                     <li>Pick up to 7 games (either against the spread and/or over/unders).</li>
+                    <li>Optionally designate one pick as your "Lock of the Week" for a bonus if it wins.</li>
                     <li>Picks must be submitted before each game's scheduled kickoff time.</li>
                     <li>Highest score at the end of each week wins a prize, and highest score at the end of the season wins the championship!</li>
                 </ul>

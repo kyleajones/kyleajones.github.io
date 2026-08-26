@@ -13,10 +13,16 @@ service cloud.firestore {
       // submission, since `update` would then see a mismatched owner.
       // Also cap total picks at 7 — the only tamper-proof enforcement of
       // the "Pick 7" rule, since client-side checks can be bypassed.
+      // lockedPick, if present, must be null or a real key in picks — kept
+      // honest as defense-in-depth only, since a dangling/forged value would
+      // just never match anything in record.js's grading loop anyway.
       allow create: if request.auth != null
                     && request.resource.data.userId == request.auth.uid
                     && request.resource.data.picks.size() <= 7
-                    && pickId.matches(request.auth.uid + '_week[0-9]+_[0-9]+');
+                    && pickId.matches(request.auth.uid + '_week[0-9]+_[0-9]+')
+                    && (!('lockedPick' in request.resource.data)
+                        || request.resource.data.lockedPick == null
+                        || request.resource.data.lockedPick in request.resource.data.picks);
 
       // Require the existing document, the incoming data, AND the document
       // ID to all match the authenticated user. Also cap total picks at 7.
@@ -24,7 +30,10 @@ service cloud.firestore {
                     && resource.data.userId == request.auth.uid
                     && request.resource.data.userId == request.auth.uid
                     && request.resource.data.picks.size() <= 7
-                    && pickId.matches(request.auth.uid + '_week[0-9]+_[0-9]+');
+                    && pickId.matches(request.auth.uid + '_week[0-9]+_[0-9]+')
+                    && (!('lockedPick' in request.resource.data)
+                        || request.resource.data.lockedPick == null
+                        || request.resource.data.lockedPick in request.resource.data.picks);
 
       allow delete: if false;
     }
