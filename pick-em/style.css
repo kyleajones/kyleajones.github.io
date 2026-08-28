@@ -472,6 +472,24 @@ button {
     flex: 1;
 }
 
+.text-link-btn {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    background: none;
+    border: none;
+    padding: 4px;
+    color: var(--color-text-muted);
+    font-size: 0.8em;
+    text-align: center;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.text-link-btn:hover {
+    color: var(--color-accent);
+}
+
 /* Mobile Auth Container (Centered & Stacked) */
 @media (max-width: 768px) {
     #auth-container {

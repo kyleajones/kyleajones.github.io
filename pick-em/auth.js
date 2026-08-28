@@ -1,6 +1,6 @@
 import { db, auth } from './firebase-config.js';
 import { collection, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 const loggedOutView = document.getElementById('logged-out-view');
 const loggedInView = document.getElementById('logged-in-view');
@@ -99,6 +99,21 @@ document.getElementById('login-btn').addEventListener('click', async () => {
         authError.textContent = "";
     } catch (error) {
         authError.textContent = "Login failed. Check your email and password.";
+    }
+});
+
+document.getElementById('forgot-password-btn').addEventListener('click', async () => {
+    const email = document.getElementById('email-input').value.trim();
+    if (!email) {
+        authError.textContent = "Enter your email above, then click 'Forgot password?' again.";
+        return;
+    }
+    try {
+        authError.textContent = "Sending reset email...";
+        await sendPasswordResetEmail(auth, email);
+        authError.textContent = "If an account exists for that email, a password reset link has been sent.";
+    } catch (error) {
+        authError.textContent = "Couldn't send reset email. Check the address and try again.";
     }
 });
 
