@@ -19,11 +19,11 @@ def main():
 
     week = get_nfl_week(datetime.now(timezone.utc))
 
-    subject = f"\U0001F3C8 Pick 'Em Reminder: Week {week} picks are due before kickoff!"
+    subject = f"\U0001F3C8 Pick 'Em Reminder: Lock in your Week {week} picks!"
     html_body = f"""
-        <p>Hey there!</p>
+        <p>Hello there!</p>
         <p>Week {week} picks are open — make sure to lock in your picks before Thursday's first kickoff.</p>
-        <p><a href="{PICKS_URL}">Make your picks now</a></p>
+        <p><a href="{PICKS_URL}">Click here to make your picks!</a></p>
         <p>Good luck!</p>
     """
 
