@@ -163,7 +163,7 @@ input[type="radio"]:checked + .team-with-logo {
 }
 
 input[type="radio"]:checked + .team-with-logo .team-label {
-    color: var(--color-accent);
+    color: #ffffff;
 }
 
 /* Over/Under Picks Styling */
@@ -236,9 +236,9 @@ input[type="radio"]:checked + .team-with-logo .team-label {
 }
 
 input[type="radio"]:checked + .team-with-logo .spread-badge {
-    background: var(--color-accent);
+    background: #000000;
     border-color: var(--color-accent);
-    color: #0a0e14;
+    color: #ffffff;
 }
 
 /* Buttons */

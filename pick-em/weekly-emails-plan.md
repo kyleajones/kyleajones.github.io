@@ -1,10 +1,11 @@
-# Automated weekly emails (Gmail drafts): pick reminder + standings
+# Automated weekly emails (Resend, direct send): pick reminder + standings
 
 ## Context
 
-The league wants two recurring emails, generated automatically as **drafts**
-in the commissioner's personal Gmail account (never auto-sent, so they can
-review/edit first), BCC'd to every player:
+The league wants two recurring emails, sent automatically and directly (no
+draft-review step — confirmed acceptable by the user, who prioritizes all
+recipients being BCC'd over having a chance to edit before sending) to
+every player via BCC:
 
 1. **Pick reminder** — before the first game of the week kicks off (assume
    Thursday; week 1 may not actually open on Thursday, but per explicit
@@ -26,26 +27,42 @@ Confirmed decisions from planning discussion:
   ~8:00 AM PT Tuesday (comfortably before any known Thursday kickoff,
   including the 9:30 AM PT Thanksgiving early game, and comfortably after
   Monday Night Football ends).
-- **Gmail draft link**: `https://3woks.com/pick-em/` (custom domain, matches
+- **Email link**: `https://3woks.com/pick-em/` (custom domain, matches
   existing `CNAME`).
 - **Sender address**: `picks@3woks.com` (display name `"3woks Pick 'Em"`),
-  not the commissioner's raw Gmail address. Since `3woks.com` currently has
-  no email hosting (it's just a GitHub Pages CNAME target), this requires
-  extra one-time setup — see prerequisites below.
+  sent via [Resend](https://resend.com) rather than through a personal
+  mailbox. Resend only needs to verify domain ownership to send *as*
+  `picks@3woks.com` — no actual mailbox/inbox at that address is required.
+- **Delivery model**: direct send, no draft/review step. Resend's API has
+  no "save as draft" concept — the email goes out the moment the script
+  runs. This was an explicit, confirmed tradeoff: the user is fine losing
+  the pre-send review in exchange for a much simpler setup (no OAuth flow,
+  no mailbox to maintain).
+- **BCC structure**: the API requires a non-empty `to` field, so `to` is
+  set to `picks@3woks.com` itself (a harmless placeholder, not a real
+  recipient) and the actual player list goes entirely in `bcc`, so no
+  player ever sees another player's email address.
 - **Ties**: list all tied top scorers as co-winners. If nobody submitted
   picks for the week, skip sending the standings email entirely that week.
-- User is starting Gmail OAuth setup from scratch — plan includes full
-  step-by-step instructions for a **one-time, local, manual** consent flow
-  (I cannot complete this interactively on the user's behalf).
 
-### Known limitation (documented, not solved)
-GitHub Actions cron is always UTC and does not shift for DST. The NFL season
-spans the Nov DST changeover, so a fixed UTC cron time will correspond to
-PT wall-clock times that drift by ~1 hour across the season. We calibrate
-the cron for **PST** (UTC-8, the timezone in effect for most of the season:
-all of Nov/Dec/Jan). This means during Sept/Oct (PDT) the emails will
-actually land ~1 hour *earlier* than the nominal target — the safe
-direction (never later than intended, never risks arriving after kickoff).
+### Known limitations (documented, not solved)
+- GitHub Actions cron is always UTC and does not shift for DST. The NFL
+  season spans the Nov DST changeover, so a fixed UTC cron time will
+  correspond to PT wall-clock times that drift by ~1 hour across the
+  season. We calibrate the cron for **PST** (UTC-8, the timezone in effect
+  for most of the season: all of Nov/Dec/Jan). This means during Sept/Oct
+  (PDT) the emails will actually land ~1 hour *earlier* than the nominal
+  target — the safe direction (never later than intended, never risks
+  arriving after kickoff).
+- **Recipient cap**: Resend's API has a limit on combined `to`+`cc`+`bcc`
+  recipients per call (on the order of 50 — confirm the current exact
+  number in Resend's docs before relying on it). Fine for a small
+  friend-group league; if the roster ever approached that size, the
+  recipient list would need to be chunked into multiple API calls.
+- **No pre-send review**: since there's no draft step, a bug in the
+  standings calculation or a typo in the copy goes straight to every
+  player's inbox with no human checkpoint. Mitigated only by testing the
+  scripts thoroughly before relying on the schedule (see Verification).
 
 ## Manual prerequisites (user must do these; I can't do them interactively)
 
@@ -55,50 +72,32 @@ direction (never later than intended, never risks arriving after kickoff).
    JSON. Add its full contents as a GitHub Actions secret named
    `FIREBASE_SERVICE_ACCOUNT_JSON` (Settings → Secrets and variables →
    Actions, in the `kyleajones.github.io` repo).
-2. **Gmail API OAuth client + refresh token** (one-time):
-   - In Google Cloud Console, create/select a project, enable the **Gmail
-     API**.
-   - Create OAuth 2.0 credentials of type **Desktop app**. Note the Client
-     ID and Client Secret.
-   - Under OAuth consent screen, add the Gmail account as a test user (if
-     the app stays in "Testing" status, which is fine for personal use).
-   - Locally, run the one-time setup script this plan adds
-     (`pick-em/gmail_oauth_setup.py`) — it opens a browser consent screen
-     (scope: `gmail.compose`, the narrowest Gmail scope that supports draft
-     creation — note it technically also permits sending, since Gmail has
-     no drafts-only scope, but the scripts we write will only ever call the
-     "create draft" endpoint) and prints a refresh token.
-   - Add three GitHub secrets: `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`,
-     `GMAIL_REFRESH_TOKEN`.
-3. **Enable sending as `picks@3woks.com`** (one-time, needed since the
-   domain has no email hosting today):
-   - Set up free inbound forwarding for the domain — e.g.
-     [ImprovMX](https://improvmx.com) (no nameserver migration required,
-     just add the DNS records it gives you at whatever registrar/DNS host
-     currently manages `3woks.com`'s records — likely wherever the existing
-     `CNAME` record was added). Add ImprovMX's MX records, then configure
-     forwarding: `picks@3woks.com` → the commissioner's real Gmail address.
-   - In Gmail, Settings → **Accounts** → "Send mail as" → **Add another
-     email address** → enter `picks@3woks.com` (uncheck "treat as an
-     alias" is fine either way) → Gmail emails a verification link to
-     `picks@3woks.com`, which forwards to the real Gmail inbox → click it
-     (or enter the confirmation code) to verify.
-   - Add an **SPF TXT record** on `3woks.com` authorizing Google's servers
-     to send as this domain: `v=spf1 include:_spf.google.com ~all` (if a
-     `v=spf1` TXT record already exists for the domain, merge the
-     `include:_spf.google.com` into it rather than adding a second SPF
-     record — domains can only have one).
-   - **Caveat to flag to the user**: without a Google Workspace account for
-     this domain, there's no way to get DKIM signing aligned for
-     `3woks.com` through personal Gmail's "send mail as" — SPF alone is a
-     reasonable, low-effort improvement, but some recipients' spam filters
-     may still be pickier the first time. For a small trusted friend-group
-     recipient list, this is a one-time "mark as not spam" at worst, not a
-     blocker.
+2. **Resend account + domain verification** (one-time):
+   - Sign up at [resend.com](https://resend.com) (free tier: 3,000
+     emails/month, 100/day — comfortably covers a weekly two-email
+     cadence to a small league).
+   - Dashboard → **Domains** → **Add Domain** → enter `3woks.com`.
+   - Resend displays the DNS records to add (an SPF TXT record plus a few
+     DKIM CNAME/TXT records under a `resend._domainkey`-style selector).
+     Add these in Cloudflare's DNS tab for `3woks.com` (same place the
+     existing `CNAME` record for GitHub Pages lives). If a `v=spf1` TXT
+     record already exists for the domain, merge Resend's `include:` into
+     it rather than adding a second SPF record — domains can only have
+     one.
+   - Back in Resend's dashboard, click **Verify**. Propagation through
+     Cloudflare is typically fast (minutes, not hours).
+   - No mailbox setup needed — `picks@3woks.com` never needs to receive
+     mail for this to work, only to be verified as a sending identity.
+3. **Resend API key** (one-time):
+   - Dashboard → **API Keys** → **Create API Key**, scoped to sending
+     access on the `3woks.com` domain if that option is offered.
+   - Add it as a single GitHub secret: `RESEND_API_KEY`.
 
-I'll write the setup script and exact instructions for all of the above;
-the interactive steps (Google OAuth consent, DNS record entry, Gmail alias
-verification click) have to be done by the user themselves.
+That's the entire prerequisite list — no OAuth consent flow, no refresh
+tokens, no third-party forwarding service, no alias verification. All
+three steps are interactive (Firebase Console, Resend dashboard, Cloudflare
+DNS) and have to be done by the user; I'll write the scripts that consume
+the resulting secrets.
 
 ## New files
 
@@ -123,19 +122,24 @@ verification click) have to be done by the user themselves.
   client for reading the `picks` collection (Admin SDK bypasses
   `firestore.rules`, so this works read-only regardless of the public
   read rule).
-- `create_gmail_draft(subject, html_body, bcc_list, to_addr)` — builds a
-  MIME `text/html` message (stdlib `email.mime.text.MIMEText`,
-  base64url-encodes it), refreshes an access token via a raw POST to
-  `https://oauth2.googleapis.com/token` using
-  `GMAIL_CLIENT_ID`/`GMAIL_CLIENT_SECRET`/`GMAIL_REFRESH_TOKEN` env vars,
-  then POSTs to `https://gmail.googleapis.com/gmail/v1/users/me/drafts`.
-  Sets the `From` header to `"3woks Pick 'Em" <picks@3woks.com>` — this
-  works because that address is set up as a verified "Send mail as" alias
-  on the authenticated Gmail account (see prerequisites); Gmail honors the
-  provided `From` for verified aliases both when creating the draft and
-  later when the user sends it. Deliberately uses raw `requests` calls
-  instead of `google-api-python-client`, keeping CI dependencies minimal
-  (matches the existing scripts' style — just `requests`).
+- `send_resend_email(subject, html_body, bcc_list)` — a single
+  `requests.post` to `https://api.resend.com/emails` with header
+  `Authorization: Bearer {RESEND_API_KEY}` (read from env) and JSON body:
+  ```json
+  {
+    "from": "3woks Pick 'Em <picks@3woks.com>",
+    "to": ["picks@3woks.com"],
+    "bcc": bcc_list,
+    "subject": subject,
+    "html": html_body
+  }
+  ```
+  No MIME construction, no base64 encoding, no token refresh — this is
+  meaningfully simpler than either Gmail or Zoho's draft APIs would have
+  required, since Resend uses a static API key rather than OAuth. Raises
+  on non-2xx via `resp.raise_for_status()`. Splits `bcc_list` into chunks
+  and issues one request per chunk if it exceeds Resend's per-call
+  recipient cap (see Known limitations).
 
 ### `pick-em/send_reminder_email.py` (new)
 - Loads `matchups.json`; if it's an empty list, logs and exits (treated as
@@ -145,9 +149,9 @@ verification click) have to be done by the user themselves.
 - Builds subject `"🏈 Pick 'Em Reminder: Week {week} picks are due before kickoff!"`
   and an HTML body: friendly reminder, deadline note ("before Thursday's
   first kickoff"), link to `https://3woks.com/pick-em/`.
-- `to_addr` = the Gmail account's own address (so the draft has a normal
-  reviewable "To"); `bcc_list` = `list_player_emails(...)`.
-- Calls `create_gmail_draft(...)`.
+- `bcc_list` = `list_player_emails(...)`.
+- Calls `send_resend_email(...)` — email goes out immediately, no review
+  step.
 
 ### `pick-em/send_standings_email.py` (new)
 - `target_week = get_nfl_week(datetime.now(timezone.utc)) - 1` (Tuesday is
@@ -169,17 +173,7 @@ verification click) have to be done by the user themselves.
   an HTML body: weekly winner(s) line, then an HTML `<table>` of season
   standings (rank/name/points), link to
   `https://3woks.com/pick-em/record.html`.
-- Same `to_addr`/BCC/`create_gmail_draft` pattern as the reminder script.
-
-### `pick-em/gmail_oauth_setup.py` (new, one-time local-use utility)
-- Small script using `google-auth-oauthlib`'s `InstalledAppFlow` (only
-  dependency needed locally, never installed in CI) to run the browser
-  consent flow for scope `https://www.googleapis.com/auth/gmail.compose`,
-  then prints the resulting refresh token to the terminal for the user to
-  copy into the `GMAIL_REFRESH_TOKEN` GitHub secret. Includes a top-of-file
-  comment explaining it's a one-time setup tool, run locally, not part of
-  the CI pipeline, and takes `client_id`/`client_secret` as CLI args (never
-  hardcoded/committed).
+- Same `bcc_list`/`send_resend_email` pattern as the reminder script.
 
 ### `.github/workflows/pick-em-emails.yml` (new)
 - Two `schedule:` cron triggers:
@@ -190,10 +184,11 @@ verification click) have to be done by the user themselves.
   and `if: github.event.schedule == '0 16 * * 2'` respectively (so
   `workflow_dispatch` manual runs can execute both — useful for testing;
   note this in a comment), each running the relevant script with
-  `working-directory: ./pick-em` and env vars `FIREBASE_SERVICE_ACCOUNT_JSON`,
-  `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, `GMAIL_REFRESH_TOKEN` pulled
-  from `${{ secrets.* }}`.
-- `pip install firebase-admin requests` (no other deps needed in CI).
+  `working-directory: ./pick-em` and env vars `FIREBASE_SERVICE_ACCOUNT_JSON`
+  and `RESEND_API_KEY` pulled from `${{ secrets.* }}`.
+- `pip install firebase-admin requests` (no other deps needed in CI — no
+  Gmail/Zoho SDKs required either way, but worth calling out explicitly
+  now that there's no OAuth library dependency at all).
 
 ## Verification
 
@@ -206,19 +201,20 @@ verification click) have to be done by the user themselves.
     tie-detection for weekly winner) — this module is real, executable
     Python, unlike the browser-only `.js` files, so this is a real test run,
     not just a simulation script.
-  - Dry-run `create_gmail_draft`'s MIME-building logic in isolation (no
-    network call) to confirm the base64url encoding and headers are
-    well-formed.
-  - I will **not** be able to exercise the live Gmail API or Firebase Admin
-    calls myself (no credentials in this environment, and creating them
-    requires the user's interactive Google consent) — the user must smoke
-    test both scripts once by manually triggering `workflow_dispatch` after
-    the four secrets are in place, then check their Gmail Drafts folder.
+  - Dry-run `send_resend_email`'s request-building logic in isolation (no
+    network call) to confirm the JSON payload shape and recipient-chunking
+    logic are correct.
+  - I will **not** be able to exercise the live Resend API or Firebase
+    Admin calls myself (no credentials in this environment) — the user
+    must smoke test both scripts once by manually triggering
+    `workflow_dispatch` after both secrets are in place, then check that
+    the email actually arrives (since there's no draft/inbox step to
+    verify against beforehand — this is the one place the loss of the
+    review step means the first real test *is* a real send).
 - Balance-check the new `.py` files (they're real Python, so this is just
   running them / `python3 -m py_compile`, not a brace-count workaround).
 - Clearly call out, at the end, the manual steps the user still owes:
-  generating the Firebase service-account key; setting up ImprovMX
-  forwarding + DNS records + SPF for `3woks.com`; verifying `picks@3woks.com`
-  as a Gmail "Send mail as" alias; running `gmail_oauth_setup.py` locally
-  once; and adding all four GitHub secrets — none of which I can do from
+  generating the Firebase service-account key; setting up domain
+  verification (DNS records in Cloudflare) in Resend; creating the Resend
+  API key; and adding both GitHub secrets — none of which I can do from
   here.
