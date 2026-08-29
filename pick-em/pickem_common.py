@@ -190,8 +190,8 @@ def send_resend_email(subject, html_body, bcc_list):
             RESEND_URL,
             headers=headers,
             json={
-                'from': "3woks Pick 'Em <picks@3woks.com>",
-                'to': ['picks@3woks.com'],
+                'from': "3woks Pick 'Em <picks@pickem.3woks.com>",
+                'to': ['picks@pickem.3woks.com'],
                 'bcc': chunk,
                 'subject': subject,
                 'html': html_body,
