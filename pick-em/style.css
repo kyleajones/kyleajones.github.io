@@ -220,23 +220,23 @@ input[type="radio"]:checked + .team-with-logo .team-label {
 .ou-option.ou-over input[type="radio"]:checked + .ou-label {
     background-color: rgba(255, 215, 0, 0.14);
     border-color: var(--color-ou-gold);
-    color: var(--color-ou-gold);
+    color: #ffffff;
     box-shadow: 0 0 0 1px var(--color-ou-gold), 0 0 16px rgba(255, 215, 0, 0.3);
 }
 
 .ou-option.ou-over input[type="radio"]:checked + .ou-label .ou-total {
-    color: var(--color-ou-gold);
+    color: #ffffff;
 }
 
 .ou-option.ou-under input[type="radio"]:checked + .ou-label {
     background-color: rgba(255, 143, 199, 0.14);
     border-color: var(--color-ou-pink);
-    color: var(--color-ou-pink);
+    color: #ffffff;
     box-shadow: 0 0 0 1px var(--color-ou-pink), 0 0 16px rgba(255, 143, 199, 0.3);
 }
 
 .ou-option.ou-under input[type="radio"]:checked + .ou-label .ou-total {
-    color: var(--color-ou-pink);
+    color: #ffffff;
 }
 
 .spread-badge {
