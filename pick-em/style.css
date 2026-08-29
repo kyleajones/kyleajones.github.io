@@ -13,6 +13,7 @@
     --color-accent: #ff6a3d;
     --color-accent-hover: #ff8259;
     --color-ou-gold: #ffd700;
+    --color-ou-pink: #ff8fc7;
     --color-win: #22c55e;
     --color-loss: #ef4444;
     --color-push: #f59e0b;
@@ -155,11 +156,14 @@ input[type="radio"] {
     display: none;
 }
 
-/* Checked Spread Pick */
+/* Checked Spread Pick — highlighted in the selected team's own color (set
+   as the --team-color custom property per-team by matchups.js), falling
+   back to the generic accent color for any team missing from
+   team-colors.json. */
 input[type="radio"]:checked + .team-with-logo {
-    background-color: rgba(255, 106, 61, 0.14);
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 1px var(--color-accent), 0 0 16px rgba(255, 106, 61, 0.35);
+    background-color: color-mix(in srgb, var(--team-color, var(--color-accent)) 14%, transparent);
+    border-color: var(--team-color, var(--color-accent));
+    box-shadow: 0 0 0 1px var(--team-color, var(--color-accent)), 0 0 16px color-mix(in srgb, var(--team-color, var(--color-accent)) 35%, transparent);
 }
 
 input[type="radio"]:checked + .team-with-logo .team-label {
@@ -213,15 +217,26 @@ input[type="radio"]:checked + .team-with-logo .team-label {
     color: var(--color-text-muted);
 }
 
-.ou-option input[type="radio"]:checked + .ou-label {
+.ou-option.ou-over input[type="radio"]:checked + .ou-label {
     background-color: rgba(255, 215, 0, 0.14);
     border-color: var(--color-ou-gold);
     color: var(--color-ou-gold);
     box-shadow: 0 0 0 1px var(--color-ou-gold), 0 0 16px rgba(255, 215, 0, 0.3);
 }
 
-.ou-option input[type="radio"]:checked + .ou-label .ou-total {
+.ou-option.ou-over input[type="radio"]:checked + .ou-label .ou-total {
     color: var(--color-ou-gold);
+}
+
+.ou-option.ou-under input[type="radio"]:checked + .ou-label {
+    background-color: rgba(255, 143, 199, 0.14);
+    border-color: var(--color-ou-pink);
+    color: var(--color-ou-pink);
+    box-shadow: 0 0 0 1px var(--color-ou-pink), 0 0 16px rgba(255, 143, 199, 0.3);
+}
+
+.ou-option.ou-under input[type="radio"]:checked + .ou-label .ou-total {
+    color: var(--color-ou-pink);
 }
 
 .spread-badge {
@@ -237,7 +252,7 @@ input[type="radio"]:checked + .team-with-logo .team-label {
 
 input[type="radio"]:checked + .team-with-logo .spread-badge {
     background: #000000;
-    border-color: var(--color-accent);
+    border-color: var(--team-color, var(--color-accent));
     color: #ffffff;
 }
 

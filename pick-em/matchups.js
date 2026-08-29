@@ -18,6 +18,21 @@ function getTeamLogoUrl(teamName) {
     return logoMap[teamName] || '';
 }
 
+// Load team color mapping (used to highlight a selected spread pick in that
+// team's own color instead of a single generic accent color).
+let teamColorMap = {};
+
+fetch('team-colors.json')
+    .then(response => response.json())
+    .then(data => {
+        teamColorMap = data;
+    })
+    .catch(error => console.warn('Could not load team color mapping:', error));
+
+function getTeamColor(teamName) {
+    return teamColorMap[teamName] || '';
+}
+
 // Pick tracking
 const MAX_PICKS = 7;
 let currentPicks = new Set();
@@ -224,6 +239,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const awayLogo = getTeamLogoUrl(game.away);
                 const homeLogo = getTeamLogoUrl(game.home);
 
+                const awayColor = getTeamColor(game.away);
+                const homeColor = getTeamColor(game.home);
+                // Only set the --team-color custom property when a color was
+                // found, so CSS's var(--team-color, var(--color-accent))
+                // fallback works correctly for any team missing from
+                // team-colors.json (an empty custom property value would
+                // otherwise NOT fall back, per the CSS var() spec).
+                const awayColorStyle = awayColor ? ` style="--team-color: ${awayColor};"` : '';
+                const homeColorStyle = homeColor ? ` style="--team-color: ${homeColor};"` : '';
+
                 const isLocked = gameDate <= new Date();
                 const lockAttr = isLocked ? 'disabled' : '';
                 const lockOverlay = isLocked ? `<div class="locked-banner">🔒 GAME LOCKED</div>` : '';
@@ -240,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="matchup">
                                 <label class="team-option">
                                     <input type="radio" name="spread_${game.id}" value="${game.away}|${awaySpread}" ${lockAttr}>
-                                    <div class="team-with-logo">
+                                    <div class="team-with-logo"${awayColorStyle}>
                                         ${awayLogo ? `<div class="team-logo-badge"><img src="${awayLogo}" alt="${game.away}" class="team-logo" onerror="this.parentElement.style.display='none'"></div>` : ''}
                                         <span class="team-label">${game.away}</span>
                                         <span class="spread-badge">${awaySpread}</span>
@@ -253,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                                 <label class="team-option">
                                     <input type="radio" name="spread_${game.id}" value="${game.home}|${homeSpread}" ${lockAttr}>
-                                    <div class="team-with-logo">
+                                    <div class="team-with-logo"${homeColorStyle}>
                                         ${homeLogo ? `<div class="team-logo-badge"><img src="${homeLogo}" alt="${game.home}" class="team-logo" onerror="this.parentElement.style.display='none'"></div>` : ''}
                                         <span class="team-label">${game.home}</span>
                                         <span class="spread-badge">${homeSpread}</span>
@@ -265,11 +290,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <!-- Over/Under Picks -->
                         <div class="picks-section">
                             <div class="ou-picks">
-                                <label class="ou-option">
+                                <label class="ou-option ou-over">
                                     <input type="radio" name="ou_${game.id}" value="Over|${game.over_under}" ${lockAttr}>
                                     <span class="ou-label">Over <br><span class="ou-total">${game.over_under}</span></span>
                                 </label>
-                                <label class="ou-option">
+                                <label class="ou-option ou-under">
                                     <input type="radio" name="ou_${game.id}" value="Under|${game.over_under}" ${lockAttr}>
                                     <span class="ou-label">Under <br><span class="ou-total">${game.over_under}</span></span>
                                 </label>
