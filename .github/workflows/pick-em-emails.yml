@@ -1,0 +1,49 @@
+name: Pick 'Em Weekly Emails
+
+on:
+  schedule:
+    # Thursday 7:00 AM PST (UTC-8) / 15:00 UTC - pick reminder
+    - cron: '0 15 * * 4'
+    # Tuesday 8:00 AM PST (UTC-8) / 16:00 UTC - weekly standings
+    - cron: '0 16 * * 2'
+  workflow_dispatch: # Allows manual trigger from the Actions tab
+    inputs:
+      test_recipient:
+        description: 'If set, sends both emails only to this address instead of the full player list'
+        required: false
+        type: string
+
+jobs:
+  send-emails:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: pip install firebase-admin requests
+
+      # workflow_dispatch runs both steps below (useful for testing);
+      # scheduled runs only execute the step matching that cron trigger.
+      - name: Send Pick Reminder Email
+        if: github.event.schedule == '0 15 * * 4' || github.event_name == 'workflow_dispatch'
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          TEST_RECIPIENT_EMAIL: ${{ github.event.inputs.test_recipient }}
+        working-directory: ./pick-em
+        run: python send_reminder_email.py
+
+      - name: Send Standings Email
+        if: github.event.schedule == '0 16 * * 2' || github.event_name == 'workflow_dispatch'
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          TEST_RECIPIENT_EMAIL: ${{ github.event.inputs.test_recipient }}
+        working-directory: ./pick-em
+        run: python send_standings_email.py

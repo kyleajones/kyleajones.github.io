@@ -1,0 +1,42 @@
+import json
+import os
+from datetime import datetime, timezone
+
+from pickem_common import get_nfl_week, resolve_recipients, send_resend_email
+
+PICKS_URL = "https://3woks.com/pick-em/"
+
+
+def main():
+    with open('matchups.json') as f:
+        matchups = json.load(f)
+
+    if not matchups:
+        # Mirrors how update_picks.py already writes [] when the odds API
+        # returns nothing — treated as off-season/no games this week.
+        print("No matchups this week (empty matchups.json) — skipping reminder email.")
+        return
+
+    week = get_nfl_week(datetime.now(timezone.utc))
+
+    subject = f"\U0001F3C8 Pick 'Em Reminder: Week {week} picks are due before kickoff!"
+    html_body = f"""
+        <p>Hey there!</p>
+        <p>Week {week} picks are open — make sure to lock in your picks before Thursday's first kickoff.</p>
+        <p><a href="{PICKS_URL}">Make your picks now</a></p>
+        <p>Good luck!</p>
+    """
+
+    cred_json = os.environ['FIREBASE_SERVICE_ACCOUNT_JSON']
+    bcc_list = resolve_recipients(cred_json)
+
+    if not bcc_list:
+        print("No recipient emails found — skipping reminder email.")
+        return
+
+    send_resend_email(subject, html_body, bcc_list)
+    print(f"Sent Week {week} reminder email to {len(bcc_list)} recipient(s).")
+
+
+if __name__ == "__main__":
+    main()
