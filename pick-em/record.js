@@ -1,5 +1,5 @@
 import { db, auth } from './firebase-config.js';
-import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { collection, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 // Escape user-controlled strings (display names, pick values) before they're
@@ -56,46 +56,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div id="tickets-section" style="margin-top: 30px;"></div>
     `;
 
-    let allPickHistory = [];
     let resultsData = {};
 
     try {
-        const [resultsRes, querySnapshot] = await Promise.all([
+        const [resultsRes, leaderboardSnap] = await Promise.all([
             fetch('results.json').catch(() => ({ json: () => ({}) })),
-            getDocs(query(collection(db, "picks"), orderBy("date", "desc")))
+            getDoc(doc(db, "leaderboard", "current"))
         ]);
-        
+
         resultsData = resultsRes.ok ? await resultsRes.json() : await resultsRes.json();
-        const userStats = {};
 
-        querySnapshot.forEach((doc) => {
-            const record = doc.data();
-            allPickHistory.push(record);
-            
-            const uid = record.userId || record.username || "Unknown";
-            const userName = record.username || "Anonymous";
-            
-            if (!userStats[uid]) {
-                userStats[uid] = { name: userName, w: 0, l: 0, p: 0, points: 0 };
-            }
-
-            for (const [pickKey, pickValue] of Object.entries(record.picks)) {
-                const gameId = pickKey.split('_')[1];
-                const pickType = pickKey.startsWith('spread') ? 'Spread' : 'Over/Under';
-                const status = gradePick(pickValue, pickType, resultsData[gameId]);
-                const isLocked = pickKey === record.lockedPick;
-
-                if (status === 'WIN') {
-                    userStats[uid].w += 1;
-                    userStats[uid].points += isLocked ? 5 : 3;
-                } else if (status === 'PUSH') {
-                    userStats[uid].p += 1;
-                    userStats[uid].points += 1;
-                } else if (status === 'LOSS') {
-                    userStats[uid].l += 1;
-                }
-            }
-        });
+        // Leaderboard is pre-computed server-side (update_leaderboard.py)
+        // into a single trusted mirror doc, already in the exact
+        // {uid: {name, points, w, l, p}} shape the rendering below
+        // expects -- so no client-side aggregation is needed here.
+        const userStats = leaderboardSnap.exists() ? leaderboardSnap.data() : {};
 
         // 1. Render Global Leaderboard
         const sortedUsers = Object.values(userStats).sort((a, b) => b.points - a.points);
@@ -130,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 2. Render Private Tickets Based on Auth State
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         const ticketsContainer = document.getElementById('tickets-section');
         if (!user) {
             ticketsContainer.innerHTML = `
@@ -142,7 +117,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        const myPicks = allPickHistory.filter(record => record.userId === user.uid);
+        let myPicks;
+        try {
+            // Scoped to just this user's own docs -- no orderBy here (see
+            // pick-em.md's composite-index gotcha), so sort the small
+            // (max ~18) result set client-side instead.
+            const querySnapshot = await getDocs(query(collection(db, "picks"), where("userId", "==", user.uid)));
+            myPicks = [];
+            querySnapshot.forEach((docSnap) => myPicks.push(docSnap.data()));
+            myPicks.sort((a, b) => new Date(b.date) - new Date(a.date));
+        } catch (error) {
+            console.error("Error fetching my picks: ", error);
+            ticketsContainer.innerHTML = `<div style="text-align: center; color: var(--color-loss); padding: 40px;">Error loading your picks.</div>`;
+            return;
+        }
 
         let tHtml = `<h2 style="margin-bottom: 20px; color: var(--color-text-main);">My Picks</h2>`;
 

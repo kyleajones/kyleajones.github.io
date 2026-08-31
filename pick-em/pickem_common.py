@@ -103,7 +103,7 @@ def compute_points(docs, results_data):
     that logic changes.
 
     `docs` is an iterable of Firestore `picks` doc dicts. Returns
-    {uid: {"name": str, "points": int}}.
+    {uid: {"name": str, "points": int, "w": int, "l": int, "p": int}}.
     """
     user_stats = {}
 
@@ -112,7 +112,7 @@ def compute_points(docs, results_data):
         user_name = record.get('username') or 'Anonymous'
 
         if uid not in user_stats:
-            user_stats[uid] = {'name': user_name, 'points': 0}
+            user_stats[uid] = {'name': user_name, 'points': 0, 'w': 0, 'l': 0, 'p': 0}
 
         picks = record.get('picks') or {}
         for pick_key, pick_value in picks.items():
@@ -122,9 +122,13 @@ def compute_points(docs, results_data):
             is_locked = pick_key == record.get('lockedPick')
 
             if status == 'WIN':
+                user_stats[uid]['w'] += 1
                 user_stats[uid]['points'] += 5 if is_locked else 3
             elif status == 'PUSH':
+                user_stats[uid]['p'] += 1
                 user_stats[uid]['points'] += 1
+            elif status == 'LOSS':
+                user_stats[uid]['l'] += 1
 
     return user_stats
 

@@ -15,6 +15,17 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Read-only mirror of the pre-computed season leaderboard (one entry
+    // per player: name, points, w/l/p record), written only by
+    // update_leaderboard.py via the Admin SDK, which bypasses these
+    // rules entirely. Exists so the public leaderboard can be served
+    // without any client ever needing to scan/read other players'
+    // individual /picks documents -- see the read rule on /picks below.
+    match /leaderboard/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // Cross-collection path to a game's matchup mirror doc, for use with
     // get()/exists().
     function matchupPath(gameId) {
@@ -99,15 +110,20 @@ service cloud.firestore {
     }
 
     match /picks/{pickId} {
-      // Leaderboard is public — anyone can view standings without logging in.
-      allow read: if true;
+      // Owner-only: a player may only read their own pick documents. The
+      // public leaderboard is served from the pre-computed /leaderboard/
+      // current mirror instead (see above), so no client -- logged in or
+      // not -- ever needs to read another player's individual picks,
+      // including picks for games that haven't started yet.
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
 
       // A user may only create their own pick document, AND the document ID
       // must actually belong to them (uid_weekN_year). Without the pickId
       // check, another logged-in player could pre-create a doc at a
       // player's future week ID (their uid is visible via the public
-      // leaderboard query) and permanently block that player's real
-      // submission, since `update` would then see a mismatched owner.
+      // leaderboard's /leaderboard/current doc) and permanently block that
+      // player's real submission, since `update` would then see a
+      // mismatched owner.
       // Also cap total picks at 7 — the only tamper-proof enforcement of
       // the "Pick 7" rule, since client-side checks can be bypassed.
       // allPicksOk() cross-checks every pick against the real matchups/
