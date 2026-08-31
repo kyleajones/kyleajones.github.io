@@ -1,6 +1,103 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Read-only mirror of each currently-published game's real matchup
+    // data (team names, spread/total lines, kickoff time, and the
+    // week/year it belongs to). Written only by update_picks.py via the
+    // Admin SDK, which bypasses these rules entirely -- clients never
+    // write here. Exists so /picks/{pickId} below can validate submitted
+    // picks against real game data, since rules can't read
+    // matchups.json (a static file served over HTTP, not a Firestore
+    // document) -- they can only get()/exists() other Firestore docs.
+    match /matchups/{gameId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Cross-collection path to a game's matchup mirror doc, for use with
+    // get()/exists().
+    function matchupPath(gameId) {
+      return /databases/$(database)/documents/matchups/$(gameId);
+    }
+
+    // True if `key` already existed in the stored document with the
+    // exact same value it has in the incoming write -- the same
+    // carry-forward exemption auth.js's merge logic relies on for UX
+    // (an untouched pick on an already-started game must remain
+    // saveable on every subsequent save, even though it would fail a
+    // fresh validity check below).
+    function pickUnchanged(key) {
+      return resource != null
+             && key in resource.data.picks
+             && resource.data.picks[key] == request.resource.data.picks[key];
+    }
+
+    // True only if `key` (e.g. "spread_<gameId>" or "ou_<gameId>") refers
+    // to a real game that belongs to THIS document's own week/year, that
+    // game hasn't started yet, and `value` exactly matches one of the
+    // four legitimate selections derivable from the mirrored line data.
+    function pickIsValid(key, value, weekStr, yearStr) {
+      let gameId = key.split('_')[1];
+      let matchup = get(matchupPath(gameId));
+      return exists(matchupPath(gameId))
+             && matchup.data.weekStr == weekStr
+             && matchup.data.yearStr == yearStr
+             && request.time < matchup.data.commenceTime
+             && (value == matchup.data.away + '|' + matchup.data.awayLine
+                 || value == matchup.data.home + '|' + matchup.data.homeLine
+                 || value == 'Over|' + matchup.data.overUnder
+                 || value == 'Under|' + matchup.data.overUnder);
+    }
+
+    function pickOk(key, weekStr, yearStr) {
+      return pickUnchanged(key) || pickIsValid(key, request.resource.data.picks[key], weekStr, yearStr);
+    }
+
+    // "all()" over picks.keys() -- the rules language has no built-in
+    // loop or all()/any() over map entries, and (unlike some other rules
+    // examples floating around) does NOT allow a function to call
+    // itself -- Firestore's rules compiler rejects that outright
+    // ("Recursive call is not allowed"). So this is unrolled by hand
+    // across 7 indices, matching the existing `picks.size() <= 7` cap
+    // enforced below: each clause is trivially true once `keys` is
+    // shorter than that index, via `||` short-circuiting before the
+    // (otherwise out-of-bounds) `keys[i]` access is ever evaluated.
+    function allPicksOk(keys, weekStr, yearStr) {
+      return (keys.size() < 1 || pickOk(keys[0], weekStr, yearStr))
+             && (keys.size() < 2 || pickOk(keys[1], weekStr, yearStr))
+             && (keys.size() < 3 || pickOk(keys[2], weekStr, yearStr))
+             && (keys.size() < 4 || pickOk(keys[3], weekStr, yearStr))
+             && (keys.size() < 5 || pickOk(keys[4], weekStr, yearStr))
+             && (keys.size() < 6 || pickOk(keys[5], weekStr, yearStr))
+             && (keys.size() < 7 || pickOk(keys[6], weekStr, yearStr));
+    }
+
+    // True if the EXISTING document's lockedPick references a game that
+    // has already started -- once true, that lock must freeze, matching
+    // the same fairness pattern already applied to picks themselves
+    // (freeze server-side at kickoff, not just via client-side disabled
+    // radios).
+    function lockIsFrozen() {
+      return resource != null
+             && 'lockedPick' in resource.data
+             && resource.data.lockedPick != null
+             && exists(matchupPath(resource.data.lockedPick.split('_')[1]))
+             && request.time >= get(matchupPath(resource.data.lockedPick.split('_')[1])).data.commenceTime;
+    }
+
+    // lockedPick, if present, must be null or a real key in picks (kept
+    // honest as defense-in-depth, since a dangling/forged value would
+    // just never match anything in record.js's grading loop anyway) --
+    // and once lockIsFrozen(), the incoming lockedPick must be unchanged
+    // from what's already stored.
+    function lockedPickOk() {
+      return (!('lockedPick' in request.resource.data)
+              || request.resource.data.lockedPick == null
+              || request.resource.data.lockedPick in request.resource.data.picks)
+             && (!lockIsFrozen() || request.resource.data.lockedPick == resource.data.lockedPick);
+    }
+
     match /picks/{pickId} {
       // Leaderboard is public — anyone can view standings without logging in.
       allow read: if true;
@@ -13,27 +110,33 @@ service cloud.firestore {
       // submission, since `update` would then see a mismatched owner.
       // Also cap total picks at 7 — the only tamper-proof enforcement of
       // the "Pick 7" rule, since client-side checks can be bypassed.
-      // lockedPick, if present, must be null or a real key in picks — kept
-      // honest as defense-in-depth only, since a dangling/forged value would
-      // just never match anything in record.js's grading loop anyway.
+      // allPicksOk() cross-checks every pick against the real matchups/
+      // mirror: it must reference a real game in THIS doc's own
+      // week/year that hasn't started yet, with a value that matches a
+      // real published line -- unless the value is unchanged from what's
+      // already stored (pickUnchanged), the same carry-forward exemption
+      // the client's merge logic depends on. This is also what makes a
+      // fabricated/never-real week, or a stale already-finished week,
+      // fail every pick automatically: neither has any matching
+      // not-yet-started game in the mirror. lockedPickOk() keeps
+      // lockedPick honest and frozen once its game starts.
       allow create: if request.auth != null
                     && request.resource.data.userId == request.auth.uid
                     && request.resource.data.picks.size() <= 7
                     && pickId.matches(request.auth.uid + '_week[0-9]+_[0-9]+')
-                    && (!('lockedPick' in request.resource.data)
-                        || request.resource.data.lockedPick == null
-                        || request.resource.data.lockedPick in request.resource.data.picks);
+                    && lockedPickOk()
+                    && allPicksOk(request.resource.data.picks.keys(), pickId.split('_')[1], pickId.split('_')[2]);
 
       // Require the existing document, the incoming data, AND the document
-      // ID to all match the authenticated user. Also cap total picks at 7.
+      // ID to all match the authenticated user. Also cap total picks at 7,
+      // and apply the same lockedPickOk()/allPicksOk() checks as create.
       allow update: if request.auth != null
                     && resource.data.userId == request.auth.uid
                     && request.resource.data.userId == request.auth.uid
                     && request.resource.data.picks.size() <= 7
                     && pickId.matches(request.auth.uid + '_week[0-9]+_[0-9]+')
-                    && (!('lockedPick' in request.resource.data)
-                        || request.resource.data.lockedPick == null
-                        || request.resource.data.lockedPick in request.resource.data.picks);
+                    && lockedPickOk()
+                    && allPicksOk(request.resource.data.picks.keys(), pickId.split('_')[1], pickId.split('_')[2]);
 
       allow delete: if false;
     }

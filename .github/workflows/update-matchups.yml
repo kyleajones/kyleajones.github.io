@@ -21,11 +21,12 @@ jobs:
           python-version: '3.11'
 
       - name: Install Dependencies
-        run: pip install requests
+        run: pip install requests firebase-admin
 
       - name: Run Fetcher Script
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
         working-directory: ./pick-em
         run: python update_picks.py
 
