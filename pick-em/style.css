@@ -795,12 +795,43 @@ button {
 }
 
 @media (max-width: 768px) {
-    .leaderboard-header-row,
-    .leaderboard-row {
+    /* W-L-T header label is dropped -- the record itself now renders as
+       a second line under each player's name (see .leaderboard-row
+       below), so a dedicated 4th header column is no longer needed. */
+    .leaderboard-header-row {
         grid-template-columns: 40px 1fr 60px;
     }
 
-    .leaderboard-record {
+    .leaderboard-header-row span:last-child {
         display: none;
+    }
+
+    /* Reflow rank/name/points/record into a 2-row grid: rank and points
+       each span both rows (so they stay vertically centered against the
+       taller row), while record renders as a smaller line directly
+       beneath the name instead of in its own column. */
+    .leaderboard-row {
+        grid-template-columns: 40px 1fr 60px;
+        grid-template-areas:
+            "rank name points"
+            "rank record points";
+        row-gap: 2px;
+    }
+
+    .rank-badge {
+        grid-area: rank;
+    }
+
+    .leaderboard-name {
+        grid-area: name;
+    }
+
+    .leaderboard-points {
+        grid-area: points;
+    }
+
+    .leaderboard-record {
+        grid-area: record;
+        font-size: 0.75em;
     }
 }
