@@ -115,7 +115,15 @@ service cloud.firestore {
       // current mirror instead (see above), so no client -- logged in or
       // not -- ever needs to read another player's individual picks,
       // including picks for games that haven't started yet.
-      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      // `resource == null` (doc doesn't exist yet, e.g. a user's first
+      // visit for a given week) must be allowed explicitly: accessing
+      // `resource.data` when resource is null throws a rules evaluation
+      // error, which Firestore reports as permission-denied rather than
+      // a graceful "not found" -- breaking auth.js's snap.exists() check
+      // on the prefill getDoc(). Allowing it here leaks nothing, since a
+      // nonexistent doc has no data to expose.
+      allow read: if request.auth != null
+                  && (resource == null || resource.data.userId == request.auth.uid);
 
       // A user may only create their own pick document, AND the document ID
       // must actually belong to them (uid_weekN_year). Without the pickId
