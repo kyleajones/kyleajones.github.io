@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <span class="rank-badge${rankClass}">#${rank}</span>
                     <span class="leaderboard-name">${escapeHtml(u.name)}</span>
                     <span class="leaderboard-points">${u.points}</span>
-                    <span class="leaderboard-record">${u.w} - ${u.l} - ${u.p}</span>
+                    <span class="leaderboard-record">${u.w}W-${u.l}L-${u.p}T</span>
                 </div>
             `;
         });
