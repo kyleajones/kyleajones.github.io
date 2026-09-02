@@ -40,7 +40,7 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add pick-em/matchups.json pick-em/results.json
+          git add pick-em/matchups.json pick-em/results.json pick-em/current_week.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Update weekly NFL matchups, spreads, and scores" && git push)
 
       - name: Update Leaderboard Aggregate

@@ -8,13 +8,27 @@ from pickem_common import get_nfl_week, firestore_client
 API_KEY = os.environ.get("ODDS_API_KEY")
 URL = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/"
 
+def write_current_week():
+    """Writes the single canonical NFL week/year -- derived once here
+    via get_nfl_week(), the same heuristic used for the Firestore
+    matchups mirror below -- to a small static file. auth.js reads this
+    instead of maintaining its own JS port of getNFLWeek(), so the
+    client and server can never disagree on what week it is.
+    """
+    now = datetime.now(timezone.utc)
+    with open("current_week.json", "w") as f:
+        json.dump({"week": get_nfl_week(now), "year": now.year}, f)
+
+
 def fetch_matchups():
+    write_current_week()
+
     params = {
         "apiKey": API_KEY,
         "regions": "us",
         "markets": "spreads,totals"
     }
-    
+
     response = requests.get(URL, params=params)
     response.raise_for_status()
     games = response.json()

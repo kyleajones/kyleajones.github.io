@@ -22,6 +22,11 @@ document.addEventListener('matchups:rendered', () => {
     maybeInitializePicks();
 });
 
+async function getCurrentWeek() {
+    const res = await fetch('current_week.json');
+    return res.json(); // { week, year }
+}
+
 async function maybeInitializePicks() {
     if (!matchupsRendered) return;
 
@@ -34,8 +39,7 @@ async function maybeInitializePicks() {
     if (!currentUser) return;
 
     try {
-        const week = getNFLWeek(new Date());
-        const year = new Date().getFullYear();
+        const { week, year } = await getCurrentWeek();
         const customDocId = `${currentUser.uid}_week${week}_${year}`;
         const docRef = doc(db, "picks", customDocId);
         const snap = await getDoc(docRef);
@@ -152,10 +156,8 @@ document.getElementById('picks-form').addEventListener('submit', async function(
     submitBtn.textContent = 'Saving...';
     submitBtn.disabled = true;
 
-    const week = getNFLWeek(new Date());
-    const year = new Date().getFullYear();
-
     try {
+        const { week, year } = await getCurrentWeek();
         const customDocId = `${currentUser.uid}_week${week}_${year}`;
         const docRef = doc(db, "picks", customDocId);
 
@@ -236,34 +238,3 @@ document.getElementById('picks-form').addEventListener('submit', async function(
         submitBtn.disabled = false;
     }
 });
-
-function getNFLWeek(date = new Date()) {
-    const currentYear = date.getFullYear();
-
-    function getLaborDay(yr) {
-        const sept1 = new Date(yr, 8, 1);
-        const dayOfWeek = sept1.getDay();
-        const daysToFirstMonday = (1 - dayOfWeek + 7) % 7;
-        return new Date(yr, 8, 1 + daysToFirstMonday);
-    }
-
-    let seasonYear = currentYear;
-    if (date.getMonth() < 7) {
-        seasonYear = currentYear - 1;
-    }
-
-    const laborDay = getLaborDay(seasonYear);
-    const week2Start = new Date(seasonYear, 8, laborDay.getDate() + 8);
-    week2Start.setHours(0, 0, 0, 0);
-
-    if (date < week2Start) {
-        return 1;
-    }
-
-    const diffTime = date.getTime() - week2Start.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const weeksSinceWeek2 = Math.floor(diffDays / 7);
-
-    const weekNum = 2 + weeksSinceWeek2;
-    return weekNum > 18 ? 18 : weekNum;
-}

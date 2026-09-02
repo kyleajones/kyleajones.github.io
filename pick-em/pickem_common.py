@@ -23,10 +23,15 @@ def escape_html(value):
 
 
 def get_nfl_week(date):
-    """Direct port of getNFLWeek() in pick-em/auth.js. Keep in sync if the
-    JS logic changes. JS Date months are 0-indexed; Python's are
-    1-indexed, so the month comparisons below are shifted by one
-    accordingly.
+    """The sole implementation of the Labor Day + N weeks calendar
+    heuristic used to determine the current NFL week. update_picks.py
+    calls this once daily and writes the result to
+    pick-em/current_week.json, which the client (auth.js) fetches
+    instead of computing the week itself -- there is no JS port of this
+    logic to keep in sync anymore. Comments below reference JS Date
+    semantics only because this was originally ported from one; JS Date
+    months are 0-indexed, Python's are 1-indexed, so the month
+    comparisons below are shifted by one accordingly.
     """
     date = date.replace(tzinfo=None)
     current_year = date.year
