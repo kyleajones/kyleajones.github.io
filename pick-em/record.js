@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <span>Rank</span>
                     <span>Player</span>
                     <span>Points</span>
-                    <span>W-L-T</span>
+                    <span>Record</span>
                 </div>
         `;
         sortedUsers.forEach((u, index) => {
