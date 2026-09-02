@@ -1,8 +1,7 @@
 import json
 import os
-from datetime import datetime, timezone
 
-from pickem_common import get_nfl_week, resolve_recipients, send_resend_email
+from pickem_common import resolve_recipients, send_resend_email
 
 PICKS_URL = "https://3woks.com/pick-em/"
 
@@ -12,12 +11,13 @@ def main():
         matchups = json.load(f)
 
     if not matchups:
-        # Mirrors how update_picks.py already writes [] when the odds API
-        # returns nothing — treated as off-season/no games this week.
+        # Mirrors how update_picks.py already writes [] when ESPN's
+        # scoreboard returns nothing — treated as off-season/no games this week.
         print("No matchups this week (empty matchups.json) — skipping reminder email.")
         return
 
-    week = get_nfl_week(datetime.now(timezone.utc))
+    with open('current_week.json') as f:
+        week = json.load(f)['week']
 
     subject = f"\U0001F3C8 Pick 'Em Reminder: Lock in your Week {week} picks!"
     html_body = f"""

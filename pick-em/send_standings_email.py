@@ -6,7 +6,6 @@ from pickem_common import (
     compute_points,
     escape_html,
     firestore_client,
-    get_nfl_week,
     resolve_recipients,
     send_resend_email,
 )
@@ -15,11 +14,13 @@ STANDINGS_URL = "https://3woks.com/pick-em/record.html"
 
 
 def main():
-    # Tuesday is exactly when getNFLWeek's week boundary rolls over
-    # (week2Start = Labor Day + 8 days = a Tuesday), so "current week" on
-    # Tuesday morning is already the *new* week; subtract 1 to get the
-    # week whose games just finished.
-    target_week = get_nfl_week(datetime.now(timezone.utc)) - 1
+    with open('current_week.json') as f:
+        current_week = json.load(f)['week']
+
+    # Tuesday is exactly when the week boundary rolls over, so "current
+    # week" on Tuesday morning is already the *new* week; subtract 1 to
+    # get the week whose games just finished.
+    target_week = current_week - 1
     if target_week < 1:
         print("Pre-season — no completed week to report on. Skipping standings email.")
         return

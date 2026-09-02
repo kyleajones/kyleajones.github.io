@@ -1,7 +1,6 @@
 import html
 import json
 import os
-from datetime import datetime
 
 import requests
 import firebase_admin
@@ -20,43 +19,6 @@ def escape_html(value):
     user-controlled in this context.
     """
     return html.escape(str(value), quote=True)
-
-
-def get_nfl_week(date):
-    """The sole implementation of the Labor Day + N weeks calendar
-    heuristic used to determine the current NFL week. update_picks.py
-    calls this once daily and writes the result to
-    pick-em/current_week.json, which the client (auth.js) fetches
-    instead of computing the week itself -- there is no JS port of this
-    logic to keep in sync anymore. Comments below reference JS Date
-    semantics only because this was originally ported from one; JS Date
-    months are 0-indexed, Python's are 1-indexed, so the month
-    comparisons below are shifted by one accordingly.
-    """
-    date = date.replace(tzinfo=None)
-    current_year = date.year
-
-    def get_labor_day(yr):
-        sept1 = datetime(yr, 9, 1)
-        day_of_week = (sept1.weekday() + 1) % 7  # JS getDay(): Sun=0..Sat=6
-        days_to_first_monday = (1 - day_of_week + 7) % 7
-        return datetime(yr, 9, 1 + days_to_first_monday)
-
-    season_year = current_year
-    if date.month < 8:  # JS: date.getMonth() < 7 means Jan(0)-Jul(6)
-        season_year = current_year - 1
-
-    labor_day = get_labor_day(season_year)
-    week2_start = datetime(season_year, 9, labor_day.day + 8)
-
-    if date < week2_start:
-        return 1
-
-    diff_days = (date - week2_start).days
-    weeks_since_week2 = diff_days // 7
-
-    week_num = 2 + weeks_since_week2
-    return min(week_num, 18)
 
 
 def grade_pick(pick_value, pick_type, game_result):
