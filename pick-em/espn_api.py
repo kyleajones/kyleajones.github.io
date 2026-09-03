@@ -84,6 +84,19 @@ def week_games(week, season_type, year):
     return games
 
 
+def week_is_complete(week, season_type, year):
+    """True if every game on this week's schedule has finished
+    (status.type.completed). A week with no games at all (bye week,
+    off-season) returns False -- there's nothing to report on, so
+    callers should treat that the same as "not done".
+    """
+    data = _scoreboard(week=week, season_type=season_type, year=year)
+    events = data.get("events", [])
+    if not events:
+        return False
+    return all(e["competitions"][0]["status"]["type"]["completed"] for e in events)
+
+
 def completed_scores(week, season_type, year):
     """Games with status.type.completed == true for a specific week, in
     results.json's existing shape:

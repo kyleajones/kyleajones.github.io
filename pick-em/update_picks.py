@@ -6,20 +6,22 @@ from espn_api import current_week_and_year, week_games
 from pickem_common import firestore_client
 
 
-def write_current_week(week, year):
+def write_current_week(week, season_type, year):
     """Writes the single canonical NFL week/year -- from ESPN's own
     scoreboard endpoint -- to a small static file. auth.js reads this
     instead of maintaining its own JS port of a week-calculation
     heuristic, so the client and server can never disagree on what
-    week it is.
+    week it is. `season_type` is included so send_standings_email.py can
+    query ESPN for a specific past week without needing its own extra
+    call to current_week_and_year() just to learn it.
     """
     with open("current_week.json", "w") as f:
-        json.dump({"week": week, "year": year}, f)
+        json.dump({"week": week, "season_type": season_type, "year": year}, f)
 
 
 def fetch_matchups():
     week, season_type, year = current_week_and_year()
-    write_current_week(week, year)
+    write_current_week(week, season_type, year)
 
     games = week_games(week, season_type, year)
 

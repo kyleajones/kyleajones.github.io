@@ -44,7 +44,6 @@ jobs:
           git diff --quiet && git diff --staged --quiet || (git commit -m "Update weekly NFL matchups, spreads, and scores" && git push)
 
       - name: Update Leaderboard Aggregate
-        continue-on-error: true
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
         working-directory: ./pick-em

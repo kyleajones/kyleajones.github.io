@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime, timezone
 
+from espn_api import week_is_complete
 from pickem_common import (
     compute_points,
     escape_html,
@@ -15,14 +16,22 @@ STANDINGS_URL = "https://3woks.com/pick-em/record.html"
 
 def main():
     with open('current_week.json') as f:
-        current_week = json.load(f)['week']
+        current_week_data = json.load(f)
+    season_type = current_week_data['season_type']
 
-    # Tuesday is exactly when the week boundary rolls over, so "current
-    # week" on Tuesday morning is already the *new* week; subtract 1 to
-    # get the week whose games just finished.
-    target_week = current_week - 1
+    # "Current week" (per ESPN) is normally already the *new* week by
+    # Tuesday morning, so the week whose games just finished is one
+    # behind it -- but confirm that explicitly against ESPN's own
+    # completed status instead of just trusting the calendar, in case
+    # this runs before the rollover (a postponed game, a schedule
+    # change, etc.).
+    target_week = current_week_data['week'] - 1
     if target_week < 1:
         print("Pre-season — no completed week to report on. Skipping standings email.")
+        return
+
+    if not week_is_complete(target_week, season_type, current_week_data['year']):
+        print(f"Week {target_week} isn't fully completed yet — skipping standings email.")
         return
 
     with open('results.json') as f:
