@@ -1,1 +1,10 @@
-{}
+{
+    "401872656": {
+        "away_team": "New England Patriots",
+        "home_team": "Seattle Seahawks",
+        "scores": {
+            "New England Patriots": 10,
+            "Seattle Seahawks": 13
+        }
+    }
+}
