@@ -107,14 +107,6 @@ function rebuildLockOptions() {
     lockSelect.value = stillValid ? previousValue : '';
 }
 
-// Reset local pick-tracking state once auth.js confirms a save succeeded.
-document.addEventListener('picks:saved', () => {
-    currentPicks.clear();
-    updatePickCount();
-    enforcePickLimit();
-    rebuildLockOptions();
-});
-
 // auth.js dispatches this on every auth state change, before prefilling, so
 // that switching users (or logging out) doesn't leave a stale prior user's
 // picks/lock checked in the DOM.

@@ -224,12 +224,6 @@ document.getElementById('picks-form').addEventListener('submit', async function(
         await setDoc(docRef, pickRecord);
 
         alert('Picks saved! You can now view your running record.');
-
-        e.target.reset();
-        document.querySelectorAll('input[type="radio"]').forEach(input => {
-            input.dataset.wasChecked = "false";
-        });
-        document.dispatchEvent(new CustomEvent('picks:saved'));
     } catch (error) {
         console.error("Error adding document: ", error);
         alert("There was an error saving your picks. Please try again.");
