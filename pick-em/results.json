@@ -6,5 +6,13 @@
             "New England Patriots": 10,
             "Seattle Seahawks": 13
         }
+    },
+    "401872657": {
+        "away_team": "San Francisco 49ers",
+        "home_team": "Los Angeles Rams",
+        "scores": {
+            "San Francisco 49ers": 27,
+            "Los Angeles Rams": 7
+        }
     }
 }
