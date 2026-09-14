@@ -1,0 +1,16 @@
+// firebase-tools refuses to reference a rules file outside its project
+// directory (../../firestore.rules) from firebase.json, so this local
+// deny-everything placeholder exists purely to satisfy the emulator's
+// startup validation. It is never actually enforced: each test file
+// reads the REAL pick-em/firestore.rules directly via fs.readFileSync
+// and loads it into the running emulator itself, through
+// initializeTestEnvironment()'s `firestore.rules` option -- which
+// replaces whatever ruleset was loaded at startup before any test runs.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
