@@ -57,14 +57,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     `;
 
     let resultsData = {};
+    // gameId -> { away, home }, so ticket chips (in particular Over/Under
+    // picks, which otherwise carry no team info at all) can show which
+    // game a pick belongs to. results.json accumulates every completed
+    // game across all weeks/seasons, so it covers essentially all of a
+    // player's history; matchups.json (current week only) fills in the
+    // gap for this week's picks on games that haven't finished yet.
+    let gameInfo = {};
 
     try {
-        const [resultsRes, leaderboardSnap] = await Promise.all([
+        const [resultsRes, matchupsRes, leaderboardSnap] = await Promise.all([
             fetch('results.json').catch(() => ({ json: () => ({}) })),
+            fetch('matchups.json').catch(() => ({ json: () => ([]) })),
             getDoc(doc(db, "leaderboard", "current"))
         ]);
 
         resultsData = resultsRes.ok ? await resultsRes.json() : await resultsRes.json();
+        const matchupsData = matchupsRes.ok ? await matchupsRes.json() : await matchupsRes.json();
+
+        Object.entries(resultsData).forEach(([gameId, result]) => {
+            gameInfo[gameId] = { away: result.away_team, home: result.home_team };
+        });
+        matchupsData.forEach((game) => {
+            if (!gameInfo[game.id]) gameInfo[game.id] = { away: game.away, home: game.home };
+        });
 
         // Leaderboard is pre-computed server-side (update_leaderboard.py)
         // into a single trusted mirror doc, already in the exact
@@ -171,11 +187,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const statusClass = `status-${status.toLowerCase()}`;
                     const typeLabel = isLocked ? `${pickType} 🔒` : pickType;
 
+                    // Spread picks already name a team in their selection, but
+                    // an Over/Under pick alone doesn't say which game it's
+                    // for -- show the matchup underneath it when known.
+                    const game = gameInfo[gameId];
+                    const gameLabel = (pickType === 'O/U' && game) ? `${game.away} @ ${game.home}` : '';
+
                     tHtml += `
                         <div class="pick-chip">
                             <div>
                                 <div class="pick-chip-type">${typeLabel}</div>
                                 <div class="pick-chip-selection">${escapeHtml(selection)} (${escapeHtml(lineDisplay)})</div>
+                                ${gameLabel ? `<div class="pick-chip-game">${escapeHtml(gameLabel)}</div>` : ''}
                             </div>
                             <span class="status-pill ${statusClass}">${status}</span>
                         </div>
