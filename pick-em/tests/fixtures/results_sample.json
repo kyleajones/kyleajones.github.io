@@ -1,0 +1,17 @@
+{
+  "g1": {
+    "away_team": "New Orleans Saints",
+    "home_team": "Detroit Lions",
+    "scores": {"New Orleans Saints": 17, "Detroit Lions": 27}
+  },
+  "g2": {
+    "away_team": "Cleveland Browns",
+    "home_team": "Jacksonville Jaguars",
+    "scores": {"Cleveland Browns": 10, "Jacksonville Jaguars": 44}
+  },
+  "g3": {
+    "away_team": "Denver Broncos",
+    "home_team": "Kansas City Chiefs",
+    "scores": {"Denver Broncos": 20, "Kansas City Chiefs": 23}
+  }
+}

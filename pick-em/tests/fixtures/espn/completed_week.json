@@ -1,0 +1,417 @@
+{
+  "week": {
+    "number": 5
+  },
+  "season": {
+    "type": 2,
+    "year": 2025
+  },
+  "events": [
+    {
+      "id": "401772939",
+      "date": "2025-10-03T00:15Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Los Angeles Rams"
+              },
+              "score": "23"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "San Francisco 49ers"
+              },
+              "score": "26"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401772633",
+      "date": "2025-10-05T13:30Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Cleveland Browns"
+              },
+              "score": "17"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Minnesota Vikings"
+              },
+              "score": "21"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401772851",
+      "date": "2025-10-05T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Indianapolis Colts"
+              },
+              "score": "40"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Las Vegas Raiders"
+              },
+              "score": "6"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401772744",
+      "date": "2025-10-05T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "New Orleans Saints"
+              },
+              "score": "26"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "New York Giants"
+              },
+              "score": "14"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401772850",
+      "date": "2025-10-05T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "New York Jets"
+              },
+              "score": "22"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Dallas Cowboys"
+              },
+              "score": "37"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401772745",
+      "date": "2025-10-05T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Philadelphia Eagles"
+              },
+              "score": "17"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Denver Broncos"
+              },
+              "score": "21"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401772852",
+      "date": "2025-10-05T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Carolina Panthers"
+              },
+              "score": "27"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Miami Dolphins"
+              },
+              "score": "24"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401772743",
+      "date": "2025-10-05T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Baltimore Ravens"
+              },
+              "score": "10"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Houston Texans"
+              },
+              "score": "44"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401772747",
+      "date": "2025-10-05T20:05Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Arizona Cardinals"
+              },
+              "score": "21"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Tennessee Titans"
+              },
+              "score": "22"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401772746",
+      "date": "2025-10-05T20:05Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Seattle Seahawks"
+              },
+              "score": "35"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Tampa Bay Buccaneers"
+              },
+              "score": "38"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401772854",
+      "date": "2025-10-05T20:25Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Cincinnati Bengals"
+              },
+              "score": "24"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Detroit Lions"
+              },
+              "score": "37"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401772853",
+      "date": "2025-10-05T20:25Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Los Angeles Chargers"
+              },
+              "score": "10"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Washington Commanders"
+              },
+              "score": "27"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401772922",
+      "date": "2025-10-06T00:20Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Buffalo Bills"
+              },
+              "score": "20"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "New England Patriots"
+              },
+              "score": "23"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401772814",
+      "date": "2025-10-07T00:15Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Jacksonville Jaguars"
+              },
+              "score": "31"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Kansas City Chiefs"
+              },
+              "score": "28"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

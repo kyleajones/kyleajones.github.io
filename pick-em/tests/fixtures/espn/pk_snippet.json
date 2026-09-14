@@ -1,0 +1,28 @@
+{
+  "week": {"number": 1},
+  "season": {"type": 2, "year": 2026},
+  "events": [
+    {
+      "id": "999999999",
+      "date": "2026-09-13T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {"homeAway": "away", "team": {"displayName": "Pick Em Away"}, "score": null},
+            {"homeAway": "home", "team": {"displayName": "Pick Em Home"}, "score": null}
+          ],
+          "status": {"type": {"completed": false}},
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {"close": {"line": "0"}},
+                "home": {"close": {"line": "0"}}
+              },
+              "overUnder": 41.5
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

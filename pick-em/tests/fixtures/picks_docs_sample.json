@@ -1,0 +1,31 @@
+[
+  {
+    "userId": "uidA",
+    "username": "Alice",
+    "week": 1,
+    "year": 2026,
+    "date": "2026-09-10T12:00:00Z",
+    "picks": {
+      "spread_g1": "Detroit Lions|-3.5",
+      "spread_g2": "Cleveland Browns|+7.5",
+      "ou_g3": "Over|43",
+      "spread_g4": "Some Team|-3"
+    },
+    "pickCount": 4,
+    "lockedPick": "spread_g1"
+  },
+  {
+    "userId": "uidB",
+    "username": "Bob",
+    "week": 1,
+    "year": 2026,
+    "date": "2026-09-10T13:00:00Z",
+    "picks": {
+      "spread_g1": "New Orleans Saints|+3.5",
+      "spread_g2": "Jacksonville Jaguars|-7.5",
+      "ou_g3": "Under|43"
+    },
+    "pickCount": 3,
+    "lockedPick": null
+  }
+]

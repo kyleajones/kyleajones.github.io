@@ -1,0 +1,730 @@
+{
+  "week": {
+    "number": 1
+  },
+  "season": {
+    "type": 2,
+    "year": 2026
+  },
+  "events": [
+    {
+      "id": "401872657",
+      "date": "2026-09-11T00:35Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Los Angeles Rams"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "San Francisco 49ers"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "+3.5"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "-3.5"
+                  }
+                }
+              },
+              "overUnder": 48.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872656",
+      "date": "2026-09-10T00:20Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Seattle Seahawks"
+              },
+              "score": "13"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "New England Patriots"
+              },
+              "score": "10"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "401872925",
+      "date": "2026-09-13T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Cincinnati Bengals"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Tampa Bay Buccaneers"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "+3.5"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "-3.5"
+                  }
+                }
+              },
+              "overUnder": 50.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872923",
+      "date": "2026-09-13T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Detroit Lions"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "New Orleans Saints"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "+7"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "-7"
+                  }
+                }
+              },
+              "overUnder": 50.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872924",
+      "date": "2026-09-13T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Tennessee Titans"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "New York Jets"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "+1.5"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "-1.5"
+                  }
+                }
+              },
+              "overUnder": 38.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872659",
+      "date": "2026-09-13T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Indianapolis Colts"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Baltimore Ravens"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "-3.5"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "+3.5"
+                  }
+                }
+              },
+              "overUnder": 47.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872658",
+      "date": "2026-09-13T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Pittsburgh Steelers"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Atlanta Falcons"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "+3.5"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "-3.5"
+                  }
+                }
+              },
+              "overUnder": 42.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872661",
+      "date": "2026-09-13T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Carolina Panthers"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Chicago Bears"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "-3"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "+3"
+                  }
+                }
+              },
+              "overUnder": 46.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872922",
+      "date": "2026-09-13T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Jacksonville Jaguars"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Cleveland Browns"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "+8.5"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "-8.5"
+                  }
+                }
+              },
+              "overUnder": 39.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872660",
+      "date": "2026-09-13T17:00Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Houston Texans"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Buffalo Bills"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "-1.5"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "+1.5"
+                  }
+                }
+              },
+              "overUnder": 44.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872928",
+      "date": "2026-09-13T20:25Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Las Vegas Raiders"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Miami Dolphins"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "+3"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "-3"
+                  }
+                }
+              },
+              "overUnder": 40.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872927",
+      "date": "2026-09-13T20:25Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Minnesota Vikings"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Green Bay Packers"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "+1.5"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "-1.5"
+                  }
+                }
+              },
+              "overUnder": 46.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872929",
+      "date": "2026-09-13T20:25Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Philadelphia Eagles"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Washington Commanders"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "+5.5"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "-5.5"
+                  }
+                }
+              },
+              "overUnder": 44.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872926",
+      "date": "2026-09-13T20:25Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Los Angeles Chargers"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Arizona Cardinals"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "+9.5"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "-9.5"
+                  }
+                }
+              },
+              "overUnder": 47.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872930",
+      "date": "2026-09-14T00:20Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "New York Giants"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Dallas Cowboys"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "-3"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "+3"
+                  }
+                }
+              },
+              "overUnder": 48.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "401872931",
+      "date": "2026-09-15T00:15Z",
+      "competitions": [
+        {
+          "competitors": [
+            {
+              "homeAway": "home",
+              "team": {
+                "displayName": "Kansas City Chiefs"
+              },
+              "score": "0"
+            },
+            {
+              "homeAway": "away",
+              "team": {
+                "displayName": "Denver Broncos"
+              },
+              "score": "0"
+            }
+          ],
+          "status": {
+            "type": {
+              "completed": false
+            }
+          },
+          "odds": [
+            {
+              "pointSpread": {
+                "away": {
+                  "close": {
+                    "line": "+2.5"
+                  }
+                },
+                "home": {
+                  "close": {
+                    "line": "-2.5"
+                  }
+                }
+              },
+              "overUnder": 43.5
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
