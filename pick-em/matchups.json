@@ -1,5 +1,21 @@
 [
     {
+        "id": "401872656",
+        "away": "New England Patriots",
+        "home": "Seattle Seahawks",
+        "spread": "+3.5",
+        "over_under": "44.5",
+        "commence_time": "2026-09-10T00:20Z"
+    },
+    {
+        "id": "401872657",
+        "away": "San Francisco 49ers",
+        "home": "Los Angeles Rams",
+        "spread": "+3.5",
+        "over_under": "48.5",
+        "commence_time": "2026-09-11T00:35Z"
+    },
+    {
         "id": "401872925",
         "away": "Tampa Bay Buccaneers",
         "home": "Cincinnati Bengals",
@@ -102,22 +118,6 @@
         "spread": "-2.5",
         "over_under": "48.5",
         "commence_time": "2026-09-14T00:20Z"
-    },
-    {
-        "id": "401872656",
-        "away": "New England Patriots",
-        "home": "Seattle Seahawks",
-        "spread": "+3.5",
-        "over_under": "44.5",
-        "commence_time": "2026-09-10T00:20Z"
-    },
-    {
-        "id": "401872657",
-        "away": "San Francisco 49ers",
-        "home": "Los Angeles Rams",
-        "spread": "+3.5",
-        "over_under": "48.5",
-        "commence_time": "2026-09-11T00:35Z"
     },
     {
         "id": "401872931",
