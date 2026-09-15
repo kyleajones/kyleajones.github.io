@@ -25,10 +25,17 @@ def main():
     # completed status instead of just trusting the calendar, in case
     # this runs before the rollover (a postponed game, a schedule
     # change, etc.).
-    target_week = current_week_data['week'] - 1
-    if target_week < 1:
-        print("Pre-season — no completed week to report on. Skipping standings email.")
-        return
+    override = os.environ.get('TARGET_WEEK_OVERRIDE')
+    if override:
+        # Manual escape hatch (set via workflow_dispatch) for when ESPN's
+        # own "current week" hasn't rolled over yet, so current_week - 1
+        # would otherwise resolve to the wrong (or a pre-season) week.
+        target_week = int(override)
+    else:
+        target_week = current_week_data['week'] - 1
+        if target_week < 1:
+            print("Pre-season — no completed week to report on. Skipping standings email.")
+            return
 
     if not week_is_complete(target_week, season_type, current_week_data['year']):
         print(f"Week {target_week} isn't fully completed yet — skipping standings email.")

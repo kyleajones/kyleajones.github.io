@@ -12,6 +12,10 @@ on:
         description: 'If set, sends both emails only to this address instead of the full player list'
         required: false
         type: string
+      target_week_override:
+        description: 'Force the standings email to report on this week number instead of auto-detecting from current_week.json (useful when ESPN has not rolled its "current week" over yet). Also skips the pick-reminder email for this run, since this is meant for backfilling a past week.'
+        required: false
+        type: string
 
 jobs:
   send-emails:
@@ -28,10 +32,12 @@ jobs:
       - name: Install Dependencies
         run: pip install firebase-admin requests
 
-      # workflow_dispatch runs both steps below (useful for testing);
-      # scheduled runs only execute the step matching that cron trigger.
+      # workflow_dispatch runs both steps below (useful for testing), unless
+      # target_week_override is set -- that input is for backfilling a past
+      # week's standings email specifically, so a reminder for a game that
+      # already happened would just be confusing.
       - name: Send Pick Reminder Email
-        if: github.event.schedule == '0 15 * * 4' || github.event_name == 'workflow_dispatch'
+        if: github.event.schedule == '0 15 * * 4' || (github.event_name == 'workflow_dispatch' && github.event.inputs.target_week_override == '')
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
@@ -45,5 +51,6 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           TEST_RECIPIENT_EMAIL: ${{ github.event.inputs.test_recipient }}
+          TARGET_WEEK_OVERRIDE: ${{ github.event.inputs.target_week_override }}
         working-directory: ./pick-em
         run: python send_standings_email.py
