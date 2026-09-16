@@ -2,10 +2,11 @@ name: Fetch Weekly NFL Matchups and Scores
 
 on:
   schedule:
-    # Runs overnight (~2-3 AM Pacific, depending on daylight saving) so
-    # players wake up to final results. A few minutes past the hour,
-    # since GitHub Actions deprioritizes exactly-on-the-hour schedules.
-    - cron: '7 10 * * *'
+    # Runs overnight (~12:23 AM Pacific, depending on daylight saving) so
+    # players wake up to final results as early as possible. Not on the
+    # hour or half-hour, since GitHub Actions deprioritizes schedules
+    # that land on those popular marks under load.
+    - cron: '23 7 * * *'
   workflow_dispatch: # Allows manual trigger from the Actions tab
 
 jobs:

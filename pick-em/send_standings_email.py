@@ -19,20 +19,25 @@ def main():
         current_week_data = json.load(f)
     season_type = current_week_data['season_type']
 
-    # "Current week" (per ESPN) is normally already the *new* week by
-    # Tuesday morning, so the week whose games just finished is one
-    # behind it -- but confirm that explicitly against ESPN's own
-    # completed status instead of just trusting the calendar, in case
-    # this runs before the rollover (a postponed game, a schedule
-    # change, etc.).
+    # ESPN's own calendar rolls "current week" over at Wednesday 00:00
+    # Pacific (07:00 UTC) -- confirmed live via the scoreboard's
+    # leagues[0].calendar[1].entries[].startDate/endDate, e.g. Week 2
+    # runs 2026-09-16T07:00Z to 2026-09-23T06:59Z. Our standings cron
+    # fires Tuesday 8am Pacific -- strictly BEFORE that boundary, every
+    # week -- so current_week.json (written by that morning's ~3am
+    # nightly run) still holds the week whose games just finished, not
+    # the week before it. No "- 1" needed. Still confirm completion
+    # explicitly against ESPN's own status instead of just trusting the
+    # calendar, in case of a postponed game or schedule change.
     override = os.environ.get('TARGET_WEEK_OVERRIDE')
     if override:
         # Manual escape hatch (set via workflow_dispatch) for when ESPN's
-        # own "current week" hasn't rolled over yet, so current_week - 1
-        # would otherwise resolve to the wrong (or a pre-season) week.
+        # own "current week" hasn't rolled over as expected, so the
+        # calendar-based value above would otherwise resolve to the
+        # wrong (or a pre-season) week.
         target_week = int(override)
     else:
-        target_week = current_week_data['week'] - 1
+        target_week = current_week_data['week']
         if target_week < 1:
             print("Pre-season — no completed week to report on. Skipping standings email.")
             return
