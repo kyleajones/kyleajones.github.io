@@ -126,5 +126,13 @@
             "Denver Broncos": 10,
             "Kansas City Chiefs": 31
         }
+    },
+    "401872932": {
+        "away_team": "Detroit Lions",
+        "home_team": "Buffalo Bills",
+        "scores": {
+            "Detroit Lions": 31,
+            "Buffalo Bills": 41
+        }
     }
 }
