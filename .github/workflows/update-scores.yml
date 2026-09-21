@@ -1,16 +1,16 @@
-name: Fetch Weekly NFL Matchups
+name: Fetch NFL Scores and Update Leaderboard
 
 on:
   schedule:
-    # Runs overnight (~12:23 AM Pacific, depending on daylight saving) so
-    # players wake up to fresh matchups/spreads as early as possible. Not on
+    # 7 minutes after the matchups workflow, to preserve today's relative
+    # ordering in case a dependency between them ever reappears. Not on
     # the hour or half-hour, since GitHub Actions deprioritizes schedules
     # that land on those popular marks under load.
-    - cron: '23 7 * * *'
+    - cron: '30 7 * * *'
   workflow_dispatch: # Allows manual trigger from the Actions tab
 
 concurrency:
-  group: update-matchups
+  group: update-scores
   cancel-in-progress: false
 
 jobs:
@@ -30,15 +30,19 @@ jobs:
       - name: Install Dependencies
         run: pip install requests firebase-admin
 
-      - name: Run Fetcher Script
-        env:
-          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+      - name: Run Scores Fetcher Script
         working-directory: ./pick-em
-        run: python update_picks.py
+        run: python fetch_scores.py
 
       - name: Commit and Push Changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add pick-em/matchups.json pick-em/current_week.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update weekly NFL matchups and spreads" && git pull --rebase origin main && git push)
+          git add pick-em/results.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update NFL scores" && git pull --rebase origin main && git push)
+
+      - name: Update Leaderboard Aggregate
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        working-directory: ./pick-em
+        run: python update_leaderboard.py
