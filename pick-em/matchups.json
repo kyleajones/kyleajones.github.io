@@ -1,5 +1,21 @@
 [
     {
+        "id": "401872947",
+        "away": "New York Giants",
+        "home": "Los Angeles Rams",
+        "spread": "+7",
+        "over_under": "47.5",
+        "commence_time": "2026-09-22T00:15Z"
+    },
+    {
+        "id": "401872932",
+        "away": "Detroit Lions",
+        "home": "Buffalo Bills",
+        "spread": "+5.5",
+        "over_under": "54.5",
+        "commence_time": "2026-09-18T00:15Z"
+    },
+    {
         "id": "401872933",
         "away": "Carolina Panthers",
         "home": "Atlanta Falcons",
@@ -110,21 +126,5 @@
         "spread": "+6.5",
         "over_under": "46.5",
         "commence_time": "2026-09-21T00:20Z"
-    },
-    {
-        "id": "401872932",
-        "away": "Detroit Lions",
-        "home": "Buffalo Bills",
-        "spread": "+5.5",
-        "over_under": "54.5",
-        "commence_time": "2026-09-18T00:15Z"
-    },
-    {
-        "id": "401872947",
-        "away": "New York Giants",
-        "home": "Los Angeles Rams",
-        "spread": "+7",
-        "over_under": "47.5",
-        "commence_time": "2026-09-22T00:15Z"
     }
 ]
