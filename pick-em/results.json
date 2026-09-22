@@ -246,5 +246,13 @@
             "Indianapolis Colts": 30,
             "Kansas City Chiefs": 33
         }
+    },
+    "401872947": {
+        "away_team": "New York Giants",
+        "home_team": "Los Angeles Rams",
+        "scores": {
+            "New York Giants": 6,
+            "Los Angeles Rams": 28
+        }
     }
 }
