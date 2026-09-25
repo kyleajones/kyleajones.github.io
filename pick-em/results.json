@@ -254,5 +254,13 @@
             "New York Giants": 6,
             "Los Angeles Rams": 28
         }
+    },
+    "401872948": {
+        "away_team": "Atlanta Falcons",
+        "home_team": "Green Bay Packers",
+        "scores": {
+            "Atlanta Falcons": 35,
+            "Green Bay Packers": 14
+        }
     }
 }
