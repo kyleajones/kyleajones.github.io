@@ -46,3 +46,9 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
         working-directory: ./pick-em
         run: python update_leaderboard.py
+
+      - name: Update Weekly Picks Board
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        working-directory: ./pick-em
+        run: python update_weekly_picks.py

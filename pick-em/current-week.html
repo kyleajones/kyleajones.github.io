@@ -3,25 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaderboard</title>
+    <title>Current Week</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Leaderboard</h1>
-        <p>Overall Season Standings</p>
+        <h1>Current Week</h1>
+        <p>Scores &amp; Picks as the Week Plays Out</p>
 
         <nav class="site-tabs">
             <a href="index.html" class="tab">Make Picks</a>
-            <a href="current-week.html" class="tab">Current Week</a>
-            <a href="record.html" class="tab active">Leaderboard</a>
+            <a href="current-week.html" class="tab active">Current Week</a>
+            <a href="record.html" class="tab">Leaderboard</a>
             <a href="#" id="how-to-play-link" class="tab">How to Play</a>
         </nav>
     </header>
 
     <main>
-        <div id="record-container">
-            <!-- Leaderboard will be automatically injected here by JavaScript -->
+        <div class="week-select-wrap">
+            <label for="week-select">Week:</label>
+            <select id="week-select"></select>
+        </div>
+
+        <div id="week-banner">
+            <div style="text-align: center; padding: 40px; color: var(--color-text-muted);">Loading games...</div>
+        </div>
+
+        <div id="picks-table-container">
+            <!-- Player picks table will be automatically injected here by JavaScript -->
         </div>
     </main>
 
@@ -30,7 +39,7 @@
         <div class="modal-content">
             <button type="button" class="modal-close" id="modal-close-btn">&times;</button>
             <h2>How to Play</h2>
-            
+
             <p>Welcome to 3woks NFL Pick'em! Make your picks each week to win it all.</p>
 
             <div class="rules-section">
@@ -54,6 +63,6 @@
             </div>
         </div>
     </div>
-    <script type="module" src="record.js"></script>
+    <script type="module" src="current-week.js"></script>
 </body>
 </html>

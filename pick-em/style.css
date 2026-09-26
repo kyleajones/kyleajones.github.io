@@ -17,6 +17,7 @@
     --color-win: #22c55e;
     --color-loss: #ef4444;
     --color-push: #f59e0b;
+    --color-tie: #9ca3af;
 
     /* Scale */
     --radius-sm: 4px;
@@ -795,6 +796,152 @@ button {
 }
 
 .status-pill.status-pending {
+    background: var(--color-bg-page);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+}
+
+/* Current Week: week picker */
+.week-select-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+}
+
+.week-select-wrap label {
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
+
+#week-select {
+    padding: 8px 12px;
+    background-color: var(--color-bg-elevated);
+    color: var(--color-text-main);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 0.95em;
+}
+
+/* Current Week: score banner */
+.week-banner {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+    margin-bottom: var(--space-5);
+}
+
+.banner-game {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 10px;
+    text-align: center;
+}
+
+.banner-teams {
+    font-weight: 600;
+    font-size: 0.9em;
+    color: var(--color-text-main);
+    margin-bottom: 4px;
+}
+
+.banner-score {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: var(--color-text-main);
+}
+
+.banner-pending {
+    color: var(--color-accent);
+    font-weight: bold;
+    font-size: 0.85em;
+}
+
+.banner-kickoff {
+    color: var(--color-text-muted);
+    font-size: 0.8em;
+}
+
+/* Current Week: player picks table */
+.picks-table-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+.picks-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-bg-card);
+}
+
+.picks-table th,
+.picks-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--color-border);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.picks-table th {
+    background: var(--color-bg-elevated);
+    color: var(--color-text-muted);
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    position: sticky;
+    top: 0;
+}
+
+.picks-table th:first-child,
+.picks-table td.picks-row-name {
+    text-align: left;
+    white-space: normal;
+}
+
+.picks-row-self {
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+.picks-row-name {
+    font-weight: 600;
+    color: var(--color-text-main);
+}
+
+.pick-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+}
+
+.pick-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75em;
+    font-weight: bold;
+}
+
+.pick-badge-win {
+    background: var(--color-win);
+    color: #0a0e14;
+}
+
+.pick-badge-loss {
+    background: var(--color-loss);
+    color: #ffffff;
+}
+
+.pick-badge-tie {
+    background: var(--color-tie);
+    color: #0a0e14;
+}
+
+.pick-badge-pending {
     background: var(--color-bg-page);
     color: var(--color-text-muted);
     border: 1px solid var(--color-border);

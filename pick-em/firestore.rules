@@ -26,6 +26,17 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Read-only mirror of one week's picks, keyed by player uid, written
+    // only by update_weekly_picks.py via the Admin SDK. Already redacted
+    // server-side before it's ever written here: a player's entry only
+    // includes pick keys for games that had already kicked off at
+    // compute time, so exposing this whole document publicly leaks
+    // nothing that a game's own kickoff time hasn't already made public.
+    match /weeklyPicks/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // Cross-collection path to a game's matchup mirror doc, for use with
     // get()/exists().
     function matchupPath(gameId) {
