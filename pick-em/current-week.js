@@ -29,6 +29,13 @@ function formatCommence(commenceTime) {
     });
 }
 
+// Drops the city from a full team name (e.g. "Los Angeles Rams" -> "Rams")
+// for compact display -- every NFL mascot name is a single word, so the
+// last word is always the right answer, with no team-name data file needed.
+function teamName(fullName) {
+    return fullName.split(' ').pop();
+}
+
 let currentUser = null;
 let currentWeekInfo = null;
 let resultsData = {};
@@ -56,7 +63,7 @@ function renderBanner(games) {
 
         html += `
             <div class="banner-game">
-                <div class="banner-teams">${escapeHtml(game.away)} @ ${escapeHtml(game.home)}</div>
+                <div class="banner-teams">${escapeHtml(teamName(game.away))} @ ${escapeHtml(teamName(game.home))}</div>
                 ${scoreHtml}
             </div>
         `;
@@ -67,13 +74,13 @@ function renderBanner(games) {
 
 function renderBadge(pickValue, pickType, gameId) {
     if (!pickValue) {
-        return `<span class="pick-badge pick-badge-pending" title="Not revealed yet">❓</span>`;
+        return '';
     }
 
     const [selection, lineStr] = pickValue.split('|');
     const status = gradePick(pickValue, pickType, resultsData[gameId]);
     const statusClass = { WIN: 'win', LOSS: 'loss', PUSH: 'tie', PENDING: 'pending' }[status] || 'pending';
-    const label = pickType === 'Spread' ? selection : `${selection} ${lineStr}`;
+    const label = pickType === 'Spread' ? teamName(selection) : `${selection} ${lineStr}`;
 
     return `<span class="pick-badge pick-badge-${statusClass}" title="${escapeHtml(pickType)}">${escapeHtml(label)}</span>`;
 }
@@ -90,7 +97,7 @@ function renderTable(games, players) {
 
     let html = '<div class="picks-table-scroll"><table class="picks-table"><thead><tr><th>Player</th>';
     games.forEach((game) => {
-        html += `<th>${escapeHtml(game.away)}<br>@ ${escapeHtml(game.home)}</th>`;
+        html += `<th>${escapeHtml(teamName(game.away))}<br>@ ${escapeHtml(teamName(game.home))}</th>`;
     });
     html += '</tr></thead><tbody>';
 

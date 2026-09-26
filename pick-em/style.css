@@ -386,6 +386,22 @@ button {
     color: #ffffff;
 }
 
+@media (max-width: 768px) {
+    /* Four tabs at the desktop padding/font-size no longer fit comfortably
+       on narrow screens -- tighten both and let the pill wrap to a second
+       row instead of overflowing or squeezing text. */
+    .site-tabs {
+        flex-wrap: wrap;
+        gap: 6px;
+        max-width: 100%;
+    }
+
+    .tab {
+        padding: 8px 12px;
+        font-size: 0.85em;
+    }
+}
+
 /* Game Cards */
 .game-card {
     background: var(--color-bg-card);
