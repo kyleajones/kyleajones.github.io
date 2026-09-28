@@ -1,5 +1,21 @@
 [
     {
+        "id": "401872963",
+        "away": "Philadelphia Eagles",
+        "home": "Chicago Bears",
+        "spread": "-4.5",
+        "over_under": "41.5",
+        "commence_time": "2026-09-29T00:15Z"
+    },
+    {
+        "id": "401872948",
+        "away": "Atlanta Falcons",
+        "home": "Green Bay Packers",
+        "spread": "+5.5",
+        "over_under": "43.5",
+        "commence_time": "2026-09-25T00:15Z"
+    },
+    {
         "id": "401872953",
         "away": "Los Angeles Chargers",
         "home": "Buffalo Bills",
@@ -110,21 +126,5 @@
         "spread": "-2.5",
         "over_under": "45.5",
         "commence_time": "2026-09-28T00:20Z"
-    },
-    {
-        "id": "401872948",
-        "away": "Atlanta Falcons",
-        "home": "Green Bay Packers",
-        "spread": "+5.5",
-        "over_under": "43.5",
-        "commence_time": "2026-09-25T00:15Z"
-    },
-    {
-        "id": "401872963",
-        "away": "Philadelphia Eagles",
-        "home": "Chicago Bears",
-        "spread": "-4.5",
-        "over_under": "41.5",
-        "commence_time": "2026-09-29T00:15Z"
     }
 ]
