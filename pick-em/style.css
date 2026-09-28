@@ -918,8 +918,30 @@ button {
     white-space: normal;
 }
 
+/* Freeze the player-name column so it stays visible while the rest of the
+   table scrolls sideways. Needs its own opaque background (mixed against
+   the real card color, not transparent) since a sticky cell must paint
+   over whatever scrolls underneath it, and a higher z-index than the
+   scrolling header row for the top-left corner cell where both stick. */
+.picks-table td.picks-row-name {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--color-bg-card);
+}
+
+.picks-table th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+}
+
 .picks-row-self {
-    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    background: color-mix(in srgb, var(--color-accent) 10%, var(--color-bg-card));
+}
+
+.picks-row-self td.picks-row-name {
+    background: color-mix(in srgb, var(--color-accent) 10%, var(--color-bg-card));
 }
 
 .picks-row-name {
