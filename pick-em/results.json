@@ -374,5 +374,13 @@
             "Los Angeles Rams": 26,
             "Denver Broncos": 30
         }
+    },
+    "401872963": {
+        "away_team": "Philadelphia Eagles",
+        "home_team": "Chicago Bears",
+        "scores": {
+            "Philadelphia Eagles": 7,
+            "Chicago Bears": 27
+        }
     }
 }
