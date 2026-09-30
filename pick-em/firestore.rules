@@ -37,6 +37,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Read-only mirror of in-progress/completed scores for the current
+    // week (and the one before it), written only by fetch_live_scores.py
+    // via the Admin SDK on a much tighter cadence than the daily
+    // results.json commit -- lets the Results tab show live scores/grades
+    // without waiting on a git commit + Pages rebuild.
+    match /liveScores/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // Cross-collection path to a game's matchup mirror doc, for use with
     // get()/exists().
     function matchupPath(gameId) {

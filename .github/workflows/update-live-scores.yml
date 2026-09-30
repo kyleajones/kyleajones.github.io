@@ -1,0 +1,46 @@
+name: Fetch Live NFL Scores and Refresh Weekly Picks
+
+# Runs every 15 minutes during NFL windows to keep the Results tab's live
+# scores and pick reveals fresh, without waiting on the once-daily
+# update-scores.yml run. Cron times are UTC and deliberately generous
+# (covering both EDT and EST offsets, plus some slack) since an off-window
+# run is a harmless no-op -- there's simply nothing in progress yet.
+# Doesn't cover Saturday games (weeks 15-18) -- easy follow-up if needed.
+on:
+  schedule:
+    - cron: '*/15 0-4 * * 5'   # Thursday Night Football (Fri 00:00-04:59 UTC)
+    - cron: '*/15 17-23 * * 0' # Sunday day/night games
+    - cron: '*/15 0-4 * * 1'   # Sunday night spillover (Mon 00:00-04:59 UTC)
+    - cron: '*/15 0-4 * * 2'   # Monday Night Football (Tue 00:00-04:59 UTC)
+  workflow_dispatch: # Allows manual trigger from the Actions tab
+
+concurrency:
+  group: update-live-scores
+  cancel-in-progress: false
+
+jobs:
+  update-live:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: pip install requests firebase-admin
+
+      - name: Fetch Live Scores
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        working-directory: ./pick-em
+        run: python fetch_live_scores.py
+
+      - name: Refresh Weekly Picks Board
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        working-directory: ./pick-em
+        run: python update_weekly_picks.py

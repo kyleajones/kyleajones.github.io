@@ -21,6 +21,16 @@ def escape_html(value):
     return html.escape(str(value), quote=True)
 
 
+def weeks_to_recheck(week):
+    """The current week plus the one before it -- catches a Thursday/early
+    game that finished before a run, or last week's Monday-nighter right
+    after rollover into a new week. Shared by fetch_scores.py,
+    fetch_live_scores.py, and update_weekly_picks.py, which all recompute
+    the same two weeks on every run for this reason.
+    """
+    return [week, week - 1] if week > 1 else [week]
+
+
 def grade_pick(pick_value, pick_type, game_result):
     """Direct port of gradePick() in pick-em/record.js. Keep in sync if
     that logic changes.

@@ -1,0 +1,75 @@
+{
+    "week": {"number": 3},
+    "season": {"type": 2, "year": 2026},
+    "events": [
+        {
+            "id": "401872700",
+            "date": "2026-09-21T17:00Z",
+            "competitions": [
+                {
+                    "competitors": [
+                        {
+                            "homeAway": "home",
+                            "team": {"displayName": "Buffalo Bills"},
+                            "score": "17"
+                        },
+                        {
+                            "homeAway": "away",
+                            "team": {"displayName": "New York Jets"},
+                            "score": "10"
+                        }
+                    ],
+                    "status": {
+                        "type": {"state": "in", "completed": false}
+                    }
+                }
+            ]
+        },
+        {
+            "id": "401872701",
+            "date": "2026-09-21T17:00Z",
+            "competitions": [
+                {
+                    "competitors": [
+                        {
+                            "homeAway": "home",
+                            "team": {"displayName": "Miami Dolphins"},
+                            "score": "0"
+                        },
+                        {
+                            "homeAway": "away",
+                            "team": {"displayName": "New England Patriots"},
+                            "score": "0"
+                        }
+                    ],
+                    "status": {
+                        "type": {"state": "pre", "completed": false}
+                    }
+                }
+            ]
+        },
+        {
+            "id": "401872702",
+            "date": "2026-09-21T13:00Z",
+            "competitions": [
+                {
+                    "competitors": [
+                        {
+                            "homeAway": "home",
+                            "team": {"displayName": "Baltimore Ravens"},
+                            "score": "27"
+                        },
+                        {
+                            "homeAway": "away",
+                            "team": {"displayName": "Cincinnati Bengals"},
+                            "score": "20"
+                        }
+                    ],
+                    "status": {
+                        "type": {"state": "post", "completed": true}
+                    }
+                }
+            ]
+        }
+    ]
+}

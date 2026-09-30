@@ -2,7 +2,7 @@ import json
 import os
 from datetime import datetime, timezone
 
-from pickem_common import firestore_client
+from pickem_common import firestore_client, weeks_to_recheck
 
 
 def compute_week_board(db, week, year):
@@ -68,14 +68,7 @@ def update_weekly_picks():
 
     db = firestore_client(cred_json)
 
-    # Recompute the current week and the one before it -- same rationale
-    # as fetch_scores.py's weeks_to_check: catches a Monday-nighter that
-    # started right at/after this week's rollover.
-    weeks_to_compute = [week]
-    if week > 1:
-        weeks_to_compute.append(week - 1)
-
-    for w in weeks_to_compute:
+    for w in weeks_to_recheck(week):
         compute_week_board(db, w, year)
         print(f"Updated weeklyPicks board for week {w}, {year}.")
 

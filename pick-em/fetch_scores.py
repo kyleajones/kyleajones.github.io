@@ -2,19 +2,14 @@ import json
 import os
 
 from espn_api import completed_scores, current_week_and_year
+from pickem_common import weeks_to_recheck
 
 
 def fetch_scores():
     print("Fetching recent NFL scores...")
 
     week, season_type, year = current_week_and_year()
-
-    # Check the current week and the one before it -- catches a
-    # Thursday/early game that finished before this runs, or last week's
-    # Monday-nighter right after rollover into a new week.
-    weeks_to_check = [week]
-    if week > 1:
-        weeks_to_check.append(week - 1)
+    weeks_to_check = weeks_to_recheck(week)
 
     # Load existing results so we don't wipe out past weeks or Thursday games
     completed_games = {}
