@@ -6,12 +6,19 @@ name: Fetch Live NFL Scores and Refresh Weekly Picks
 # (covering both EDT and EST offsets, plus some slack) since an off-window
 # run is a harmless no-op -- there's simply nothing in progress yet.
 # Doesn't cover Saturday games (weeks 15-18) -- easy follow-up if needed.
+#
+# Minutes are offset to :02/:17/:32/:47 rather than the :00/:15/:30/:45
+# marks `*/15` would otherwise hit -- those are the most oversubscribed
+# minutes across all of GitHub Actions' scheduler, and update-scores.yml's
+# own placement already avoids them for the same reason. Doesn't guarantee
+# on-time runs (GitHub's scheduler is best-effort with no SLA either way),
+# just avoids adding to the worst of the queueing.
 on:
   schedule:
-    - cron: '*/15 0-4 * * 5'   # Thursday Night Football (Fri 00:00-04:59 UTC)
-    - cron: '*/15 17-23 * * 0' # Sunday day/night games
-    - cron: '*/15 0-4 * * 1'   # Sunday night spillover (Mon 00:00-04:59 UTC)
-    - cron: '*/15 0-4 * * 2'   # Monday Night Football (Tue 00:00-04:59 UTC)
+    - cron: '2-59/15 0-4 * * 5'   # Thursday Night Football (Fri 00:00-04:59 UTC)
+    - cron: '2-59/15 17-23 * * 0' # Sunday day/night games
+    - cron: '2-59/15 0-4 * * 1'   # Sunday night spillover (Mon 00:00-04:59 UTC)
+    - cron: '2-59/15 0-4 * * 2'   # Monday Night Football (Tue 00:00-04:59 UTC)
   workflow_dispatch: # Allows manual trigger from the Actions tab
 
 concurrency:
