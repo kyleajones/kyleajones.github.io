@@ -2,6 +2,12 @@ import requests
 
 BASE = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
 
+# fetch_live_scores.py calls into this every 15 minutes during game
+# windows via a workflow with cancel-in-progress: false -- an unbounded
+# hang here would queue up runs behind it rather than self-healing within
+# a cycle, so every request needs a hard ceiling.
+REQUEST_TIMEOUT_SECONDS = 10
+
 
 def _scoreboard(week=None, season_type=None, year=None):
     """Hits ESPN's undocumented (no API key) scoreboard endpoint. With no
@@ -14,7 +20,7 @@ def _scoreboard(week=None, season_type=None, year=None):
         params["week"] = week
         params["seasontype"] = season_type
         params["dates"] = year
-    response = requests.get(BASE, params=params)
+    response = requests.get(BASE, params=params, timeout=REQUEST_TIMEOUT_SECONDS)
     response.raise_for_status()
     return response.json()
 

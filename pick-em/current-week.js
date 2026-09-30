@@ -39,26 +39,64 @@ function teamName(fullName) {
 let currentUser = null;
 let currentWeekInfo = null;
 let resultsData = {};
-let liveRefreshTimer = null;
 
-// While the currently-viewed week could still have a live game (the
-// current week or the one before it -- the only weeks fetch_live_scores.py
-// ever writes to), keep re-rendering on an interval so the pulsing "LIVE"
-// score/badges actually update without a manual week switch or reload.
+// Guards against a slow/stale async renderWeek (or live tick) painting the
+// DOM after the user has since switched to a different week -- checked
+// after every await, before anything gets rendered from that call.
+let activeRenderWeek = null;
+
+// Set after a full renderWeek() completes, so the periodic live tick below
+// can cheaply re-render the same games/players without re-running the
+// matchups/weeklyPicks/own-picks queries that don't change minute to
+// minute.
+let liveTickState = null;
+let liveRefreshTimer = null;
 const LIVE_REFRESH_MS = 60000;
 
-function scheduleLiveRefresh(week) {
+function stopLiveRefresh() {
     if (liveRefreshTimer) {
         clearInterval(liveRefreshTimer);
         liveRefreshTimer = null;
     }
-    if (!currentWeekInfo || week < currentWeekInfo.week - 1) return;
-    liveRefreshTimer = setInterval(() => renderWeek(week), LIVE_REFRESH_MS);
 }
 
-async function changeWeek(week) {
-    await renderWeek(week);
-    scheduleLiveRefresh(week);
+function weekHasLiveGame(games) {
+    return games.some((game) => resultsData[game.id]?.completed === false);
+}
+
+// Merges the liveScores doc's games into resultsData, but never lets a
+// stale "still in progress" live snapshot regress a game that's already
+// resolved to a final result (from results.json, or from an earlier tick
+// that already saw it complete) -- guards against fetch_live_scores.py
+// having stopped refreshing a week while ESPN still reports one of its
+// games as unfinished.
+function applyLiveOverlay(liveSnap) {
+    const liveGames = liveSnap.exists() ? liveSnap.data().games || {} : {};
+    for (const [gameId, liveGame] of Object.entries(liveGames)) {
+        const existing = resultsData[gameId];
+        if (existing && existing.completed !== false) continue;
+        resultsData[gameId] = liveGame;
+    }
+}
+
+async function liveTick() {
+    if (!liveTickState) return;
+    const { week, yearStr, weekStr, games, players } = liveTickState;
+
+    let liveSnap;
+    try {
+        liveSnap = await getDoc(doc(db, 'liveScores', `${yearStr}_${weekStr}`));
+    } catch (error) {
+        console.error('Error refreshing live scores: ', error);
+        return;
+    }
+    if (activeRenderWeek !== week) return; // user switched weeks while this was in flight
+
+    applyLiveOverlay(liveSnap);
+    renderBanner(games);
+    renderTable(games, players);
+
+    if (!weekHasLiveGame(games)) stopLiveRefresh();
 }
 
 function renderBanner(games) {
@@ -148,6 +186,10 @@ function renderTable(games, players) {
 }
 
 async function renderWeek(week) {
+    activeRenderWeek = week;
+    stopLiveRefresh();
+    liveTickState = null;
+
     const year = currentWeekInfo.year;
     const weekStr = `week${week}`;
     const yearStr = String(year);
@@ -163,6 +205,7 @@ async function renderWeek(week) {
             getDoc(doc(db, 'weeklyPicks', `${yearStr}_${weekStr}`)),
             getDoc(doc(db, 'liveScores', `${yearStr}_${weekStr}`)),
         ]);
+        if (activeRenderWeek !== week) return; // user switched weeks while this was in flight
 
         const games = [];
         matchupsSnap.forEach((snap) => games.push({ id: snap.id, ...snap.data() }));
@@ -175,8 +218,7 @@ async function renderWeek(week) {
         // once-daily results.json snapshot -- the live doc is fresher
         // whenever it has an entry for a game, since it's written every
         // 15 minutes during game windows instead of once a day.
-        const liveGames = liveSnap.exists() ? liveSnap.data().games || {} : {};
-        resultsData = { ...resultsData, ...liveGames };
+        applyLiveOverlay(liveSnap);
 
         // Always show the logged-in user their own picks in full, even for
         // games that haven't started -- the weeklyPicks mirror redacts
@@ -184,6 +226,7 @@ async function renderWeek(week) {
         // by them per firestore.rules).
         if (currentUser) {
             const ownSnap = await getDoc(doc(db, 'picks', `${currentUser.uid}_week${week}_${year}`));
+            if (activeRenderWeek !== week) return;
             if (ownSnap.exists()) {
                 const own = ownSnap.data();
                 players[currentUser.uid] = { username: own.username, picks: own.picks || {} };
@@ -192,7 +235,17 @@ async function renderWeek(week) {
 
         renderBanner(games);
         renderTable(games, players);
+
+        // Only keep polling while this week actually has a game in
+        // progress -- an old, fully-final week (or a live week once every
+        // game ends) stops re-fetching on its own instead of ticking
+        // forever for no reason.
+        liveTickState = { week, yearStr, weekStr, games, players };
+        if (weekHasLiveGame(games)) {
+            liveRefreshTimer = setInterval(liveTick, LIVE_REFRESH_MS);
+        }
     } catch (error) {
+        if (activeRenderWeek !== week) return; // don't clobber a newer, valid view with a stale error
         console.error('Error loading week board: ', error);
         bannerContainer.innerHTML = `<div style="text-align: center; color: var(--color-loss); padding: 40px;">Error loading this week.</div>`;
     }
@@ -203,7 +256,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
-        if (weekSelect.value) changeWeek(parseInt(weekSelect.value, 10));
+        if (weekSelect.value) renderWeek(parseInt(weekSelect.value, 10));
     });
 
     try {
@@ -227,9 +280,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         weekSelect.appendChild(opt);
     }
     weekSelect.value = currentWeek;
-    weekSelect.addEventListener('change', () => changeWeek(parseInt(weekSelect.value, 10)));
+    weekSelect.addEventListener('change', () => renderWeek(parseInt(weekSelect.value, 10)));
 
-    await changeWeek(currentWeek);
+    await renderWeek(currentWeek);
 
     const modal = document.getElementById('how-to-play-modal');
     const openBtn = document.getElementById('how-to-play-link');

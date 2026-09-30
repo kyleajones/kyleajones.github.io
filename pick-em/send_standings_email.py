@@ -1,6 +1,5 @@
 import json
 import os
-from datetime import datetime, timezone
 
 from espn_api import week_is_complete
 from pickem_common import (
@@ -52,9 +51,13 @@ def main():
     cred_json = os.environ['FIREBASE_SERVICE_ACCOUNT_JSON']
     db = firestore_client(cred_json)
 
-    # auth.js stores `year: new Date().getFullYear()` at submission time,
-    # i.e. the literal calendar year, not the season year — match that.
-    year = datetime.now(timezone.utc).year
+    # auth.js stores `year` straight from current_week.json's `year` field
+    # (the ESPN *season* year, e.g. 2026 for the whole 2026 season including
+    # its January 2027 games) -- not the calendar year at submission time.
+    # Match that, rather than datetime.now().year, which would silently
+    # find zero picks for every season-ending week whose report date lands
+    # in the following calendar year.
+    year = current_week_data['year']
 
     week_docs = [
         doc.to_dict()

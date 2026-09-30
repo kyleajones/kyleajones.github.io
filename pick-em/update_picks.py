@@ -86,15 +86,18 @@ def js_number_to_string(n):
 def compute_lines(away_spread_raw):
     """Port of the away/home spread computation in pick-em/matchups.js.
     `away_spread_raw` is the raw stored spread string from matchups.json
-    (e.g. "+7", "-3.5", "N/A"). Returns (away_line, home_line) exactly as
-    they'd appear in a pick's stored "<Team>|<Line>" value, matching what
-    a legitimate client-side selection would produce. The away side is
-    never reformatted by the client, so away_line is just away_spread_raw
-    verbatim (except the "PK" case, where the client overwrites it). Keep
-    in sync if matchups.js's logic changes.
+    (e.g. "+7", "-3.5", "N/A", or already "PK" -- espn_api._format_spread()
+    normalizes a zero line to "PK" before it's ever written to
+    matchups.json, so that's the actual shape this receives for a
+    pick'em game, not a numeric "0"). Returns (away_line, home_line)
+    exactly as they'd appear in a pick's stored "<Team>|<Line>" value,
+    matching what a legitimate client-side selection would produce. The
+    away side is never reformatted by the client, so away_line is just
+    away_spread_raw verbatim (except the "PK" case, where the client
+    overwrites it). Keep in sync if matchups.js's logic changes.
     """
-    if away_spread_raw == "N/A":
-        return "N/A", "N/A"
+    if away_spread_raw in ("N/A", "PK"):
+        return away_spread_raw, away_spread_raw
 
     spread_val = float(away_spread_raw)
     if spread_val == 0:

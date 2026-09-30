@@ -217,7 +217,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 let awaySpread = game.spread;
                 let homeSpread = "N/A";
 
-                if (awaySpread !== "N/A") {
+                // game.spread arrives already normalized to the literal
+                // string "PK" for a pick'em line (matchups.json's spread
+                // field is written from espn_api._format_spread(), which
+                // does that conversion upstream) -- it's never the numeric
+                // string "0" in practice, so that has to be checked before
+                // parseFloat(), which would otherwise return NaN for "PK".
+                if (awaySpread === "PK") {
+                    homeSpread = "PK";
+                } else if (awaySpread !== "N/A") {
                     const spreadVal = parseFloat(awaySpread);
                     if (spreadVal === 0) {
                         awaySpread = "PK";
