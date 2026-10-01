@@ -177,16 +177,6 @@ document.addEventListener('picks:prefill', (event) => {
 document.addEventListener('DOMContentLoaded', () => {
     updatePickCount();
 
-    const pickCounterSentinel = document.getElementById('pick-counter-sentinel');
-    const pickCounterWrap = document.getElementById('pick-counter-wrap');
-    if (pickCounterSentinel && pickCounterWrap && 'IntersectionObserver' in window) {
-        const stickyObserver = new IntersectionObserver(
-            ([entry]) => pickCounterWrap.classList.toggle('is-stuck', !entry.isIntersecting),
-            { threshold: 0 }
-        );
-        stickyObserver.observe(pickCounterSentinel);
-    }
-
     fetch('matchups.json')
         .then(response => {
             if (!response.ok) {

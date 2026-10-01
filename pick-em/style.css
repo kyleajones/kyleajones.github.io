@@ -533,32 +533,38 @@ button {
     }
 }
 
-/* Pick counter + progress bar */
-#pick-counter-sentinel {
-    height: 1px;
-}
-
+/* Pick counter + progress bar — a small pill that floats fixed in the
+   top-left corner for the whole page, clear of mobile notch/camera
+   cutouts via the safe-area inset. */
 .pick-counter-wrap {
-    margin-top: 15px;
-    margin-bottom: 20px;
-    transition: padding 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    position: fixed;
+    top: max(12px, env(safe-area-inset-top));
+    left: max(12px, env(safe-area-inset-left));
+    z-index: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
 }
 
 .pick-counter-label {
-    font-size: 1.2em;
+    font-size: 0.95em;
     font-weight: bold;
+    white-space: nowrap;
 }
 
 .pick-progress-track {
-    width: 100%;
-    max-width: 260px;
+    width: 60px;
+    flex-shrink: 0;
     height: 6px;
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border);
     border-radius: 999px;
-    margin: 10px auto 0;
     overflow: hidden;
-    transition: max-width 0.2s ease, margin 0.2s ease;
 }
 
 .pick-progress-bar {
@@ -567,38 +573,6 @@ button {
     background: var(--color-accent);
     border-radius: 999px;
     transition: width 0.2s ease-out;
-}
-
-/* Once the page scrolls past the header, the counter detaches from the
-   header's flow and pins to the top of the viewport as a small pill. */
-.pick-counter-wrap.is-stuck {
-    position: fixed;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 500;
-    margin: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 16px;
-    border-radius: 999px;
-    background: var(--color-bg-elevated);
-    border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-md);
-}
-
-.pick-counter-wrap.is-stuck .pick-counter-text {
-    display: none;
-}
-
-.pick-counter-wrap.is-stuck .pick-counter-label {
-    font-size: 0.95em;
-}
-
-.pick-counter-wrap.is-stuck .pick-progress-track {
-    margin: 0;
-    max-width: 90px;
 }
 
 /* Modal Overlay */
