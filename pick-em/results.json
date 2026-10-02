@@ -382,5 +382,13 @@
             "Philadelphia Eagles": 7,
             "Chicago Bears": 27
         }
+    },
+    "401872964": {
+        "away_team": "Pittsburgh Steelers",
+        "home_team": "Cleveland Browns",
+        "scores": {
+            "Pittsburgh Steelers": 24,
+            "Cleveland Browns": 27
+        }
     }
 }
