@@ -1,13 +1,5 @@
 [
     {
-        "id": "401872964",
-        "away": "Pittsburgh Steelers",
-        "home": "Cleveland Browns",
-        "spread": "-2.5",
-        "over_under": "38.5",
-        "commence_time": "2026-10-02T00:15Z"
-    },
-    {
         "id": "401872965",
         "away": "Indianapolis Colts",
         "home": "Washington Commanders",
@@ -118,6 +110,14 @@
         "spread": "-3.5",
         "over_under": "50.5",
         "commence_time": "2026-10-05T00:20Z"
+    },
+    {
+        "id": "401872964",
+        "away": "Pittsburgh Steelers",
+        "home": "Cleveland Browns",
+        "spread": "-2.5",
+        "over_under": "38.5",
+        "commence_time": "2026-10-02T00:15Z"
     },
     {
         "id": "401872979",
