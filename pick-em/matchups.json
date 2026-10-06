@@ -1,13 +1,5 @@
 [
     {
-        "id": "401872979",
-        "away": "Atlanta Falcons",
-        "home": "New Orleans Saints",
-        "spread": "+3",
-        "over_under": "48.5",
-        "commence_time": "2026-10-06T00:15Z"
-    },
-    {
         "id": "401872964",
         "away": "Pittsburgh Steelers",
         "home": "Cleveland Browns",
@@ -126,5 +118,13 @@
         "spread": "-3.5",
         "over_under": "50.5",
         "commence_time": "2026-10-05T00:20Z"
+    },
+    {
+        "id": "401872979",
+        "away": "Atlanta Falcons",
+        "home": "New Orleans Saints",
+        "spread": "+3",
+        "over_under": "48.5",
+        "commence_time": "2026-10-06T00:15Z"
     }
 ]
