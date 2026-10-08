@@ -3,6 +3,44 @@ import { collection, getDocs, query, where, doc, getDoc } from "https://www.gsta
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { gradePick } from './grading.js';
 
+const ESPN_SCOREBOARD_URL = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard';
+
+// Direct client-side poll of ESPN's scoreboard endpoint -- confirmed
+// CORS-open (access-control-allow-origin: *) from a browser, see
+// docs/live-scoring-scheduling-plan.md. Replaces the Firestore liveScores
+// mirror a 15-minute GitHub Actions cron used to keep fresh, whose
+// schedule: trigger isn't reliable enough during a ~3-hour game window.
+// Mirrors espn_api.py's live_scores()/_scored_games() parsing so the shape
+// returned here matches what applyLiveOverlay() already expects.
+async function fetchEspnLiveScores(week, seasonType, year) {
+    const url = `${ESPN_SCOREBOARD_URL}?week=${week}&seasontype=${seasonType}&dates=${year}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`ESPN scoreboard request failed: ${response.status}`);
+    const data = await response.json();
+
+    const games = {};
+    for (const event of data.events || []) {
+        const competition = event.competitions[0];
+        const statusType = competition.status.type;
+        if (!statusType.completed && statusType.state !== 'in') continue;
+
+        const competitors = competition.competitors;
+        const away = competitors.find((c) => c.homeAway === 'away');
+        const home = competitors.find((c) => c.homeAway === 'home');
+        if (away?.score == null || home?.score == null) continue;
+
+        const awayTeam = away.team.displayName;
+        const homeTeam = home.team.displayName;
+        games[event.id] = {
+            away_team: awayTeam,
+            home_team: homeTeam,
+            scores: { [awayTeam]: Number(away.score), [homeTeam]: Number(home.score) },
+            completed: statusType.completed,
+        };
+    }
+    return games;
+}
+
 // Escape user-controlled strings (display names, pick values) before they're
 // interpolated into innerHTML, so a crafted display name can't inject markup
 // that executes in every visitor's browser.
@@ -64,14 +102,12 @@ function weekHasLiveGame(games) {
     return games.some((game) => resultsData[game.id]?.completed === false);
 }
 
-// Merges the liveScores doc's games into resultsData, but never lets a
-// stale "still in progress" live snapshot regress a game that's already
-// resolved to a final result (from results.json, or from an earlier tick
-// that already saw it complete) -- guards against fetch_live_scores.py
-// having stopped refreshing a week while ESPN still reports one of its
-// games as unfinished.
-function applyLiveOverlay(liveSnap) {
-    const liveGames = liveSnap.exists() ? liveSnap.data().games || {} : {};
+// Merges live ESPN games into resultsData, but never lets a stale "still
+// in progress" live snapshot regress a game that's already resolved to a
+// final result (from results.json, or from an earlier tick that already
+// saw it complete) -- guards against a mid-poll ESPN hiccup reporting one
+// of this week's games as unfinished after it already wrapped up.
+function applyLiveOverlay(liveGames) {
     for (const [gameId, liveGame] of Object.entries(liveGames)) {
         const existing = resultsData[gameId];
         if (existing && existing.completed !== false) continue;
@@ -81,18 +117,18 @@ function applyLiveOverlay(liveSnap) {
 
 async function liveTick() {
     if (!liveTickState) return;
-    const { week, yearStr, weekStr, games, players } = liveTickState;
+    const { week, games, players } = liveTickState;
 
-    let liveSnap;
+    let liveGames;
     try {
-        liveSnap = await getDoc(doc(db, 'liveScores', `${yearStr}_${weekStr}`));
+        liveGames = await fetchEspnLiveScores(week, currentWeekInfo.season_type, currentWeekInfo.year);
     } catch (error) {
         console.error('Error refreshing live scores: ', error);
         return;
     }
     if (activeRenderWeek !== week) return; // user switched weeks while this was in flight
 
-    applyLiveOverlay(liveSnap);
+    applyLiveOverlay(liveGames);
     renderBanner(games);
     renderTable(games, players);
 
@@ -200,10 +236,9 @@ async function renderWeek(week) {
     tableContainer.innerHTML = '';
 
     try {
-        const [matchupsSnap, boardSnap, liveSnap] = await Promise.all([
+        const [matchupsSnap, boardSnap] = await Promise.all([
             getDocs(query(collection(db, 'matchups'), where('weekStr', '==', weekStr), where('yearStr', '==', yearStr))),
             getDoc(doc(db, 'weeklyPicks', `${yearStr}_${weekStr}`)),
-            getDoc(doc(db, 'liveScores', `${yearStr}_${weekStr}`)),
         ]);
         if (activeRenderWeek !== week) return; // user switched weeks while this was in flight
 
@@ -214,11 +249,18 @@ async function renderWeek(week) {
         const board = boardSnap.exists() ? boardSnap.data() : { players: {} };
         const players = { ...(board.players || {}) };
 
-        // Overlay the frequently-refreshed live mirror on top of the
-        // once-daily results.json snapshot -- the live doc is fresher
-        // whenever it has an entry for a game, since it's written every
-        // 15 minutes during game windows instead of once a day.
-        applyLiveOverlay(liveSnap);
+        // Overlay live ESPN scores on top of the once-daily results.json
+        // snapshot -- fetched directly, not via a cron-fed mirror, so
+        // there's no schedule to be delayed. A failure here (network
+        // blip, ESPN hiccup) just means this render falls back to
+        // whatever results.json already had; it shouldn't break the rest
+        // of the week from loading.
+        const liveGames = await fetchEspnLiveScores(week, currentWeekInfo.season_type, year).catch((error) => {
+            console.error('Error fetching live scores: ', error);
+            return {};
+        });
+        if (activeRenderWeek !== week) return;
+        applyLiveOverlay(liveGames);
 
         // Always show the logged-in user their own picks in full, even for
         // games that haven't started -- the weeklyPicks mirror redacts
