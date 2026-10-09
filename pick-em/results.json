@@ -510,5 +510,13 @@
             "Atlanta Falcons": 45,
             "New Orleans Saints": 24
         }
+    },
+    "401872980": {
+        "away_team": "Tampa Bay Buccaneers",
+        "home_team": "Dallas Cowboys",
+        "scores": {
+            "Tampa Bay Buccaneers": 24,
+            "Dallas Cowboys": 16
+        }
     }
 }
