@@ -55,22 +55,6 @@ async function seedLeaderboard() {
   });
 }
 
-async function seedLiveScores() {
-  await testEnv.withSecurityRulesDisabled(async (context) => {
-    await setDoc(doc(context.firestore(), "liveScores/2026_week1"), {
-      games: {
-        game1: {
-          away_team: "Team A",
-          home_team: "Team B",
-          scores: { "Team A": 10, "Team B": 17 },
-          completed: false,
-        },
-      },
-      updatedAt: new Date(),
-    });
-  });
-}
-
 test("unauthenticated users can read /matchups/{gameId}", async () => {
   await seedMatchup();
   const db = testEnv.unauthenticatedContext().firestore();
@@ -99,16 +83,3 @@ test("no client, even authenticated, can write /leaderboard/{docId}", async () =
   );
 });
 
-test("unauthenticated users can read /liveScores/{docId}", async () => {
-  await seedLiveScores();
-  const db = testEnv.unauthenticatedContext().firestore();
-  await assertSucceeds(getDoc(doc(db, "liveScores/2026_week1")));
-});
-
-test("no client, even authenticated, can write /liveScores/{docId}", async () => {
-  await seedLiveScores();
-  const db = testEnv.authenticatedContext("alice").firestore();
-  await assertFails(
-    setDoc(doc(db, "liveScores/2026_week1"), { games: { game1: { completed: true } } })
-  );
-});

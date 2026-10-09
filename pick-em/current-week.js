@@ -9,9 +9,11 @@ const ESPN_SCOREBOARD_URL = 'https://site.api.espn.com/apis/site/v2/sports/footb
 // CORS-open (access-control-allow-origin: *) from a browser, see
 // docs/live-scoring-scheduling-plan.md. Replaces the Firestore liveScores
 // mirror a 15-minute GitHub Actions cron used to keep fresh, whose
-// schedule: trigger isn't reliable enough during a ~3-hour game window.
-// Mirrors espn_api.py's live_scores()/_scored_games() parsing so the shape
-// returned here matches what applyLiveOverlay() already expects.
+// schedule: trigger wasn't reliable enough during a ~3-hour game window.
+// Mirrors espn_api.py's completed_scores() parsing (same event/competitor
+// shape), plus the in-progress case via status.type.state == "in" --
+// completed_scores() only ever returns finished games, since that's all
+// the once-daily results.json pipeline needs.
 async function fetchEspnLiveScores(week, seasonType, year) {
     const url = `${ESPN_SCOREBOARD_URL}?week=${week}&seasontype=${seasonType}&dates=${year}`;
     const response = await fetch(url);

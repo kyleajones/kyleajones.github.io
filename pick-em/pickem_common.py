@@ -24,9 +24,9 @@ def escape_html(value):
 def weeks_to_recheck(week):
     """The current week plus the one before it -- catches a Thursday/early
     game that finished before a run, or last week's Monday-nighter right
-    after rollover into a new week. Shared by fetch_scores.py,
-    fetch_live_scores.py, and update_weekly_picks.py, which all recompute
-    the same two weeks on every run for this reason.
+    after rollover into a new week. Shared by fetch_scores.py and
+    update_weekly_picks.py, which both recompute the same two weeks on
+    every run for this reason.
     """
     return [week, week - 1] if week > 1 else [week]
 

@@ -2,10 +2,22 @@
 
 ## Status
 
-Not yet needed. Written 2026-09-30 while monitoring `update-live-scores.yml`'s
-first live game windows. Revisit this doc if those runs are showing delays
-that meaningfully undermine the "live" promise (see "How to decide" below)
-— otherwise leave the current design as-is.
+**Resolved — Option C implemented and confirmed working.** Written
+2026-09-30 while monitoring `update-live-scores.yml`'s first live game
+windows, after `schedule:` runs showed delays bad enough to undermine the
+"live" promise. The Option C CORS blocker was tested and confirmed open
+(2026-10-09); `current-week.js` was switched to poll ESPN's scoreboard
+endpoint directly, and that held up through a real Thursday night game
+(2026-10-08/09).
+
+Follow-up cleanup done once the new path was confirmed: removed
+`fetch_live_scores.py`, the `liveScores` Firestore collection/rules, and
+the corresponding step from `update-live-scores.yml` (renamed internally
+to "Refresh Weekly Picks Board", its only remaining job), since nothing
+reads that mirror anymore. The picks-reveal half (`update_weekly_picks.py`)
+still runs on that workflow's existing 15-minute `schedule:` cadence, per
+the recommendation below — it's less time-critical than scores, so the
+same unreliable trigger is an acceptable tradeoff for it.
 
 ## Context
 
@@ -149,12 +161,19 @@ because there's no schedule.
 
 ## Reference: relevant files
 
-- `.github/workflows/update-live-scores.yml` — current `schedule:`-based
-  trigger; what Option A would change the trigger mechanism of.
-- `fetch_live_scores.py`, `espn_api.py` — logic that would move
-  client-side (Option C) or into a Cloud Function (Option B).
-- `current-week.js`'s `liveTick()` / `renderWeek()` — already polls every
-  60 seconds; Option C changes *what* it polls, not the polling itself.
+- `current-week.js`'s `fetchEspnLiveScores()` / `liveTick()` /
+  `renderWeek()` — the implemented Option C: direct client-side poll of
+  ESPN's scoreboard endpoint, parsed the same way `espn_api.py`'s
+  `completed_scores()` is, plus the in-progress (`status.type.state ==
+  "in"`) case that function doesn't need.
+- `.github/workflows/update-live-scores.yml` — still runs
+  `update_weekly_picks.py` on the existing `schedule:`-based 15-minute
+  cadence for the picks-reveal half; no longer runs any score-fetching
+  step (`fetch_live_scores.py` was removed, along with the `liveScores`
+  Firestore collection/rules it wrote to).
+- `espn_api.py` — still the shared ESPN-parsing module for everything
+  server-side (`week_games()`, `completed_scores()`, etc.); no longer has
+  a `live_scores()`/`_scored_games()` pair, now that nothing calls them.
 - Firebase plan: currently Spark (free) — confirmed sufficient for the
   current Firestore-mirror design; Option B is the only one of these
   three that requires moving off it.

@@ -2,10 +2,9 @@ import requests
 
 BASE = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
 
-# fetch_live_scores.py calls into this every 15 minutes during game
-# windows via a workflow with cancel-in-progress: false -- an unbounded
-# hang here would queue up runs behind it rather than self-healing within
-# a cycle, so every request needs a hard ceiling.
+# Every workflow that calls into this runs with cancel-in-progress: false
+# -- an unbounded hang here would queue up runs behind it rather than
+# self-healing within a cycle, so every request needs a hard ceiling.
 REQUEST_TIMEOUT_SECONDS = 10
 
 
@@ -103,19 +102,18 @@ def week_is_complete(week, season_type, year):
     return all(e["competitions"][0]["status"]["type"]["completed"] for e in events)
 
 
-def _scored_games(data, want_status):
-    """Shared extraction for completed_scores()/live_scores(): every event
-    for which `want_status(status_type)` is true, in the shape
-    {event_id: {away_team, home_team, scores: {team_name: score},
-    completed}}. Skips any event missing a score on either side (e.g. not
-    yet started).
+def completed_scores(week, season_type, year):
+    """Games with status.type.completed == true for a specific week, in
+    results.json's existing shape:
+    {event_id: {away_team, home_team, scores: {team_name: score}}}.
+    Skips any event missing a score on either side (e.g. not yet started).
     """
+    data = _scoreboard(week=week, season_type=season_type, year=year)
     results = {}
 
     for event in data.get("events", []):
         competition = event["competitions"][0]
-        status_type = competition["status"]["type"]
-        if not want_status(status_type):
+        if not competition["status"]["type"]["completed"]:
             continue
 
         competitors = competition["competitors"]
@@ -135,38 +133,6 @@ def _scored_games(data, want_status):
                 away_team: int(away["score"]),
                 home_team: int(home["score"]),
             },
-            "completed": status_type["completed"],
         }
 
     return results
-
-
-def completed_scores(week, season_type, year):
-    """Games with status.type.completed == true for a specific week, in
-    results.json's existing shape:
-    {event_id: {away_team, home_team, scores: {team_name: score}}}.
-    """
-    data = _scoreboard(week=week, season_type=season_type, year=year)
-    games = _scored_games(data, lambda status_type: status_type["completed"])
-
-    # Every game here is completed by construction -- drop the redundant
-    # flag to keep results.json's existing shape unchanged.
-    for game in games.values():
-        del game["completed"]
-
-    return games
-
-
-def live_scores(week, season_type, year):
-    """Games that have kicked off for a specific week -- in progress
-    (status.type.state == "in") or completed -- in the same shape as
-    completed_scores(), plus a `completed` bool. Games that haven't
-    started yet (state == "pre") are excluded, since there's no score to
-    show. Used for the frequent in-game refresh; completed_scores() is
-    still what the once-daily pipeline writes to results.json.
-    """
-    data = _scoreboard(week=week, season_type=season_type, year=year)
-    return _scored_games(
-        data,
-        lambda status_type: status_type["completed"] or status_type.get("state") == "in",
-    )

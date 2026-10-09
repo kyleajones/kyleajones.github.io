@@ -129,27 +129,6 @@ def test_week_is_complete_false_for_empty_week(monkeypatch):
     assert espn_api.week_is_complete(22, 2, 2026) is False
 
 
-def test_live_scores_includes_in_progress_and_completed_excludes_pregame(monkeypatch):
-    data = _load("in_progress_week.json")
-    _patch_scoreboard(monkeypatch, data)
-
-    scores = espn_api.live_scores(3, 2, 2026)
-
-    assert set(scores.keys()) == {"401872700", "401872702"}
-
-    jets_bills = scores["401872700"]
-    assert jets_bills == {
-        "away_team": "New York Jets",
-        "home_team": "Buffalo Bills",
-        "scores": {"New York Jets": 10, "Buffalo Bills": 17},
-        "completed": False,
-    }
-
-    bengals_ravens = scores["401872702"]
-    assert bengals_ravens["completed"] is True
-    assert bengals_ravens["scores"] == {"Cincinnati Bengals": 20, "Baltimore Ravens": 27}
-
-
 def test_current_week_and_year_parses_top_level_block(monkeypatch):
     data = _load("upcoming_week.json")
     _patch_scoreboard(monkeypatch, data)
