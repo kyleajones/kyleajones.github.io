@@ -1,13 +1,5 @@
 [
     {
-        "id": "401872994",
-        "away": "Buffalo Bills",
-        "home": "Los Angeles Rams",
-        "spread": "+3",
-        "over_under": "54.5",
-        "commence_time": "2026-10-13T00:15Z"
-    },
-    {
         "id": "401872980",
         "away": "Tampa Bay Buccaneers",
         "home": "Dallas Cowboys",
@@ -118,5 +110,13 @@
         "spread": "+3.5",
         "over_under": "43.5",
         "commence_time": "2026-10-12T00:20Z"
+    },
+    {
+        "id": "401872994",
+        "away": "Buffalo Bills",
+        "home": "Los Angeles Rams",
+        "spread": "+3",
+        "over_under": "54.5",
+        "commence_time": "2026-10-13T00:15Z"
     }
 ]
