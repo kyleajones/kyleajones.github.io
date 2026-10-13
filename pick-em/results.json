@@ -622,5 +622,13 @@
             "Baltimore Ravens": 30,
             "Atlanta Falcons": 23
         }
+    },
+    "401872994": {
+        "away_team": "Buffalo Bills",
+        "home_team": "Los Angeles Rams",
+        "scores": {
+            "Buffalo Bills": 37,
+            "Los Angeles Rams": 34
+        }
     }
 }
