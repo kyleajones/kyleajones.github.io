@@ -630,5 +630,13 @@
             "Buffalo Bills": 37,
             "Los Angeles Rams": 34
         }
+    },
+    "401872995": {
+        "away_team": "Seattle Seahawks",
+        "home_team": "Denver Broncos",
+        "scores": {
+            "Seattle Seahawks": 14,
+            "Denver Broncos": 17
+        }
     }
 }
