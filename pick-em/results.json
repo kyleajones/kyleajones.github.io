@@ -638,5 +638,101 @@
             "Seattle Seahawks": 14,
             "Denver Broncos": 17
         }
+    },
+    "401872996": {
+        "away_team": "Houston Texans",
+        "home_team": "Jacksonville Jaguars",
+        "scores": {
+            "Houston Texans": 34,
+            "Jacksonville Jaguars": 31
+        }
+    },
+    "401872999": {
+        "away_team": "Chicago Bears",
+        "home_team": "Atlanta Falcons",
+        "scores": {
+            "Chicago Bears": 31,
+            "Atlanta Falcons": 23
+        }
+    },
+    "401872997": {
+        "away_team": "Baltimore Ravens",
+        "home_team": "Cleveland Browns",
+        "scores": {
+            "Baltimore Ravens": 10,
+            "Cleveland Browns": 13
+        }
+    },
+    "401873003": {
+        "away_team": "Tennessee Titans",
+        "home_team": "Indianapolis Colts",
+        "scores": {
+            "Tennessee Titans": 26,
+            "Indianapolis Colts": 20
+        }
+    },
+    "401873001": {
+        "away_team": "New York Jets",
+        "home_team": "New England Patriots",
+        "scores": {
+            "New York Jets": 19,
+            "New England Patriots": 26
+        }
+    },
+    "401873000": {
+        "away_team": "New Orleans Saints",
+        "home_team": "New York Giants",
+        "scores": {
+            "New Orleans Saints": 34,
+            "New York Giants": 27
+        }
+    },
+    "401872998": {
+        "away_team": "Carolina Panthers",
+        "home_team": "Philadelphia Eagles",
+        "scores": {
+            "Carolina Panthers": 25,
+            "Philadelphia Eagles": 14
+        }
+    },
+    "401873002": {
+        "away_team": "Pittsburgh Steelers",
+        "home_team": "Tampa Bay Buccaneers",
+        "scores": {
+            "Pittsburgh Steelers": 26,
+            "Tampa Bay Buccaneers": 19
+        }
+    },
+    "401873004": {
+        "away_team": "Arizona Cardinals",
+        "home_team": "Los Angeles Rams",
+        "scores": {
+            "Arizona Cardinals": 18,
+            "Los Angeles Rams": 16
+        }
+    },
+    "401873006": {
+        "away_team": "Los Angeles Chargers",
+        "home_team": "Kansas City Chiefs",
+        "scores": {
+            "Los Angeles Chargers": 6,
+            "Kansas City Chiefs": 22
+        }
+    },
+    "401873005": {
+        "away_team": "Buffalo Bills",
+        "home_team": "Las Vegas Raiders",
+        "scores": {
+            "Buffalo Bills": 33,
+            "Las Vegas Raiders": 30
+        }
+    },
+    "401873007": {
+        "away_team": "Dallas Cowboys",
+        "home_team": "Green Bay Packers",
+        "scores": {
+            "Dallas Cowboys": 13,
+            "Green Bay Packers": 23
+        }
     }
 }
