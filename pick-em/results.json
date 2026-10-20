@@ -734,5 +734,13 @@
             "Dallas Cowboys": 13,
             "Green Bay Packers": 23
         }
+    },
+    "401873008": {
+        "away_team": "Washington Commanders",
+        "home_team": "San Francisco 49ers",
+        "scores": {
+            "Washington Commanders": 17,
+            "San Francisco 49ers": 23
+        }
     }
 }
