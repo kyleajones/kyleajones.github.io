@@ -1,13 +1,5 @@
 [
     {
-        "id": "401873008",
-        "away": "Washington Commanders",
-        "home": "San Francisco 49ers",
-        "spread": "+7.5",
-        "over_under": "50.5",
-        "commence_time": "2026-10-20T00:15Z"
-    },
-    {
         "id": "401872995",
         "away": "Seattle Seahawks",
         "home": "Denver Broncos",
@@ -110,5 +102,13 @@
         "spread": "+1.5",
         "over_under": "52.5",
         "commence_time": "2026-10-19T00:20Z"
+    },
+    {
+        "id": "401873008",
+        "away": "Washington Commanders",
+        "home": "San Francisco 49ers",
+        "spread": "+7.5",
+        "over_under": "50.5",
+        "commence_time": "2026-10-20T00:15Z"
     }
 ]
