@@ -742,5 +742,13 @@
             "Washington Commanders": 17,
             "San Francisco 49ers": 23
         }
+    },
+    "401873010": {
+        "away_team": "New England Patriots",
+        "home_team": "Chicago Bears",
+        "scores": {
+            "New England Patriots": 24,
+            "Chicago Bears": 30
+        }
     }
 }
