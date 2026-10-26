@@ -1,5 +1,21 @@
 [
     {
+        "id": "401873009",
+        "away": "Dallas Cowboys",
+        "home": "Philadelphia Eagles",
+        "spread": "-4.5",
+        "over_under": "44.5",
+        "commence_time": "2026-10-27T00:15Z"
+    },
+    {
+        "id": "401873010",
+        "away": "New England Patriots",
+        "home": "Chicago Bears",
+        "spread": "+3",
+        "over_under": "50.5",
+        "commence_time": "2026-10-23T00:15Z"
+    },
+    {
         "id": "401873011",
         "away": "Pittsburgh Steelers",
         "home": "New Orleans Saints",
@@ -94,21 +110,5 @@
         "spread": "+2.5",
         "over_under": "42.5",
         "commence_time": "2026-10-26T00:20Z"
-    },
-    {
-        "id": "401873010",
-        "away": "New England Patriots",
-        "home": "Chicago Bears",
-        "spread": "+3",
-        "over_under": "50.5",
-        "commence_time": "2026-10-23T00:15Z"
-    },
-    {
-        "id": "401873009",
-        "away": "Dallas Cowboys",
-        "home": "Philadelphia Eagles",
-        "spread": "-4.5",
-        "over_under": "44.5",
-        "commence_time": "2026-10-27T00:15Z"
     }
 ]
