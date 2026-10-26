@@ -39,7 +39,6 @@ def grade_pick(pick_value, pick_type, game_result):
         return 'PENDING'
 
     selection, line_str = pick_value.split('|')
-    line = 0.0 if line_str == 'PK' else float(line_str)
 
     scores = game_result.get('scores', {})
     away_team = game_result.get('away_team')
@@ -51,7 +50,29 @@ def grade_pick(pick_value, pick_type, game_result):
     away_score = scores[away_team]
     home_score = scores[home_team]
 
+    # A line is either the literal "PK" (pick'em) or a numeric string.
+    # Anything else is ungradeable -- notably "N/A", which is what
+    # espn_api._format_spread() writes whenever ESPN has published no odds
+    # for a game. float("N/A") used to raise ValueError here, which aborted
+    # update_leaderboard.py / send_standings_email.py outright, so one
+    # player's unpriced pick took down the whole league's standings.
+    if line_str == 'PK':
+        line = 0.0
+    else:
+        try:
+            line = float(line_str)
+        except ValueError:
+            return 'PENDING'
+
     if pick_type == 'Spread':
+        # `selection` must name one of the two real teams. Anything else is
+        # ungradeable rather than a silent default: without this check an
+        # Over/Under value stored under a spread_ key (e.g. "Under|0") fell
+        # through to the home-team branch below and got graded as though the
+        # total were a spread, which handed out guaranteed wins.
+        if selection not in (away_team, home_team):
+            return 'PENDING'
+
         is_away = selection == away_team
         picked_score = away_score if is_away else home_score
         opponent_score = home_score if is_away else away_score
@@ -63,13 +84,18 @@ def grade_pick(pick_value, pick_type, game_result):
             return 'LOSS'
         return 'PUSH'
     elif pick_type == 'Over/Under':
+        # Same reasoning as the Spread branch: a team name stored under an
+        # ou_ key is ungradeable, and must be rejected before the push
+        # check below, which would otherwise report PUSH for it.
+        if selection not in ('Over', 'Under'):
+            return 'PENDING'
+
         total_points = away_score + home_score
         if total_points == line:
             return 'PUSH'
         if selection == 'Over':
             return 'WIN' if total_points > line else 'LOSS'
-        if selection == 'Under':
-            return 'WIN' if total_points < line else 'LOSS'
+        return 'WIN' if total_points < line else 'LOSS'
 
     return 'PENDING'
 
@@ -85,13 +111,25 @@ def compute_points(docs, results_data):
     user_stats = {}
 
     for record in docs:
+        picks = record.get('picks') or {}
+
+        # A doc with no picks contributes nothing but would still create a
+        # 0-point leaderboard row below, since the entry is seeded before
+        # the pick loop runs. firestore.rules now rejects empty-picks
+        # writes outright, but this also covers any junk doc created
+        # before that bound existed (e.g. a fabricated
+        # "<uid>_week999_9999"). A player whose picks are all still
+        # PENDING is unaffected -- they have picks, so they keep their
+        # legitimate 0-point row while the week plays out.
+        if not picks:
+            continue
+
         uid = record.get('userId') or record.get('username') or 'Unknown'
         user_name = record.get('username') or 'Anonymous'
 
         if uid not in user_stats:
             user_stats[uid] = {'name': user_name, 'points': 0, 'w': 0, 'l': 0, 'p': 0}
 
-        picks = record.get('picks') or {}
         for pick_key, pick_value in picks.items():
             game_id = pick_key.split('_')[1]
             pick_type = 'Spread' if pick_key.startswith('spread') else 'Over/Under'
@@ -108,6 +146,39 @@ def compute_points(docs, results_data):
                 user_stats[uid]['l'] += 1
 
     return user_stats
+
+
+def standings_sort_key(entry):
+    """Sort key matching compareStandings() in pick-em/grading.js: points
+    desc, then more wins, then fewer losses, then name asc. Keep in sync
+    -- record.js and send_standings_email.py render the same ranks, so a
+    divergence would have the emailed standings disagree with the web
+    leaderboard.
+    """
+    return (-entry['points'], -entry['w'], entry['l'], entry.get('name') or '')
+
+
+def rank_standings(sorted_entries):
+    """Port of rankStandings() in pick-em/grading.js. Assigns standard
+    competition ranking ("1224"): entries tied on points/w/l share a
+    rank, and the next distinct entry skips the ranks that tie consumed.
+    Expects `sorted_entries` already ordered by standings_sort_key().
+    Returns [(rank, entry), ...].
+
+    Name is deliberately not part of the tie test -- it's only a
+    display-order tiebreaker, so two players equal on points/w/l are a
+    genuine tie and must share a rank.
+    """
+    ranked = []
+    last_rank = 0
+    last_key = None
+    for index, entry in enumerate(sorted_entries):
+        key = (entry['points'], entry['w'], entry['l'])
+        if key != last_key:
+            last_rank = index + 1
+            last_key = key
+        ranked.append((last_rank, entry))
+    return ranked
 
 
 def _firebase_app(cred_json):

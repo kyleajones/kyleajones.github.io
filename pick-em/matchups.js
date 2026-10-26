@@ -59,6 +59,7 @@ function enforcePickLimit() {
     const atLimit = currentPicks.size >= MAX_PICKS;
     document.querySelectorAll('input[type="radio"]').forEach(input => {
         if (input.checked || input.closest('.game-card.locked')) return;
+        if (input.dataset.unavailable === "true") return;
         input.disabled = atLimit;
     });
 }
@@ -250,8 +251,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 const homeColorStyle = homeColor ? ` style="--team-color: ${homeColor};"` : '';
 
                 const isLocked = gameDate <= new Date();
-                const lockAttr = isLocked ? 'disabled' : '';
                 const lockOverlay = isLocked ? `<div class="locked-banner">🔒 GAME LOCKED</div>` : '';
+
+                // An unpriced line ("N/A", written by
+                // espn_api._format_spread()/_format_over_under() when ESPN
+                // has published no odds yet) isn't pickable: there's no real
+                // line to grade against, so the graders return PENDING and
+                // firestore.rules rejects the write outright. Disable those
+                // inputs so a player can't make a pick that silently scores
+                // nothing. The two sides are independent -- a game often has
+                // a published total but no spread, or vice versa.
+                // data-unavailable marks these as permanently unpickable, so
+                // enforcePickLimit() (which otherwise re-enables any
+                // unchecked input whenever the player drops below the cap)
+                // leaves them alone.
+                const spreadUnavailable = awaySpread === "N/A" || homeSpread === "N/A";
+                const ouUnavailable = game.over_under === "N/A" || game.over_under == null;
+                const spreadLockAttr = spreadUnavailable
+                    ? 'disabled data-unavailable="true"'
+                    : (isLocked ? 'disabled' : '');
+                const ouLockAttr = ouUnavailable
+                    ? 'disabled data-unavailable="true"'
+                    : (isLocked ? 'disabled' : '');
 
                 const wrapperDiv = document.createElement('div');
                 wrapperDiv.className = 'game-card';
@@ -264,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="picks-section">
                             <div class="matchup">
                                 <label class="team-option">
-                                    <input type="radio" name="spread_${game.id}" value="${game.away}|${awaySpread}" ${lockAttr}>
+                                    <input type="radio" name="spread_${game.id}" value="${game.away}|${awaySpread}" ${spreadLockAttr}>
                                     <div class="team-with-logo"${awayColorStyle}>
                                         ${awayLogo ? `<div class="team-logo-badge"><img src="${awayLogo}" alt="${game.away}" class="team-logo" onerror="this.parentElement.style.display='none'"></div>` : ''}
                                         <span class="team-label">${game.away}</span>
@@ -277,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
 
                                 <label class="team-option">
-                                    <input type="radio" name="spread_${game.id}" value="${game.home}|${homeSpread}" ${lockAttr}>
+                                    <input type="radio" name="spread_${game.id}" value="${game.home}|${homeSpread}" ${spreadLockAttr}>
                                     <div class="team-with-logo"${homeColorStyle}>
                                         ${homeLogo ? `<div class="team-logo-badge"><img src="${homeLogo}" alt="${game.home}" class="team-logo" onerror="this.parentElement.style.display='none'"></div>` : ''}
                                         <span class="team-label">${game.home}</span>
@@ -291,11 +312,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="picks-section">
                             <div class="ou-picks">
                                 <label class="ou-option ou-over">
-                                    <input type="radio" name="ou_${game.id}" value="Over|${game.over_under}" ${lockAttr}>
+                                    <input type="radio" name="ou_${game.id}" value="Over|${game.over_under}" ${ouLockAttr}>
                                     <span class="ou-label">Over <br><span class="ou-total">${game.over_under}</span></span>
                                 </label>
                                 <label class="ou-option ou-under">
-                                    <input type="radio" name="ou_${game.id}" value="Under|${game.over_under}" ${lockAttr}>
+                                    <input type="radio" name="ou_${game.id}" value="Under|${game.over_under}" ${ouLockAttr}>
                                     <span class="ou-label">Under <br><span class="ou-total">${game.over_under}</span></span>
                                 </label>
                             </div>

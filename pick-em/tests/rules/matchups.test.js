@@ -47,10 +47,16 @@ async function seedMatchup() {
   });
 }
 
+// Matches the shape update_leaderboard.py actually writes: player
+// entries nested under `players`, alongside a `computedAt` timestamp
+// that record.js surfaces to explain how stale the points are.
 async function seedLeaderboard() {
   await testEnv.withSecurityRulesDisabled(async (context) => {
     await setDoc(doc(context.firestore(), "leaderboard/current"), {
-      alice: { name: "Alice", points: 12, w: 4, l: 1, p: 0 },
+      players: {
+        alice: { name: "Alice", points: 12, w: 4, l: 1, p: 0 },
+      },
+      computedAt: new Date(),
     });
   });
 }

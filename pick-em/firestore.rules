@@ -58,18 +58,39 @@ service cloud.firestore {
     // True only if `key` (e.g. "spread_<gameId>" or "ou_<gameId>") refers
     // to a real game that belongs to THIS document's own week/year, that
     // game hasn't started yet, and `value` exactly matches one of the
-    // four legitimate selections derivable from the mirrored line data.
+    // legitimate selections derivable from the mirrored line data FOR THAT
+    // KEY'S OWN PICK TYPE.
+    //
+    // The pick type matters: this used to accept any of the four values
+    // for either prefix, so "spread_<gameId>" = "Under|0" passed. The
+    // graders then read "Under" as a team name, fell through to the home
+    // side, and scored the total as though it were a spread -- a forged
+    // guaranteed win. The graders now reject that too (grade_pick() in
+    // pickem_common.py / gradePick() in grading.js), but it shouldn't be
+    // storable in the first place.
+    //
+    // An unpriced line ("N/A", what espn_api._format_spread() writes when
+    // ESPN has published no odds) is rejected outright: it isn't a real
+    // line, so there's no honest way to grade a pick against it.
+    function valueMatchesKeyType(key, value, matchup) {
+      return key.matches('spread_.*')
+             ? (matchup.data.awayLine != 'N/A'
+                && (value == matchup.data.away + '|' + matchup.data.awayLine
+                    || value == matchup.data.home + '|' + matchup.data.homeLine))
+             : (matchup.data.overUnder != 'N/A'
+                && (value == 'Over|' + matchup.data.overUnder
+                    || value == 'Under|' + matchup.data.overUnder));
+    }
+
     function pickIsValid(key, value, weekStr, yearStr) {
       let gameId = key.split('_')[1];
       let matchup = get(matchupPath(gameId));
-      return exists(matchupPath(gameId))
+      return matchup != null
              && matchup.data.weekStr == weekStr
              && matchup.data.yearStr == yearStr
              && request.time < matchup.data.commenceTime
-             && (value == matchup.data.away + '|' + matchup.data.awayLine
-                 || value == matchup.data.home + '|' + matchup.data.homeLine
-                 || value == 'Over|' + matchup.data.overUnder
-                 || value == 'Under|' + matchup.data.overUnder);
+             && (key.matches('spread_.*') || key.matches('ou_.*'))
+             && valueMatchesKeyType(key, value, matchup);
     }
 
     function pickOk(key, weekStr, yearStr) {
@@ -85,6 +106,27 @@ service cloud.firestore {
     // enforced below: each clause is trivially true once `keys` is
     // shorter than that index, via `||` short-circuiting before the
     // (otherwise out-of-bounds) `keys[i]` access is ever evaluated.
+    //
+    // ACCESS BUDGET -- the reason every helper here is written to spend
+    // at most one get() per path. Firestore allows only 10 document
+    // access calls (get/exists) per single-document rules evaluation,
+    // and exceeding it fails the write with permission-denied, which
+    // would look exactly like a legitimate rule rejection. The worst
+    // case is a 7-pick save where no pick can use pickUnchanged()'s
+    // short-circuit (i.e. 7 brand-new picks):
+    //
+    //   7 x pickIsValid()  = 7   (one get() each)
+    //   + lockIsFrozen()   = 1   (only when a lock is already stored)
+    //   -------------------------
+    //                        8   of 10
+    //
+    // That leaves 2 of headroom. This is why pickIsValid() and
+    // matchupStarted() null-check a single get() instead of calling
+    // exists() first: the exists()+get() pair this replaced cost 2 per
+    // pick, putting the same save at ~16 and silently breaking every
+    // full-slate submission. If MAX_PICKS ever rises above 7, or any
+    // helper gains another get(), this budget has to be rechecked --
+    // the limit is per-evaluation and cannot be raised.
     function allPicksOk(keys, weekStr, yearStr) {
       return (keys.size() < 1 || pickOk(keys[0], weekStr, yearStr))
              && (keys.size() < 2 || pickOk(keys[1], weekStr, yearStr))
@@ -95,17 +137,26 @@ service cloud.firestore {
              && (keys.size() < 7 || pickOk(keys[6], weekStr, yearStr));
     }
 
+    // True if `gameId`'s mirrored matchup exists and has already kicked
+    // off. Spends a single document access (one get(), null-checked)
+    // rather than the exists()+get() pair on the same path this replaced
+    // -- see the access-budget note on allPicksOk().
+    function matchupStarted(gameId) {
+      let matchup = get(matchupPath(gameId));
+      return matchup != null && request.time >= matchup.data.commenceTime;
+    }
+
     // True if the EXISTING document's lockedPick references a game that
     // has already started -- once true, that lock must freeze, matching
     // the same fairness pattern already applied to picks themselves
     // (freeze server-side at kickoff, not just via client-side disabled
-    // radios).
+    // radios). The && chain short-circuits before matchupStarted(), so
+    // the get() is only spent when there's actually a stored lock.
     function lockIsFrozen() {
       return resource != null
              && 'lockedPick' in resource.data
              && resource.data.lockedPick != null
-             && exists(matchupPath(resource.data.lockedPick.split('_')[1]))
-             && request.time >= get(matchupPath(resource.data.lockedPick.split('_')[1])).data.commenceTime;
+             && matchupStarted(resource.data.lockedPick.split('_')[1]);
     }
 
     // lockedPick, if present, must be null or a real key in picks (kept
@@ -155,19 +206,33 @@ service cloud.firestore {
       // fail every pick automatically: neither has any matching
       // not-yet-started game in the mirror. lockedPickOk() keeps
       // lockedPick honest and frozen once its game starts.
+      //
+      // The >= 1 lower bound is what stops an empty-picks doc at a
+      // fabricated week/year (e.g. "<uid>_week999_9999") from being
+      // created at all: allPicksOk() vacuously passes on an empty map,
+      // since there are no picks to find a mirrored game for, so size()
+      // is the only thing standing between that and a junk 0-point row
+      // on the leaderboard. auth.js already refuses to submit zero
+      // picks client-side ("You must make at least one pick"), so this
+      // rejects nothing a legitimate client would ever send.
       allow create: if request.auth != null
                     && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.picks.size() >= 1
                     && request.resource.data.picks.size() <= 7
                     && pickId.matches(request.auth.uid + '_week[0-9]+_[0-9]+')
                     && lockedPickOk()
                     && allPicksOk(request.resource.data.picks.keys(), pickId.split('_')[1], pickId.split('_')[2]);
 
       // Require the existing document, the incoming data, AND the document
-      // ID to all match the authenticated user. Also cap total picks at 7,
-      // and apply the same lockedPickOk()/allPicksOk() checks as create.
+      // ID to all match the authenticated user. Also bound total picks to
+      // 1..7, and apply the same lockedPickOk()/allPicksOk() checks as
+      // create -- an update must not be able to empty out a doc either,
+      // which would otherwise be a way to retroactively withdraw a losing
+      // week's picks.
       allow update: if request.auth != null
                     && resource.data.userId == request.auth.uid
                     && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.picks.size() >= 1
                     && request.resource.data.picks.size() <= 7
                     && pickId.matches(request.auth.uid + '_week[0-9]+_[0-9]+')
                     && lockedPickOk()

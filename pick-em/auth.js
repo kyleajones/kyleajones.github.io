@@ -163,9 +163,25 @@ document.getElementById('picks-form').addEventListener('submit', async function(
 
         // Merge with any previously saved picks so that resubmitting
         // doesn't erase picks for games that have already locked.
+        //
+        // matchups.json is load-bearing for everything below: each
+        // carry-forward and lock-freeze decision is a kickoff-time
+        // comparison against it. A failed fetch used to fall back to [],
+        // which made every find() miss and `!game` treat every pick as
+        // locked -- silently freezing the player's Lock even though its
+        // game hadn't started, and carrying forward not-yet-started picks
+        // that could then trip the 7-pick cap with a "locked-in picks"
+        // message that made no sense. Since the write below is a whole-doc
+        // setDoc(), those bad decisions would be persisted, so abort
+        // instead and let the player retry. Checking r.ok matches how
+        // matchups.js already fetches this same file -- a non-OK response
+        // whose body happens to parse as JSON must not be trusted here.
         const [existingSnap, matchupsData] = await Promise.all([
             getDoc(docRef),
-            fetch('matchups.json').then(r => r.json()).catch(() => [])
+            fetch('matchups.json').then(r => {
+                if (!r.ok) throw new Error(`matchups.json request failed: ${r.status}`);
+                return r.json();
+            })
         ]);
         const existingPicks = existingSnap.exists() ? (existingSnap.data().picks || {}) : {};
         const existingLockedPick = existingSnap.exists() ? (existingSnap.data().lockedPick || null) : null;

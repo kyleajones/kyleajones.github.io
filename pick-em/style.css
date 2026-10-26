@@ -736,6 +736,15 @@ button {
     color: var(--color-text-muted);
 }
 
+/* Explains why these points can lag the Results tab's live grading. */
+.leaderboard-note {
+    margin: 12px 4px 0 4px;
+    color: var(--color-text-muted);
+    font-size: 0.8em;
+    line-height: 1.5;
+    text-align: center;
+}
+
 /* My Picks Tickets */
 .ticket-card {
     background: var(--color-bg-card);

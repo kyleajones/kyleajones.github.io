@@ -6,11 +6,41 @@ from pickem_common import (
     compute_points,
     escape_html,
     firestore_client,
+    rank_standings,
     resolve_recipients,
     send_resend_email,
+    standings_sort_key,
 )
 
 STANDINGS_URL = "https://3woks.com/pick-em/record.html"
+
+
+def top_scorers(weekly_points):
+    """Returns (max_points, [winner names]) for the week, or None if
+    there's nothing worth emailing about.
+
+    None covers two cases that must not produce a send:
+
+    - No scorable entries at all. compute_points() skips docs with no
+      picks, so a non-empty week_docs can still reduce to {} here, and
+      max() would raise ValueError on the empty sequence.
+    - Everyone on zero. That means nothing graded -- week_is_complete()
+      consults ESPN directly, but results.json is written by a SEPARATE
+      workflow (update-scores.yml) whose scheduled runs have been
+      observed hours late, so ESPN can report a finished week while the
+      results file this reads is still stale. Congratulating the whole
+      league on "the top score of the week (0 points)" reads like a bug;
+      better to skip and let the next run send the real thing.
+    """
+    if not weekly_points:
+        return None
+
+    max_points = max(u['points'] for u in weekly_points.values())
+    if max_points <= 0:
+        return None
+
+    winners = [u['name'] for u in weekly_points.values() if u['points'] == max_points]
+    return max_points, winners
 
 
 def main():
@@ -67,22 +97,37 @@ def main():
             .stream()
     ]
 
+    # Strictly redundant with top_scorers()'s empty check below, but kept
+    # so the log distinguishes "nobody submitted picks" from "picks exist
+    # but nothing has graded yet" -- the two call for very different
+    # follow-up when someone asks why no email arrived.
     if not week_docs:
         print(f"No picks submitted for week {target_week} — skipping standings email.")
         return
 
     weekly_points = compute_points(week_docs, results_data)
-    max_points = max(u['points'] for u in weekly_points.values())
-    weekly_winners = [u['name'] for u in weekly_points.values() if u['points'] == max_points]
+    top = top_scorers(weekly_points)
+    if top is None:
+        print(
+            f"Week {target_week} has no scored picks yet (results likely "
+            "not in) — skipping standings email."
+        )
+        return
+    max_points, weekly_winners = top
 
     all_docs = [doc.to_dict() for doc in db.collection('picks').stream()]
     season_points = compute_points(all_docs, results_data)
-    standings = sorted(season_points.values(), key=lambda u: u['points'], reverse=True)
+    # Same ordering and shared-rank logic as record.js's leaderboard, via
+    # the ports in pickem_common, so the emailed standings and the web
+    # leaderboard can't disagree on either row order or rank numbers.
+    standings = rank_standings(
+        sorted(season_points.values(), key=standings_sort_key)
+    )
 
     winners_line = " & ".join(escape_html(name) for name in weekly_winners)
     rows = "".join(
-        f"<tr><td>{i + 1}</td><td>{escape_html(u['name'])}</td><td>{u['points']}</td></tr>"
-        for i, u in enumerate(standings)
+        f"<tr><td>{rank}</td><td>{escape_html(u['name'])}</td><td>{u['points']}</td></tr>"
+        for rank, u in standings
     )
 
     subject = f"\U0001F3C8 Week {target_week} Results: Winner + Standings"
