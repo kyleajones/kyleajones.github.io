@@ -27,15 +27,5 @@ jobs:
         with: { node-version: '20' }
       - run: npm install
         working-directory: pick-em/tests/rules
-      # --concurrency=1 is required, not a tuning preference. node's test
-      # runner executes test FILES in parallel processes by default, and all
-      # three files share one emulator datastore (same host/port, same
-      # projectId), so one file's afterEach clearFirestore() wipes data
-      # another file just seeded. That surfaced as "a different
-      # authenticated user cannot read someone else's picks" passing a read
-      # it should have denied: the doc had been cleared out from under it,
-      # and the read rule deliberately allows resource == null (see the
-      # comment on that rule). Serializing the files removes the shared-state
-      # race without needing a separate emulator per file.
-      - run: npx firebase emulators:exec --project=demo-pickem "node --test --concurrency=1 *.test.js"
+      - run: npx firebase emulators:exec --project=demo-pickem "node --test *.test.js"
         working-directory: pick-em/tests/rules

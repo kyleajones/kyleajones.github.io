@@ -12,7 +12,9 @@ let testEnv;
 
 before(async () => {
   testEnv = await initializeTestEnvironment({
-    projectId: "demo-pickem",
+    // Per-file projectId so this file's clearFirestore() can't wipe data
+    // another test file seeded -- see the note in picks.test.js.
+    projectId: "demo-pickem-weekly",
     firestore: {
       rules: fs.readFileSync(
         path.join(__dirname, "..", "..", "firestore.rules"),

@@ -15,7 +15,18 @@ const PAST = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
 before(async () => {
   testEnv = await initializeTestEnvironment({
-    projectId: "demo-pickem",
+    // Per-FILE projectId. node --test runs test files in parallel
+    // processes, and the emulator partitions data by project, so sharing
+    // one projectId across files means one file's afterEach
+    // clearFirestore() wipes data another file just seeded. That showed
+    // up as "a different authenticated user cannot read someone else's
+    // picks" passing a read it should have denied: the doc had been
+    // cleared from under it, and the read rule deliberately allows
+    // resource == null (for auth.js's prefill getDoc). Distinct IDs keep
+    // the files parallel and independent. Must still start with "demo-"
+    // so the emulator treats it as a demo project and never reaches for
+    // real credentials.
+    projectId: "demo-pickem-picks",
     firestore: {
       rules: fs.readFileSync(
         path.join(__dirname, "..", "..", "firestore.rules"),
