@@ -35,14 +35,32 @@ afterEach(async () => {
   await testEnv.clearFirestore();
 });
 
-// Seeds the matchups/{gameId} mirror docs the same way update_picks.py's
-// Admin SDK actually writes them in production -- tests should seed data
-// the same way prod writes it, not rely on the rules under test to also
-// seed themselves.
+// Mirror of update_picks.valid_picks_map() -- the precomputed set of
+// legitimate stored pick values that firestore.rules now does a simple
+// membership test against (instead of rebuilding the strings inline,
+// which blew the 1000-expression evaluation limit). Built here rather
+// than hardcoded into each fixture so the seeded docs can't silently
+// drift from the real line data alongside them. An "N/A" side yields an
+// empty list, so nothing is pickable on it.
+function validPicks({ away, home, awayLine, homeLine, overUnder }) {
+  return {
+    spread: awayLine === "N/A" ? [] : [`${away}|${awayLine}`, `${home}|${homeLine}`],
+    ou: overUnder === "N/A" ? [] : [`Over|${overUnder}`, `Under|${overUnder}`],
+  };
+}
+
+// Builds a matchups/{gameId} mirror doc in exactly the shape
+// update_picks.py's Admin SDK writes in production -- tests should seed
+// data the same way prod writes it, not rely on the rules under test to
+// also seed themselves.
+function matchupDoc(fields) {
+  return { ...fields, validPicks: validPicks(fields) };
+}
+
 async function seedMatchups() {
   await testEnv.withSecurityRulesDisabled(async (context) => {
     const db = context.firestore();
-    await setDoc(doc(db, "matchups/future-game"), {
+    await setDoc(doc(db, "matchups/future-game"), matchupDoc({
       away: "Team A",
       home: "Team B",
       awayLine: "+3",
@@ -51,8 +69,8 @@ async function seedMatchups() {
       commenceTime: FUTURE,
       weekStr: "week1",
       yearStr: "2026",
-    });
-    await setDoc(doc(db, "matchups/started-game"), {
+    }));
+    await setDoc(doc(db, "matchups/started-game"), matchupDoc({
       away: "Team C",
       home: "Team D",
       awayLine: "-7",
@@ -61,8 +79,8 @@ async function seedMatchups() {
       commenceTime: PAST,
       weekStr: "week1",
       yearStr: "2026",
-    });
-    await setDoc(doc(db, "matchups/wrong-week-game"), {
+    }));
+    await setDoc(doc(db, "matchups/wrong-week-game"), matchupDoc({
       away: "Team E",
       home: "Team F",
       awayLine: "+2.5",
@@ -71,10 +89,10 @@ async function seedMatchups() {
       commenceTime: FUTURE,
       weekStr: "week2",
       yearStr: "2026",
-    });
+    }));
     // A game ESPN has published no odds for yet -- update_picks.py mirrors
     // "N/A" through verbatim from espn_api._format_spread().
-    await setDoc(doc(db, "matchups/unpriced-game"), {
+    await setDoc(doc(db, "matchups/unpriced-game"), matchupDoc({
       away: "Team G",
       home: "Team H",
       awayLine: "N/A",
@@ -83,7 +101,7 @@ async function seedMatchups() {
       commenceTime: FUTURE,
       weekStr: "week1",
       yearStr: "2026",
-    });
+    }));
   });
 }
 
@@ -272,7 +290,7 @@ test("create rejects a pick referencing a matchup whose commenceTime is already 
   );
 });
 
-// ---- Document access budget ----
+// ---- Rules evaluation budget ----
 
 // Seeds 4 future games, enough to build a full 7-pick slate from their
 // spread + over/under sides.
@@ -280,7 +298,7 @@ async function seedSevenPickSlate() {
   await testEnv.withSecurityRulesDisabled(async (context) => {
     const db = context.firestore();
     for (let i = 1; i <= 4; i++) {
-      await setDoc(doc(db, `matchups/budget-game${i}`), {
+      await setDoc(doc(db, `matchups/budget-game${i}`), matchupDoc({
         away: `Away ${i}`,
         home: `Home ${i}`,
         awayLine: "+3",
@@ -289,7 +307,7 @@ async function seedSevenPickSlate() {
         commenceTime: FUTURE,
         weekStr: "week1",
         yearStr: "2026",
-      });
+      }));
     }
   });
 }
@@ -307,14 +325,14 @@ function sevenFreshPicks() {
   };
 }
 
-// Regression test for the document-access budget documented on
-// allPicksOk(). Firestore permits only 10 get()/exists() calls per
-// single-document rules evaluation. pickIsValid() used to spend 2 per
-// pick (exists() then get() on the same path), so a full 7-pick slate
-// needed ~14-16 and was rejected with permission-denied -- a legitimate
-// save failing for a reason indistinguishable from a real rule
-// violation. Every other test in this file uses only 1-2 picks, so none
-// of them exercise the limit.
+// Regression tests for BOTH per-evaluation limits documented on
+// allPicksOk(): 10 document accesses, and 1000 evaluated expressions.
+// Exceeding either returns permission-denied, indistinguishable from a
+// real rule violation. Every other test in this file uses only 1-2
+// picks, so these are the only ones that exercise either limit -- and
+// the update case below is the one that actually caught the
+// expression-limit overrun in CI, after the access limit was already
+// fixed. Keep all three.
 test("create accepts a full slate of 7 fresh picks (access budget)", async () => {
   await seedSevenPickSlate();
   await assertSucceeds(

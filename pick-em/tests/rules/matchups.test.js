@@ -32,6 +32,8 @@ afterEach(async () => {
   await testEnv.clearFirestore();
 });
 
+// Shape matches what update_picks.py writes, including the precomputed
+// validPicks map firestore.rules validates incoming picks against.
 async function seedMatchup() {
   await testEnv.withSecurityRulesDisabled(async (context) => {
     await setDoc(doc(context.firestore(), "matchups/game1"), {
@@ -43,6 +45,10 @@ async function seedMatchup() {
       commenceTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
       weekStr: "week1",
       yearStr: "2026",
+      validPicks: {
+        spread: ["Team A|+3", "Team B|-3"],
+        ou: ["Over|44.5", "Under|44.5"],
+      },
     });
   });
 }

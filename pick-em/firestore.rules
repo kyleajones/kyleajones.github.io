@@ -71,26 +71,25 @@ service cloud.firestore {
     //
     // An unpriced line ("N/A", what espn_api._format_spread() writes when
     // ESPN has published no odds) is rejected outright: it isn't a real
-    // line, so there's no honest way to grade a pick against it.
-    function valueMatchesKeyType(key, value, matchup) {
-      return key.matches('spread_.*')
-             ? (matchup.data.awayLine != 'N/A'
-                && (value == matchup.data.away + '|' + matchup.data.awayLine
-                    || value == matchup.data.home + '|' + matchup.data.homeLine))
-             : (matchup.data.overUnder != 'N/A'
-                && (value == 'Over|' + matchup.data.overUnder
-                    || value == 'Under|' + matchup.data.overUnder));
-    }
-
+    // line, so there's no honest way to grade a pick against it. That
+    // falls out of validPicks being an empty list for such a side.
+    //
+    // The legitimate values are precomputed server-side by
+    // update_picks.valid_picks_map() into
+    // matchup.data.validPicks = {spread: [...], ou: [...]}, so this is a
+    // single map lookup plus a list membership test. Rebuilding those
+    // strings inline here (regex + ternary + four concatenations, per
+    // pick) is what exceeded Firestore's 1000-expression-per-evaluation
+    // limit on a 7-pick update -- see the budget note on allPicksOk().
     function pickIsValid(key, value, weekStr, yearStr) {
-      let gameId = key.split('_')[1];
-      let matchup = get(matchupPath(gameId));
+      let prefix = key.split('_')[0];
+      let matchup = get(matchupPath(key.split('_')[1]));
       return matchup != null
              && matchup.data.weekStr == weekStr
              && matchup.data.yearStr == yearStr
              && request.time < matchup.data.commenceTime
-             && (key.matches('spread_.*') || key.matches('ou_.*'))
-             && valueMatchesKeyType(key, value, matchup);
+             && prefix in matchup.data.validPicks
+             && value in matchup.data.validPicks[prefix];
     }
 
     function pickOk(key, weekStr, yearStr) {
@@ -107,26 +106,36 @@ service cloud.firestore {
     // shorter than that index, via `||` short-circuiting before the
     // (otherwise out-of-bounds) `keys[i]` access is ever evaluated.
     //
-    // ACCESS BUDGET -- the reason every helper here is written to spend
-    // at most one get() per path. Firestore allows only 10 document
-    // access calls (get/exists) per single-document rules evaluation,
-    // and exceeding it fails the write with permission-denied, which
-    // would look exactly like a legitimate rule rejection. The worst
-    // case is a 7-pick save where no pick can use pickUnchanged()'s
-    // short-circuit (i.e. 7 brand-new picks):
+    // EVALUATION BUDGET -- there are TWO separate per-evaluation limits
+    // here, and both are easy to trip because exceeding either fails the
+    // write with permission-denied, indistinguishable from a legitimate
+    // rule rejection:
     //
-    //   7 x pickIsValid()  = 7   (one get() each)
-    //   + lockIsFrozen()   = 1   (only when a lock is already stored)
-    //   -------------------------
-    //                        8   of 10
+    //   1. 10 document access calls (get/exists).
+    //   2. 1000 expressions evaluated.
     //
-    // That leaves 2 of headroom. This is why pickIsValid() and
-    // matchupStarted() null-check a single get() instead of calling
-    // exists() first: the exists()+get() pair this replaced cost 2 per
-    // pick, putting the same save at ~16 and silently breaking every
-    // full-slate submission. If MAX_PICKS ever rises above 7, or any
-    // helper gains another get(), this budget has to be rechecked --
-    // the limit is per-evaluation and cannot be raised.
+    // Limit 1 is why pickIsValid() and matchupStarted() null-check a
+    // single get() rather than calling exists() first on the same path:
+    // that pair cost 2 accesses per pick, putting a 7-pick save at ~16.
+    // Worst case now is 7 (one per pick) + 1 (lockIsFrozen, only when a
+    // lock is already stored) = 8 of 10.
+    //
+    // Limit 2 was hit for real, by a 7-pick UPDATE -- CI caught it after
+    // limit 1 had already been fixed, which is exactly why the two have
+    // to be tracked separately. Each pick pays pickUnchanged() (3
+    // expressions, only short-circuiting cheaply on create, where
+    // resource == null) AND pickIsValid(); rebuilding the legitimate
+    // pick strings inline there (a regex match, a ternary, and four
+    // string concatenations against the mirror doc) multiplied out past
+    // 1000 across 7 keys. Hence validPicks: the string building moved
+    // server-side into update_picks.valid_picks_map(), leaving the rule
+    // a map lookup and a list membership test.
+    //
+    // Neither limit can be raised. If MAX_PICKS ever goes above 7, or a
+    // helper gains a get() or any non-trivial per-pick expression, BOTH
+    // budgets need rechecking -- and the only reliable check is running
+    // the 7-pick tests in tests/rules/picks.test.js against the
+    // emulator, since neither cost is visible by reading the file.
     function allPicksOk(keys, weekStr, yearStr) {
       return (keys.size() < 1 || pickOk(keys[0], weekStr, yearStr))
              && (keys.size() < 2 || pickOk(keys[1], weekStr, yearStr))

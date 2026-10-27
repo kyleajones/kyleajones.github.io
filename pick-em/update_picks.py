@@ -108,6 +108,36 @@ def compute_lines(away_spread_raw):
     return away_spread_raw, home_line
 
 
+def valid_picks_map(away, home, away_line, home_line, over_under):
+    """The exact set of legitimate stored pick values for a game, keyed by
+    the pick-key prefix they're allowed under ("spread_<id>" -> "spread").
+
+    Precomputed here, server-side, purely so firestore.rules can validate
+    a pick with a single `value in matchup.data.validPicks[prefix]`
+    membership test. The rules used to rebuild these strings inline with
+    per-pick regex matching, a ternary and four string concatenations,
+    which blew past Firestore's 1000-expression-per-evaluation limit on a
+    7-pick update (each of the 7 keys paying that cost, plus
+    pickUnchanged() on every one). Moving the string building here makes
+    the rule cost roughly constant per pick.
+
+    An unpriced side ("N/A", what espn_api._format_spread() /
+    _format_over_under() write when ESPN has published no odds) yields an
+    empty list, so `value in []` is false and no pick on that side can be
+    stored -- the same rejection the explicit != 'N/A' checks used to do.
+    """
+    return {
+        "spread": [] if away_line == "N/A" else [
+            f"{away}|{away_line}",
+            f"{home}|{home_line}",
+        ],
+        "ou": [] if over_under == "N/A" else [
+            f"Over|{over_under}",
+            f"Under|{over_under}",
+        ],
+    }
+
+
 def mirror_matchups_to_firestore(matchups, week, year):
     """Writes a read-only mirror of each currently-published game to
     Firestore's `matchups` collection via the Admin SDK (bypasses
@@ -139,6 +169,9 @@ def mirror_matchups_to_firestore(matchups, week, year):
             "commenceTime": commence_time,
             "weekStr": week_str,
             "yearStr": year_str,
+            "validPicks": valid_picks_map(
+                game["away"], game["home"], away_line, home_line, game["over_under"]
+            ),
         })
 
 
