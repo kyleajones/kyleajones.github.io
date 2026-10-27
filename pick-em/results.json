@@ -846,5 +846,13 @@
             "Kansas City Chiefs": 3,
             "Seattle Seahawks": 20
         }
+    },
+    "401873009": {
+        "away_team": "Dallas Cowboys",
+        "home_team": "Philadelphia Eagles",
+        "scores": {
+            "Dallas Cowboys": 38,
+            "Philadelphia Eagles": 21
+        }
     }
 }
