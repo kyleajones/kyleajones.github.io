@@ -1,0 +1,54 @@
+name: ESPN Schema Check
+
+# Runs the `live`-marked test in pick-em/tests/, which hits ESPN's real
+# scoreboard endpoint and asserts the response still has the shape
+# espn_api.py parses. Everything in this app -- matchups, spreads, totals,
+# scores, and the canonical current week -- comes from that one
+# undocumented, key-less, SLA-free endpoint, so a field rename on ESPN's
+# side silently corrupts matchups.json/results.json on the next nightly
+# run with nothing to flag it. The fixtures in tests/fixtures/espn/ record
+# two shape surprises already hit in production (`odds` arriving as null
+# rather than [], and `score` being a JSON string), so drift here is a
+# real pattern rather than a hypothetical.
+#
+# Deliberately a SEPARATE workflow from test.yml rather than another job
+# in it: this is the only test that touches the network, and ESPN being
+# briefly unreachable must not fail an unrelated pull request. Nothing in
+# test.yml runs it, because pytest.ini sets `addopts = -m "not live"`,
+# which deselects the marker on every ordinary invocation.
+on:
+  schedule:
+    # Weekly, in-season only. The test asserts the scoreboard returns at
+    # least one event, and ESPN legitimately returns an empty `events`
+    # list out of season -- espn_api.week_is_complete() treats that as
+    # normal, not as an error. Running year-round would therefore fail
+    # every week from roughly February through August on a false alarm,
+    # and an alert that cries wolf for half the year is one nobody reads.
+    # Months 9-12 and 1-2 cover the regular season and the playoffs
+    # through the Super Bowl.
+    #
+    # Wednesday is chosen on purpose: ESPN's own calendar rolls the week
+    # over at Wednesday 00:00 Pacific, and the pick-reminder email goes
+    # out Thursday 15:00 UTC. A Wednesday check means drift is caught
+    # after the new week's data lands but BEFORE players are invited to
+    # make picks against it. 14:47 UTC is ~7:47am Pacific -- inside
+    # waking hours, and off the :00/:30 marks that GitHub's scheduler
+    # most oversubscribes (same reasoning as the other workflows here).
+    - cron: '47 14 * 9-12 3'  # Sep-Dec: regular season
+    - cron: '47 14 * 1-2 3'   # Jan-Feb: late season + playoffs
+  workflow_dispatch: # Allows manual trigger from the Actions tab
+
+jobs:
+  espn-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install -r tests/requirements.txt
+        working-directory: pick-em
+      # -m live inverts pytest.ini's default marker filter, so this runs
+      # ONLY the live test -- the rest of the suite is already covered by
+      # test.yml on every push.
+      - run: pytest -m live
+        working-directory: pick-em
