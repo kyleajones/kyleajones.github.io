@@ -1,2 +1,17 @@
 .DS_Store
 
+# Python test/bytecode caches (pytest runs from pick-em/, so these appear
+# both there and at the repo root).
+.pytest_cache/
+__pycache__/
+*.pyc
+
+# Installed by `npm install` in pick-em/tests/rules for the Firestore
+# rules emulator tests.
+node_modules/
+
+# Written into the working directory by `firebase emulators:exec` when the
+# rules tests run locally.
+firestore-debug.log
+firebase-debug.log
+ui-debug.log

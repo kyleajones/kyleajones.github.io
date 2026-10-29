@@ -1,18 +1,7 @@
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { compareStandings, rankStandings } from './grading.js';
-
-// Escape user-controlled strings (display names, pick values) before they're
-// interpolated into innerHTML, so a crafted display name can't inject markup
-// that executes in every visitor's browser.
-function escapeHtml(str) {
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
+import { escapeHtml, initHowToPlayModal } from './ui.js';
 
 // `computedAt` arrives as a Firestore Timestamp (which needs .toDate())
 // over the SDK, but as an ISO string if the doc is ever read from a
@@ -103,24 +92,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('leaderboard-section').innerHTML = `<div style="text-align: center; color: var(--color-loss); padding: 40px;">Error loading leaderboard.</div>`;
     }
 
-    const modal = document.getElementById('how-to-play-modal');
-    const openBtn = document.getElementById('how-to-play-link');
-    const closeBtn = document.getElementById('modal-close-btn');
-
-    if (openBtn && modal && closeBtn) {
-        openBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            modal.style.display = 'flex';
-        });
-
-        closeBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-    }
+    initHowToPlayModal();
 });

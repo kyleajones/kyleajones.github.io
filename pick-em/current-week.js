@@ -2,6 +2,7 @@ import { db, auth } from './firebase-config.js';
 import { collection, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { gradePick } from './grading.js';
+import { escapeHtml, initHowToPlayModal } from './ui.js';
 
 const ESPN_SCOREBOARD_URL = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard';
 
@@ -41,18 +42,6 @@ async function fetchEspnLiveScores(week, seasonType, year) {
         };
     }
     return games;
-}
-
-// Escape user-controlled strings (display names, pick values) before they're
-// interpolated into innerHTML, so a crafted display name can't inject markup
-// that executes in every visitor's browser.
-function escapeHtml(str) {
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
 }
 
 function toDate(value) {
@@ -298,6 +287,12 @@ async function renderWeek(week) {
 document.addEventListener('DOMContentLoaded', async () => {
     const weekSelect = document.getElementById('week-select');
 
+    // Wired up before the data fetches below, which can bail out early via
+    // `return` -- the Rules tab used to go dead on any page where
+    // current_week.json failed to load, since this was the last thing in
+    // the handler.
+    initHowToPlayModal();
+
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
         if (weekSelect.value) renderWeek(parseInt(weekSelect.value, 10));
@@ -327,25 +322,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     weekSelect.addEventListener('change', () => renderWeek(parseInt(weekSelect.value, 10)));
 
     await renderWeek(currentWeek);
-
-    const modal = document.getElementById('how-to-play-modal');
-    const openBtn = document.getElementById('how-to-play-link');
-    const closeBtn = document.getElementById('modal-close-btn');
-
-    if (openBtn && modal && closeBtn) {
-        openBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            modal.style.display = 'flex';
-        });
-
-        closeBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-    }
 });

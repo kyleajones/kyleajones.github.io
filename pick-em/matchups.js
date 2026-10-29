@@ -3,31 +3,47 @@
 // Deliberately has zero external/CDN imports (unlike auth.js, which depends
 // on the Firebase SDK). This keeps picks visible and the page usable even if
 // a browser's content blocker prevents Firebase's scripts from loading.
+// ui.js is a local module with the same no-CDN property, so importing it
+// doesn't weaken that.
+import { initHowToPlayModal } from './ui.js';
 
-// Load logo mapping
+// Logo and team-color maps, both consumed during the render below.
+//
+// These used to be kicked off as bare, unawaited fetch().then() chains that
+// assigned into module-level objects. Rendering happens on
+// DOMContentLoaded, which routinely won over a cold network fetch, so logos
+// and team colors would silently fail to appear -- and the colors aren't
+// merely decorative, they're what highlights a selected spread pick. Now
+// the render awaits these explicitly.
+//
+// A failure is still non-fatal: each resolves to {} and the page renders
+// with the generic accent color and no logos, which is strictly better than
+// not rendering the picks at all.
 let logoMap = {};
+let teamColorMap = {};
 
-fetch('logos.json')
-    .then(response => response.json())
-    .then(data => {
-        logoMap = data;
-    })
-    .catch(error => console.warn('Could not load logo mapping:', error));
+function fetchJsonMap(path, label) {
+    return fetch(path)
+        .then(response => {
+            if (!response.ok) throw new Error(`${path} request failed: ${response.status}`);
+            return response.json();
+        })
+        .catch(error => {
+            console.warn(`Could not load ${label}:`, error);
+            return {};
+        });
+}
+
+async function loadTeamAssets() {
+    [logoMap, teamColorMap] = await Promise.all([
+        fetchJsonMap('logos.json', 'logo mapping'),
+        fetchJsonMap('team-colors.json', 'team color mapping'),
+    ]);
+}
 
 function getTeamLogoUrl(teamName) {
     return logoMap[teamName] || '';
 }
-
-// Load team color mapping (used to highlight a selected spread pick in that
-// team's own color instead of a single generic accent color).
-let teamColorMap = {};
-
-fetch('team-colors.json')
-    .then(response => response.json())
-    .then(data => {
-        teamColorMap = data;
-    })
-    .catch(error => console.warn('Could not load team color mapping:', error));
 
 function getTeamColor(teamName) {
     return teamColorMap[teamName] || '';
@@ -177,15 +193,20 @@ document.addEventListener('picks:prefill', (event) => {
 
 document.addEventListener('DOMContentLoaded', () => {
     updatePickCount();
+    initHowToPlayModal();
 
-    fetch('matchups.json')
-        .then(response => {
+    // The logo/color maps are fetched alongside matchups.json and awaited
+    // together, so the render below can never start before they've settled.
+    Promise.all([
+        fetch('matchups.json').then(response => {
             if (!response.ok) {
                 throw new Error(`File not found or server error (Status: ${response.status})`);
             }
             return response.json();
-        })
-        .then(matchups => {
+        }),
+        loadTeamAssets(),
+    ])
+        .then(([matchups]) => {
             const container = document.getElementById('matchups-container');
 
             let currentDateTimeString = '';
@@ -357,26 +378,4 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error fetching matchups:', error);
             document.getElementById('matchups-container').innerHTML = '<p style="color: var(--color-text-muted);">Matchups will be available soon.</p>';
         });
-
-    // How to Play Modal Logic
-    const modal = document.getElementById('how-to-play-modal');
-    const openBtn = document.getElementById('how-to-play-link');
-    const closeBtn = document.getElementById('modal-close-btn');
-
-    if (openBtn && modal && closeBtn) {
-        openBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            modal.style.display = 'flex';
-        });
-
-        closeBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-    }
 });
