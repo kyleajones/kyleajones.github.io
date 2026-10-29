@@ -24,20 +24,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         // Leaderboard is pre-computed server-side (update_leaderboard.py)
-        // into a single trusted mirror doc, already in the exact
-        // {uid: {name, points, w, l, p}} shape the rendering below
-        // expects -- so no client-side aggregation is needed here.
+        // into a single trusted mirror doc shaped
+        // {players: {uid: {name, points, w, l, p}}, computedAt: <ts>},
+        // already exactly what the rendering below expects -- so no
+        // client-side aggregation is needed here.
         const leaderboardSnap = await getDoc(doc(db, "leaderboard", "current"));
         const leaderboardData = leaderboardSnap.exists() ? leaderboardSnap.data() : {};
 
-        // update_leaderboard.py nests entries under `players` alongside a
-        // `computedAt` timestamp. Fall back to treating the whole doc as
-        // the player map for the pre-nesting shape, which stays live until
-        // the next nightly run writes the new one -- without this, every
-        // name/points field would read as undefined in the meantime.
-        const isNested = 'players' in leaderboardData;
-        const userStats = isNested ? (leaderboardData.players || {}) : leaderboardData;
-        const computedAt = isNested ? leaderboardData.computedAt : null;
+        const userStats = leaderboardData.players || {};
+        const computedAt = leaderboardData.computedAt || null;
 
         // Ranking rules live in grading.js so send_standings_email.py's
         // Python ports stay the single other copy: points desc, then more
@@ -73,8 +68,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Explain the discrepancy a player hits when they compare this
         // page against the Results tab mid-week: these points come from
         // results.json as of the last nightly run, while Results overlays
-        // live ESPN scores. Only shown when the timestamp is actually
-        // available (i.e. not for the pre-nesting doc shape).
+        // live ESPN scores. Skipped when the doc doesn't exist yet, so an
+        // empty leaderboard doesn't claim a bogus "updated" time.
         const computedAtText = computedAt ? formatComputedAt(computedAt) : '';
         if (computedAtText) {
             lbHtml += `
