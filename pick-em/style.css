@@ -1035,6 +1035,33 @@ button {
     animation: live-pulse 1.5s ease-in-out infinite;
 }
 
+/* Lock of the Week. The glyph alone carries the meaning, so no extra
+   background/border is layered on -- that would fight the win/loss/push
+   colors the badge already uses to convey its result. */
+.pick-badge-lock {
+    margin-right: 3px;
+    font-size: 0.9em;
+    /* Cancels the badge's bold so the emoji renders consistently across
+       platforms that ship a bold variant. */
+    font-weight: normal;
+}
+
+/* Player cell: name on the first line, this week's W-L-T beneath it. */
+.picks-row-player {
+    display: block;
+}
+
+.picks-row-record {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.72em;
+    font-weight: normal;
+    color: var(--color-text-muted);
+    /* Tabular figures keep the dashes vertically aligned down the column
+       even when players' digit counts differ. */
+    font-variant-numeric: tabular-nums;
+}
+
 @media (max-width: 768px) {
     /* W-L-T header label is dropped -- the record itself now renders as
        a second line under each player's name (see .leaderboard-row

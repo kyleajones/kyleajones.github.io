@@ -159,7 +159,7 @@ function renderBanner(games) {
     bannerContainer.innerHTML = html;
 }
 
-function renderBadge(pickValue, pickType, gameId) {
+function renderBadge(pickValue, pickType, gameId, isLocked = false) {
     if (!pickValue) {
         return '';
     }
@@ -171,7 +171,46 @@ function renderBadge(pickValue, pickType, gameId) {
     const label = pickType === 'Spread' ? teamName(selection) : `${selection} ${lineStr}`;
     const isLive = gameResult?.completed === false && status !== 'PENDING';
 
-    return `<span class="pick-badge pick-badge-${statusClass}${isLive ? ' pick-badge-live' : ''}" title="${escapeHtml(pickType)}${isLive ? ' (live, not final)' : ''}">${escapeHtml(label)}</span>`;
+    // The lock marker is a plain text glyph rather than an <img>, so it
+    // needs no asset and can't fail to load. Kept inside the badge so it
+    // travels with the pick it belongs to.
+    const lockMark = isLocked ? '<span class="pick-badge-lock" aria-hidden="true">🔒</span>' : '';
+    const titleParts = [pickType];
+    if (isLocked) titleParts.push('Lock of the Week');
+    if (isLive) titleParts.push('live, not final');
+
+    return `<span class="pick-badge pick-badge-${statusClass}${isLive ? ' pick-badge-live' : ''}${isLocked ? ' pick-badge-locked' : ''}" title="${escapeHtml(titleParts.join(' — '))}">${lockMark}${escapeHtml(label)}</span>`;
+}
+
+// A player's W-L-T for one week, computed from the same gradePick() the
+// badges above use, so the summary can never disagree with the cells it
+// sits under. PENDING picks (game not started, or no result yet) simply
+// don't count toward any column, which is what makes this tick upward
+// naturally as games finalize.
+//
+// Deliberately counts only picks present in `player.picks` -- for other
+// players that's the redacted set, so an opponent's record reflects only
+// their already-revealed picks rather than hinting at how many more they
+// have pending.
+function weekRecord(player, games) {
+    const picks = player.picks || {};
+    let w = 0, l = 0, t = 0;
+
+    games.forEach((game) => {
+        const candidates = [
+            [picks[`spread_${game.id}`], 'Spread'],
+            [picks[`ou_${game.id}`], 'Over/Under'],
+        ];
+        candidates.forEach(([pickValue, pickType]) => {
+            if (!pickValue) return;
+            const status = gradePick(pickValue, pickType, resultsData[game.id]);
+            if (status === 'WIN') w++;
+            else if (status === 'LOSS') l++;
+            else if (status === 'PUSH') t++;
+        });
+    });
+
+    return { w, l, t };
 }
 
 function renderTable(games, players) {
@@ -192,15 +231,26 @@ function renderTable(games, players) {
 
     playerEntries.forEach(([uid, player]) => {
         const isSelf = currentUser && uid === currentUser.uid;
+        const lockedPick = player.lockedPick || null;
+        const { w, l, t } = weekRecord(player, games);
+        const hasGraded = w + l + t > 0;
+
         html += `<tr class="${isSelf ? 'picks-row-self' : ''}">`;
-        html += `<td class="picks-row-name">${escapeHtml(player.username || 'Anonymous')}${isSelf ? ' (You)' : ''}</td>`;
+        html += `
+            <td class="picks-row-name">
+                <span class="picks-row-player">${escapeHtml(player.username || 'Anonymous')}${isSelf ? ' (You)' : ''}</span>
+                ${hasGraded ? `<span class="picks-row-record">${w}-${l}-${t}</span>` : ''}
+            </td>
+        `;
         games.forEach((game) => {
             const picks = player.picks || {};
+            const spreadKey = `spread_${game.id}`;
+            const ouKey = `ou_${game.id}`;
             html += `
                 <td>
                     <div class="pick-cell">
-                        ${renderBadge(picks[`spread_${game.id}`], 'Spread', game.id)}
-                        ${renderBadge(picks[`ou_${game.id}`], 'Over/Under', game.id)}
+                        ${renderBadge(picks[spreadKey], 'Spread', game.id, lockedPick === spreadKey)}
+                        ${renderBadge(picks[ouKey], 'Over/Under', game.id, lockedPick === ouKey)}
                     </div>
                 </td>
             `;
@@ -256,13 +306,20 @@ async function renderWeek(week) {
         // Always show the logged-in user their own picks in full, even for
         // games that haven't started -- the weeklyPicks mirror redacts
         // those, so overlay directly from their own doc (already readable
-        // by them per firestore.rules).
+        // by them per firestore.rules). Their own lockedPick comes from
+        // here too, unredacted: revealed_lock() in update_weekly_picks.py
+        // withholds it from the mirror until kickoff, which is right for
+        // rivals but would hide a player's own lock from them.
         if (currentUser) {
             const ownSnap = await getDoc(doc(db, 'picks', `${currentUser.uid}_week${week}_${year}`));
             if (activeRenderWeek !== week) return;
             if (ownSnap.exists()) {
                 const own = ownSnap.data();
-                players[currentUser.uid] = { username: own.username, picks: own.picks || {} };
+                players[currentUser.uid] = {
+                    username: own.username,
+                    picks: own.picks || {},
+                    lockedPick: own.lockedPick || null,
+                };
             }
         }
 
