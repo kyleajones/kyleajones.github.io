@@ -854,5 +854,13 @@
             "Dallas Cowboys": 38,
             "Philadelphia Eagles": 21
         }
+    },
+    "401873023": {
+        "away_team": "Carolina Panthers",
+        "home_team": "Green Bay Packers",
+        "scores": {
+            "Carolina Panthers": 19,
+            "Green Bay Packers": 27
+        }
     }
 }
