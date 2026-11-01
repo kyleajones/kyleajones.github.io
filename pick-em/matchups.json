@@ -1,13 +1,5 @@
 [
     {
-        "id": "401873023",
-        "away": "Carolina Panthers",
-        "home": "Green Bay Packers",
-        "spread": "+3.5",
-        "over_under": "47.5",
-        "commence_time": "2026-10-30T00:15Z"
-    },
-    {
         "id": "401873026",
         "away": "Baltimore Ravens",
         "home": "Buffalo Bills",
@@ -102,6 +94,14 @@
         "spread": "+5.5",
         "over_under": "40.5",
         "commence_time": "2026-11-02T01:20Z"
+    },
+    {
+        "id": "401873023",
+        "away": "Carolina Panthers",
+        "home": "Green Bay Packers",
+        "spread": "+3.5",
+        "over_under": "47.5",
+        "commence_time": "2026-10-30T00:15Z"
     },
     {
         "id": "401873036",
