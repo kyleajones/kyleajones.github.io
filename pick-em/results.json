@@ -958,5 +958,13 @@
             "Philadelphia Eagles": 10,
             "Washington Commanders": 27
         }
+    },
+    "401873036": {
+        "away_team": "Chicago Bears",
+        "home_team": "Seattle Seahawks",
+        "scores": {
+            "Chicago Bears": 34,
+            "Seattle Seahawks": 17
+        }
     }
 }
