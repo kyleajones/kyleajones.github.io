@@ -974,5 +974,109 @@
             "Jacksonville Jaguars": 33,
             "Baltimore Ravens": 10
         }
+    },
+    "401873038": {
+        "away_team": "Cincinnati Bengals",
+        "home_team": "Atlanta Falcons",
+        "scores": {
+            "Cincinnati Bengals": 34,
+            "Atlanta Falcons": 17
+        }
+    },
+    "401873040": {
+        "away_team": "Dallas Cowboys",
+        "home_team": "Indianapolis Colts",
+        "scores": {
+            "Dallas Cowboys": 27,
+            "Indianapolis Colts": 23
+        }
+    },
+    "401873045": {
+        "away_team": "New York Jets",
+        "home_team": "Kansas City Chiefs",
+        "scores": {
+            "New York Jets": 12,
+            "Kansas City Chiefs": 35
+        }
+    },
+    "401873042": {
+        "away_team": "Detroit Lions",
+        "home_team": "Miami Dolphins",
+        "scores": {
+            "Detroit Lions": 19,
+            "Miami Dolphins": 9
+        }
+    },
+    "401873039": {
+        "away_team": "Cleveland Browns",
+        "home_team": "New Orleans Saints",
+        "scores": {
+            "Cleveland Browns": 22,
+            "New Orleans Saints": 23
+        }
+    },
+    "401873044": {
+        "away_team": "New York Giants",
+        "home_team": "Philadelphia Eagles",
+        "scores": {
+            "New York Giants": 19,
+            "Philadelphia Eagles": 11
+        }
+    },
+    "401873043": {
+        "away_team": "Los Angeles Rams",
+        "home_team": "Washington Commanders",
+        "scores": {
+            "Los Angeles Rams": 20,
+            "Washington Commanders": 13
+        }
+    },
+    "401873041": {
+        "away_team": "Denver Broncos",
+        "home_team": "Carolina Panthers",
+        "scores": {
+            "Denver Broncos": 26,
+            "Carolina Panthers": 21
+        }
+    },
+    "401873046": {
+        "away_team": "Houston Texans",
+        "home_team": "Los Angeles Chargers",
+        "scores": {
+            "Houston Texans": 44,
+            "Los Angeles Chargers": 22
+        }
+    },
+    "401873049": {
+        "away_team": "Green Bay Packers",
+        "home_team": "New England Patriots",
+        "scores": {
+            "Green Bay Packers": 45,
+            "New England Patriots": 27
+        }
+    },
+    "401873047": {
+        "away_team": "Las Vegas Raiders",
+        "home_team": "San Francisco 49ers",
+        "scores": {
+            "Las Vegas Raiders": 17,
+            "San Francisco 49ers": 38
+        }
+    },
+    "401873048": {
+        "away_team": "Arizona Cardinals",
+        "home_team": "Seattle Seahawks",
+        "scores": {
+            "Arizona Cardinals": 3,
+            "Seattle Seahawks": 17
+        }
+    },
+    "401873050": {
+        "away_team": "Tampa Bay Buccaneers",
+        "home_team": "Chicago Bears",
+        "scores": {
+            "Tampa Bay Buccaneers": 24,
+            "Chicago Bears": 27
+        }
     }
 }
