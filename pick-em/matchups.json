@@ -1,5 +1,21 @@
 [
     {
+        "id": "401873051",
+        "away": "Buffalo Bills",
+        "home": "Minnesota Vikings",
+        "spread": "-3.5",
+        "over_under": "45.5",
+        "commence_time": "2026-11-10T01:15Z"
+    },
+    {
+        "id": "401873037",
+        "away": "Jacksonville Jaguars",
+        "home": "Baltimore Ravens",
+        "spread": "-10",
+        "over_under": "39.5",
+        "commence_time": "2026-11-06T01:15Z"
+    },
+    {
         "id": "401873038",
         "away": "Cincinnati Bengals",
         "home": "Atlanta Falcons",
@@ -102,21 +118,5 @@
         "spread": "+6",
         "over_under": "47.5",
         "commence_time": "2026-11-09T01:20Z"
-    },
-    {
-        "id": "401873037",
-        "away": "Jacksonville Jaguars",
-        "home": "Baltimore Ravens",
-        "spread": "-10",
-        "over_under": "39.5",
-        "commence_time": "2026-11-06T01:15Z"
-    },
-    {
-        "id": "401873051",
-        "away": "Buffalo Bills",
-        "home": "Minnesota Vikings",
-        "spread": "-3.5",
-        "over_under": "45.5",
-        "commence_time": "2026-11-10T01:15Z"
     }
 ]
