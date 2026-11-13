@@ -1086,5 +1086,13 @@
             "Buffalo Bills": 23,
             "Minnesota Vikings": 6
         }
+    },
+    "401873052": {
+        "away_team": "Washington Commanders",
+        "home_team": "New York Giants",
+        "scores": {
+            "Washington Commanders": 24,
+            "New York Giants": 21
+        }
     }
 }
