@@ -1190,5 +1190,13 @@
             "Pittsburgh Steelers": 18,
             "Cincinnati Bengals": 38
         }
+    },
+    "401873065": {
+        "away_team": "Los Angeles Chargers",
+        "home_team": "Baltimore Ravens",
+        "scores": {
+            "Los Angeles Chargers": 23,
+            "Baltimore Ravens": 20
+        }
     }
 }
