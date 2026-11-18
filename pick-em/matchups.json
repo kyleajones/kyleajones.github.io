@@ -1,114 +1,106 @@
 [
     {
-        "id": "401873052",
-        "away": "Washington Commanders",
-        "home": "New York Giants",
-        "spread": "+2.5",
-        "over_under": "41.5",
-        "commence_time": "2026-11-13T01:15Z"
+        "id": "401873066",
+        "away": "Indianapolis Colts",
+        "home": "Houston Texans",
+        "spread": "+12.5",
+        "over_under": "44.5",
+        "commence_time": "2026-11-20T01:15Z"
     },
     {
-        "id": "401873053",
-        "away": "New England Patriots",
-        "home": "Detroit Lions",
-        "spread": "+2.5",
-        "over_under": "51.5",
-        "commence_time": "2026-11-15T14:30Z"
-    },
-    {
-        "id": "401873058",
-        "away": "Kansas City Chiefs",
-        "home": "Atlanta Falcons",
-        "spread": "-3.5",
-        "over_under": "45.5",
-        "commence_time": "2026-11-15T18:00Z"
-    },
-    {
-        "id": "401873056",
-        "away": "Houston Texans",
-        "home": "Cleveland Browns",
-        "spread": "-5.5",
-        "over_under": "39.5",
-        "commence_time": "2026-11-15T18:00Z"
-    },
-    {
-        "id": "401873060",
-        "away": "Minnesota Vikings",
-        "home": "Green Bay Packers",
-        "spread": "+3.5",
-        "over_under": "41.5",
-        "commence_time": "2026-11-15T18:00Z"
-    },
-    {
-        "id": "401873057",
-        "away": "Jacksonville Jaguars",
-        "home": "Tennessee Titans",
-        "spread": "-10.5",
-        "over_under": "46.5",
-        "commence_time": "2026-11-15T18:00Z"
-    },
-    {
-        "id": "401873059",
+        "id": "401873070",
         "away": "Miami Dolphins",
-        "home": "Indianapolis Colts",
-        "spread": "+3.5",
-        "over_under": "38.5",
-        "commence_time": "2026-11-15T18:00Z"
+        "home": "Buffalo Bills",
+        "spread": "+16.5",
+        "over_under": "45.5",
+        "commence_time": "2026-11-22T18:00Z"
     },
     {
-        "id": "401873055",
-        "away": "Carolina Panthers",
-        "home": "New Orleans Saints",
-        "spread": "+2.5",
+        "id": "401873071",
+        "away": "New Orleans Saints",
+        "home": "Chicago Bears",
+        "spread": "+11.5",
         "over_under": "48.5",
-        "commence_time": "2026-11-15T18:00Z"
+        "commence_time": "2026-11-22T18:00Z"
     },
     {
-        "id": "401873054",
-        "away": "Buffalo Bills",
-        "home": "New York Jets",
-        "spread": "-8.5",
-        "over_under": "50.5",
-        "commence_time": "2026-11-15T18:00Z"
-    },
-    {
-        "id": "401873062",
-        "away": "Seattle Seahawks",
-        "home": "Las Vegas Raiders",
-        "spread": "-6.5",
-        "over_under": "40.5",
-        "commence_time": "2026-11-15T21:05Z"
-    },
-    {
-        "id": "401873061",
-        "away": "Los Angeles Rams",
-        "home": "Arizona Cardinals",
-        "spread": "-9.5",
-        "over_under": "39.5",
-        "commence_time": "2026-11-15T21:05Z"
-    },
-    {
-        "id": "401873063",
-        "away": "San Francisco 49ers",
+        "id": "401873073",
+        "away": "Tennessee Titans",
         "home": "Dallas Cowboys",
-        "spread": "-3.5",
-        "over_under": "55.5",
-        "commence_time": "2026-11-15T21:25Z"
+        "spread": "+8.5",
+        "over_under": "54.5",
+        "commence_time": "2026-11-22T18:00Z"
     },
     {
-        "id": "401873064",
+        "id": "401873072",
+        "away": "Tampa Bay Buccaneers",
+        "home": "Detroit Lions",
+        "spread": "+7",
+        "over_under": "43.5",
+        "commence_time": "2026-11-22T18:00Z"
+    },
+    {
+        "id": "401873067",
+        "away": "Arizona Cardinals",
+        "home": "Kansas City Chiefs",
+        "spread": "+15.5",
+        "over_under": "40.5",
+        "commence_time": "2026-11-22T18:00Z"
+    },
+    {
+        "id": "401873076",
         "away": "Pittsburgh Steelers",
-        "home": "Cincinnati Bengals",
-        "spread": "+3.5",
-        "over_under": "49.5",
-        "commence_time": "2026-11-16T01:20Z"
+        "home": "Philadelphia Eagles",
+        "spread": "-4.5",
+        "over_under": "38.5",
+        "commence_time": "2026-11-22T18:00Z"
     },
     {
-        "id": "401873065",
-        "away": "Los Angeles Chargers",
-        "home": "Baltimore Ravens",
-        "spread": "+4.5",
-        "over_under": "38.5",
-        "commence_time": "2026-11-17T01:15Z"
+        "id": "401873068",
+        "away": "Baltimore Ravens",
+        "home": "Carolina Panthers",
+        "spread": "+2.5",
+        "over_under": "43.5",
+        "commence_time": "2026-11-22T18:00Z"
+    },
+    {
+        "id": "401873074",
+        "away": "New York Jets",
+        "home": "Los Angeles Chargers",
+        "spread": "+3.5",
+        "over_under": "41.5",
+        "commence_time": "2026-11-22T21:05Z"
+    },
+    {
+        "id": "401873075",
+        "away": "Las Vegas Raiders",
+        "home": "Denver Broncos",
+        "spread": "+10",
+        "over_under": "40.5",
+        "commence_time": "2026-11-22T21:25Z"
+    },
+    {
+        "id": "401873069",
+        "away": "Jacksonville Jaguars",
+        "home": "New York Giants",
+        "spread": "-6",
+        "over_under": "46.5",
+        "commence_time": "2026-11-22T21:25Z"
+    },
+    {
+        "id": "401873077",
+        "away": "Minnesota Vikings",
+        "home": "San Francisco 49ers",
+        "spread": "+3",
+        "over_under": "45.5",
+        "commence_time": "2026-11-23T01:20Z"
+    },
+    {
+        "id": "401873078",
+        "away": "Cincinnati Bengals",
+        "home": "Washington Commanders",
+        "spread": "-6.5",
+        "over_under": "54.5",
+        "commence_time": "2026-11-24T01:15Z"
     }
 ]
