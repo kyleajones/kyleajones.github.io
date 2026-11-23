@@ -1206,5 +1206,93 @@
             "Indianapolis Colts": 3,
             "Houston Texans": 26
         }
+    },
+    "401873070": {
+        "away_team": "Miami Dolphins",
+        "home_team": "Buffalo Bills",
+        "scores": {
+            "Miami Dolphins": 9,
+            "Buffalo Bills": 26
+        }
+    },
+    "401873071": {
+        "away_team": "New Orleans Saints",
+        "home_team": "Chicago Bears",
+        "scores": {
+            "New Orleans Saints": 13,
+            "Chicago Bears": 21
+        }
+    },
+    "401873073": {
+        "away_team": "Tennessee Titans",
+        "home_team": "Dallas Cowboys",
+        "scores": {
+            "Tennessee Titans": 30,
+            "Dallas Cowboys": 51
+        }
+    },
+    "401873072": {
+        "away_team": "Tampa Bay Buccaneers",
+        "home_team": "Detroit Lions",
+        "scores": {
+            "Tampa Bay Buccaneers": 21,
+            "Detroit Lions": 31
+        }
+    },
+    "401873067": {
+        "away_team": "Arizona Cardinals",
+        "home_team": "Kansas City Chiefs",
+        "scores": {
+            "Arizona Cardinals": 7,
+            "Kansas City Chiefs": 34
+        }
+    },
+    "401873076": {
+        "away_team": "Pittsburgh Steelers",
+        "home_team": "Philadelphia Eagles",
+        "scores": {
+            "Pittsburgh Steelers": 16,
+            "Philadelphia Eagles": 19
+        }
+    },
+    "401873068": {
+        "away_team": "Baltimore Ravens",
+        "home_team": "Carolina Panthers",
+        "scores": {
+            "Baltimore Ravens": 33,
+            "Carolina Panthers": 35
+        }
+    },
+    "401873074": {
+        "away_team": "New York Jets",
+        "home_team": "Los Angeles Chargers",
+        "scores": {
+            "New York Jets": 27,
+            "Los Angeles Chargers": 24
+        }
+    },
+    "401873075": {
+        "away_team": "Las Vegas Raiders",
+        "home_team": "Denver Broncos",
+        "scores": {
+            "Las Vegas Raiders": 24,
+            "Denver Broncos": 38
+        }
+    },
+    "401873069": {
+        "away_team": "Jacksonville Jaguars",
+        "home_team": "New York Giants",
+        "scores": {
+            "Jacksonville Jaguars": 18,
+            "New York Giants": 23
+        }
+    },
+    "401873077": {
+        "away_team": "Minnesota Vikings",
+        "home_team": "San Francisco 49ers",
+        "scores": {
+            "Minnesota Vikings": 10,
+            "San Francisco 49ers": 35
+        }
     }
 }
