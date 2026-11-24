@@ -1294,5 +1294,13 @@
             "Minnesota Vikings": 10,
             "San Francisco 49ers": 35
         }
+    },
+    "401873078": {
+        "away_team": "Cincinnati Bengals",
+        "home_team": "Washington Commanders",
+        "scores": {
+            "Cincinnati Bengals": 20,
+            "Washington Commanders": 22
+        }
     }
 }
