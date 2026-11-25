@@ -1,106 +1,130 @@
 [
     {
-        "id": "401873066",
-        "away": "Indianapolis Colts",
-        "home": "Houston Texans",
-        "spread": "+12.5",
+        "id": "401873079",
+        "away": "Green Bay Packers",
+        "home": "Los Angeles Rams",
+        "spread": "+2.5",
         "over_under": "44.5",
-        "commence_time": "2026-11-20T01:15Z"
+        "commence_time": "2026-11-26T01:00Z"
     },
     {
-        "id": "401873070",
-        "away": "Miami Dolphins",
-        "home": "Buffalo Bills",
-        "spread": "+16.5",
-        "over_under": "45.5",
-        "commence_time": "2026-11-22T18:00Z"
+        "id": "401873081",
+        "away": "Chicago Bears",
+        "home": "Detroit Lions",
+        "spread": "-1.5",
+        "over_under": "55.5",
+        "commence_time": "2026-11-26T18:00Z"
     },
     {
-        "id": "401873071",
-        "away": "New Orleans Saints",
-        "home": "Chicago Bears",
-        "spread": "+11.5",
-        "over_under": "48.5",
-        "commence_time": "2026-11-22T18:00Z"
-    },
-    {
-        "id": "401873073",
-        "away": "Tennessee Titans",
+        "id": "401873080",
+        "away": "Philadelphia Eagles",
         "home": "Dallas Cowboys",
         "spread": "+8.5",
-        "over_under": "54.5",
-        "commence_time": "2026-11-22T18:00Z"
+        "over_under": "48.5",
+        "commence_time": "2026-11-26T21:30Z"
     },
     {
-        "id": "401873072",
-        "away": "Tampa Bay Buccaneers",
-        "home": "Detroit Lions",
-        "spread": "+7",
-        "over_under": "43.5",
-        "commence_time": "2026-11-22T18:00Z"
-    },
-    {
-        "id": "401873067",
-        "away": "Arizona Cardinals",
-        "home": "Kansas City Chiefs",
-        "spread": "+15.5",
-        "over_under": "40.5",
-        "commence_time": "2026-11-22T18:00Z"
-    },
-    {
-        "id": "401873076",
-        "away": "Pittsburgh Steelers",
-        "home": "Philadelphia Eagles",
-        "spread": "-4.5",
-        "over_under": "38.5",
-        "commence_time": "2026-11-22T18:00Z"
-    },
-    {
-        "id": "401873068",
-        "away": "Baltimore Ravens",
-        "home": "Carolina Panthers",
-        "spread": "+2.5",
-        "over_under": "43.5",
-        "commence_time": "2026-11-22T18:00Z"
-    },
-    {
-        "id": "401873074",
-        "away": "New York Jets",
-        "home": "Los Angeles Chargers",
-        "spread": "+3.5",
-        "over_under": "41.5",
-        "commence_time": "2026-11-22T21:05Z"
-    },
-    {
-        "id": "401873075",
-        "away": "Las Vegas Raiders",
-        "home": "Denver Broncos",
-        "spread": "+10",
-        "over_under": "40.5",
-        "commence_time": "2026-11-22T21:25Z"
-    },
-    {
-        "id": "401873069",
-        "away": "Jacksonville Jaguars",
-        "home": "New York Giants",
-        "spread": "-6",
+        "id": "401873082",
+        "away": "Kansas City Chiefs",
+        "home": "Buffalo Bills",
+        "spread": "+3",
         "over_under": "46.5",
-        "commence_time": "2026-11-22T21:25Z"
+        "commence_time": "2026-11-27T01:20Z"
     },
     {
-        "id": "401873077",
-        "away": "Minnesota Vikings",
+        "id": "401873083",
+        "away": "Denver Broncos",
+        "home": "Pittsburgh Steelers",
+        "spread": "-3.5",
+        "over_under": "36.5",
+        "commence_time": "2026-11-27T20:00Z"
+    },
+    {
+        "id": "401873087",
+        "away": "New Orleans Saints",
+        "home": "Cincinnati Bengals",
+        "spread": "+10",
+        "over_under": "50.5",
+        "commence_time": "2026-11-29T18:00Z"
+    },
+    {
+        "id": "401873088",
+        "away": "New York Giants",
+        "home": "Indianapolis Colts",
+        "spread": "-6.5",
+        "over_under": "41.5",
+        "commence_time": "2026-11-29T18:00Z"
+    },
+    {
+        "id": "401873089",
+        "away": "New York Jets",
+        "home": "Miami Dolphins",
+        "spread": "-3.5",
+        "over_under": "40.5",
+        "commence_time": "2026-11-29T18:00Z"
+    },
+    {
+        "id": "401873084",
+        "away": "Atlanta Falcons",
+        "home": "Minnesota Vikings",
+        "spread": "+7",
+        "over_under": "41.5",
+        "commence_time": "2026-11-29T18:00Z"
+    },
+    {
+        "id": "401873090",
+        "away": "Tennessee Titans",
+        "home": "Jacksonville Jaguars",
+        "spread": "+14.5",
+        "over_under": "48.5",
+        "commence_time": "2026-11-29T18:00Z"
+    },
+    {
+        "id": "401873085",
+        "away": "Baltimore Ravens",
+        "home": "Houston Texans",
+        "spread": "+7",
+        "over_under": "47.5",
+        "commence_time": "2026-11-29T18:00Z"
+    },
+    {
+        "id": "401873093",
+        "away": "New England Patriots",
+        "home": "Los Angeles Chargers",
+        "spread": "+1.5",
+        "over_under": "35.5",
+        "commence_time": "2026-11-29T21:05Z"
+    },
+    {
+        "id": "401873092",
+        "away": "Washington Commanders",
+        "home": "Arizona Cardinals",
+        "spread": "-7",
+        "over_under": "41.5",
+        "commence_time": "2026-11-29T21:25Z"
+    },
+    {
+        "id": "401873091",
+        "away": "Seattle Seahawks",
         "home": "San Francisco 49ers",
         "spread": "+3",
         "over_under": "45.5",
-        "commence_time": "2026-11-23T01:20Z"
+        "commence_time": "2026-11-29T21:25Z"
     },
     {
-        "id": "401873078",
-        "away": "Cincinnati Bengals",
-        "home": "Washington Commanders",
-        "spread": "-6.5",
-        "over_under": "54.5",
-        "commence_time": "2026-11-24T01:15Z"
+        "id": "401873086",
+        "away": "Las Vegas Raiders",
+        "home": "Cleveland Browns",
+        "spread": "+4.5",
+        "over_under": "40.5",
+        "commence_time": "2026-11-30T01:20Z"
+    },
+    {
+        "id": "401873094",
+        "away": "Carolina Panthers",
+        "home": "Tampa Bay Buccaneers",
+        "spread": "+3",
+        "over_under": "43.5",
+        "commence_time": "2026-12-01T01:15Z"
     }
 ]
