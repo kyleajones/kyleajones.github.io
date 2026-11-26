@@ -1302,5 +1302,13 @@
             "Cincinnati Bengals": 20,
             "Washington Commanders": 22
         }
+    },
+    "401873079": {
+        "away_team": "Green Bay Packers",
+        "home_team": "Los Angeles Rams",
+        "scores": {
+            "Green Bay Packers": 13,
+            "Los Angeles Rams": 26
+        }
     }
 }
