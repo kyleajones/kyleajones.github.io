@@ -1,5 +1,21 @@
 [
     {
+        "id": "401873083",
+        "away": "Denver Broncos",
+        "home": "Pittsburgh Steelers",
+        "spread": "-3.5",
+        "over_under": "36.5",
+        "commence_time": "2026-11-27T20:00Z"
+    },
+    {
+        "id": "401873079",
+        "away": "Green Bay Packers",
+        "home": "Los Angeles Rams",
+        "spread": "+2.5",
+        "over_under": "44.5",
+        "commence_time": "2026-11-26T01:00Z"
+    },
+    {
         "id": "401873081",
         "away": "Chicago Bears",
         "home": "Detroit Lions",
@@ -22,22 +38,6 @@
         "spread": "+3",
         "over_under": "46.5",
         "commence_time": "2026-11-27T01:20Z"
-    },
-    {
-        "id": "401873079",
-        "away": "Green Bay Packers",
-        "home": "Los Angeles Rams",
-        "spread": "+2.5",
-        "over_under": "44.5",
-        "commence_time": "2026-11-26T01:00Z"
-    },
-    {
-        "id": "401873083",
-        "away": "Denver Broncos",
-        "home": "Pittsburgh Steelers",
-        "spread": "-3.5",
-        "over_under": "36.5",
-        "commence_time": "2026-11-27T20:00Z"
     },
     {
         "id": "401873087",
