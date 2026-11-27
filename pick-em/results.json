@@ -1310,5 +1310,29 @@
             "Green Bay Packers": 13,
             "Los Angeles Rams": 26
         }
+    },
+    "401873081": {
+        "away_team": "Chicago Bears",
+        "home_team": "Detroit Lions",
+        "scores": {
+            "Chicago Bears": 39,
+            "Detroit Lions": 35
+        }
+    },
+    "401873080": {
+        "away_team": "Philadelphia Eagles",
+        "home_team": "Dallas Cowboys",
+        "scores": {
+            "Philadelphia Eagles": 39,
+            "Dallas Cowboys": 38
+        }
+    },
+    "401873082": {
+        "away_team": "Kansas City Chiefs",
+        "home_team": "Buffalo Bills",
+        "scores": {
+            "Kansas City Chiefs": 10,
+            "Buffalo Bills": 13
+        }
     }
 }
