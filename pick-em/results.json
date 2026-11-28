@@ -1334,5 +1334,13 @@
             "Kansas City Chiefs": 10,
             "Buffalo Bills": 13
         }
+    },
+    "401873083": {
+        "away_team": "Denver Broncos",
+        "home_team": "Pittsburgh Steelers",
+        "scores": {
+            "Denver Broncos": 5,
+            "Pittsburgh Steelers": 27
+        }
     }
 }
